@@ -46,13 +46,8 @@ impl Line {
     }
 
     fn valid_part_2(&self) -> bool {
-        let valid = (self.password.chars().nth(self.n1 - 1) == Some(self.c))
-            ^ (self.password.chars().nth(self.n2 - 1) == Some(self.c));
-        println!(
-            "{}-{} {}: {} ({})",
-            self.n1, self.n2, self.c, self.password, valid,
-        );
-        valid
+        (self.password.chars().nth(self.n1 - 1) == Some(self.c))
+            ^ (self.password.chars().nth(self.n2 - 1) == Some(self.c))
     }
 }
 
