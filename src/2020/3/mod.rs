@@ -51,7 +51,7 @@ impl Map {
         &self,
         x_incr: usize,
         y_incr: usize,
-    ) -> anyhow::Result<usize> {
+    ) -> anyhow::Result<i64> {
         let mut trees = 0;
         for r in 0..self.rows() / y_incr {
             let x = r * x_incr;
@@ -64,23 +64,18 @@ impl Map {
     }
 }
 
-pub fn part1() -> anyhow::Result<()> {
+pub fn part1() -> anyhow::Result<i64> {
     let map = read_map()?;
-    println!("{}", map.trees_for_slope(3, 1)?);
-    Ok(())
+    Ok(map.trees_for_slope(3, 1)?)
 }
 
-pub fn part2() -> anyhow::Result<()> {
+pub fn part2() -> anyhow::Result<i64> {
     let map = read_map()?;
-    println!(
-        "{}",
-        map.trees_for_slope(1, 1)?
-            * map.trees_for_slope(3, 1)?
-            * map.trees_for_slope(5, 1)?
-            * map.trees_for_slope(7, 1)?
-            * map.trees_for_slope(1, 2)?
-    );
-    Ok(())
+    Ok(map.trees_for_slope(1, 1)?
+        * map.trees_for_slope(3, 1)?
+        * map.trees_for_slope(5, 1)?
+        * map.trees_for_slope(7, 1)?
+        * map.trees_for_slope(1, 2)?)
 }
 
 fn read_map() -> anyhow::Result<Map> {

@@ -15,7 +15,9 @@ fn main(opt: Opt) {
         Opt::Year2020 { day, puzzle } => crate::year2020::run(day, puzzle),
     };
     match res {
-        Ok(()) => {}
+        Ok(answer) => {
+            println!("{}", answer);
+        }
         Err(e) => {
             eprintln!("{}", e);
             std::process::exit(1);

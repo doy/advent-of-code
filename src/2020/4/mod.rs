@@ -3,7 +3,7 @@ use anyhow::Context as _;
 const REQUIRED_KEYS: &[&str] =
     &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
-pub fn part1() -> anyhow::Result<()> {
+pub fn part1() -> anyhow::Result<i64> {
     let batch = crate::util::read_file_str("data/4.txt")?;
     let mut valid = 0;
     for passport in parse(&batch)? {
@@ -18,11 +18,10 @@ pub fn part1() -> anyhow::Result<()> {
             valid += 1;
         }
     }
-    println!("{}", valid);
-    Ok(())
+    Ok(valid)
 }
 
-pub fn part2() -> anyhow::Result<()> {
+pub fn part2() -> anyhow::Result<i64> {
     let batch = crate::util::read_file_str("data/4.txt")?;
     let mut valid = 0;
     for passport in parse(&batch)? {
@@ -45,8 +44,7 @@ pub fn part2() -> anyhow::Result<()> {
             valid += 1;
         }
     }
-    println!("{}", valid);
-    Ok(())
+    Ok(valid)
 }
 
 fn parse(

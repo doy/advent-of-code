@@ -1,4 +1,5 @@
 use anyhow::Context as _;
+use std::convert::TryInto as _;
 use std::io::BufRead as _;
 
 struct Line {
@@ -51,18 +52,16 @@ impl Line {
     }
 }
 
-pub fn part1() -> anyhow::Result<()> {
+pub fn part1() -> anyhow::Result<i64> {
     let lines = read_lines()?;
     let count = lines.iter().filter(|l| l.valid_part_1()).count();
-    println!("{}", count);
-    Ok(())
+    Ok(count.try_into()?)
 }
 
-pub fn part2() -> anyhow::Result<()> {
+pub fn part2() -> anyhow::Result<i64> {
     let lines = read_lines()?;
     let count = lines.iter().filter(|l| l.valid_part_2()).count();
-    println!("{}", count);
-    Ok(())
+    Ok(count.try_into()?)
 }
 
 fn read_lines() -> anyhow::Result<Vec<Line>> {

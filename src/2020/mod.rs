@@ -7,7 +7,7 @@ mod day3;
 #[path = "4/mod.rs"]
 mod day4;
 
-pub fn run(day: u8, puzzle: u8) -> anyhow::Result<()> {
+pub fn run(day: u8, puzzle: u8) -> anyhow::Result<i64> {
     match (day, puzzle) {
         (1, 1) => day1::part1(),
         (1, 2) => day1::part2(),
