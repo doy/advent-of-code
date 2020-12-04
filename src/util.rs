@@ -16,6 +16,15 @@ pub fn read_ints(filename: &str) -> anyhow::Result<Vec<i32>> {
     ints
 }
 
+pub fn read_file(filename: &str) -> anyhow::Result<Vec<u8>> {
+    let mut f = std::fs::File::open(filename)
+        .with_context(|| format!("couldn't find data file {}", filename))?;
+    let mut s = vec![];
+    f.read_to_end(&mut s)
+        .context("failed to read map contents")?;
+    Ok(s)
+}
+
 pub fn read_file_str(filename: &str) -> anyhow::Result<String> {
     let mut f = std::fs::File::open(filename)
         .with_context(|| format!("couldn't find data file {}", filename))?;

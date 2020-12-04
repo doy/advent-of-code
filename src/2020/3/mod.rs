@@ -1,5 +1,4 @@
 use anyhow::Context as _;
-use std::io::Read as _;
 
 struct Map {
     grid: Vec<Vec<bool>>,
@@ -85,10 +84,6 @@ pub fn part2() -> anyhow::Result<()> {
 }
 
 fn read_map() -> anyhow::Result<Map> {
-    let mut f = std::fs::File::open("data/3.txt")
-        .context("couldn't find data file 3.txt")?;
-    let mut map_str = vec![];
-    f.read_to_end(&mut map_str)
-        .context("failed to read map contents")?;
+    let map_str = crate::util::read_file("data/3.txt")?;
     Map::parse(&map_str)
 }
