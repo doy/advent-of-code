@@ -1,5 +1,5 @@
 use anyhow::Context as _;
-use std::io::BufRead as _;
+use std::io::{BufRead as _, Read as _};
 
 pub fn read_ints(filename: &str) -> anyhow::Result<Vec<i32>> {
     let f = std::fs::File::open(filename)
@@ -14,4 +14,13 @@ pub fn read_ints(filename: &str) -> anyhow::Result<Vec<i32>> {
         })
         .collect();
     ints
+}
+
+pub fn read_file_str(filename: &str) -> anyhow::Result<String> {
+    let mut f = std::fs::File::open(filename)
+        .with_context(|| format!("couldn't find data file {}", filename))?;
+    let mut s = String::new();
+    f.read_to_string(&mut s)
+        .context("failed to read map contents")?;
+    Ok(s)
 }
