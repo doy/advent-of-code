@@ -1,5 +1,6 @@
 #![allow(clippy::collapsible_if)]
 
+#[macro_use]
 mod util;
 #[path = "2020/mod.rs"]
 mod year2020;

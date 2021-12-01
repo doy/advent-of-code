@@ -79,6 +79,5 @@ pub fn part2() -> anyhow::Result<i64> {
 }
 
 fn read_map() -> anyhow::Result<Map> {
-    let map_str = crate::util::read_file("data/2020/3.txt")?;
-    Map::parse(&map_str)
+    Map::parse(&data_bytes!()?)
 }

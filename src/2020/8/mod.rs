@@ -44,7 +44,7 @@ impl std::str::FromStr for Op {
 }
 
 pub fn part1() -> anyhow::Result<i64> {
-    let input = crate::util::read_file_str("data/2020/8.txt")?;
+    let input = data_str!()?;
     let opcodes = parse(&input)?;
     let (acc, success) = run(&opcodes)?;
     if success {
@@ -54,7 +54,7 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let input = crate::util::read_file_str("data/2020/8.txt")?;
+    let input = data_str!()?;
     let opcodes = parse(&input)?;
     for i in 0..opcodes.len() {
         match opcodes[i].ty {

@@ -65,8 +65,7 @@ pub fn part2() -> anyhow::Result<i64> {
 }
 
 fn read_lines() -> anyhow::Result<Vec<Line>> {
-    let f = std::fs::File::open("data/2020/2.txt")
-        .context("couldn't find data file 2.txt")?;
+    let f = data!()?;
     let f = std::io::BufReader::new(f);
     f.lines()
         .map(|l| Line::parse(&l.context("failed to read a line")?))

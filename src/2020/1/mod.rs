@@ -1,5 +1,5 @@
 pub fn part1() -> anyhow::Result<i64> {
-    let ints = crate::util::read_ints("data/2020/1.txt")?;
+    let ints = data_ints!()?;
     for i in &ints {
         for j in &ints {
             if i + j == 2020 {
@@ -11,7 +11,7 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let ints = crate::util::read_ints("data/2020/1.txt")?;
+    let ints = data_ints!()?;
     for i in &ints {
         for j in &ints {
             for k in &ints {

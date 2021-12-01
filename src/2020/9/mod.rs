@@ -1,7 +1,7 @@
 pub fn part1() -> anyhow::Result<i64> {
     const WINDOW: usize = 25;
 
-    let list = crate::util::read_ints("data/2020/9.txt")?;
+    let list = data_ints!()?;
     for i in 0..(list.len() - WINDOW) {
         let set = &list[i..i + WINDOW];
         let n = list[i + WINDOW];
@@ -16,7 +16,7 @@ pub fn part1() -> anyhow::Result<i64> {
 pub fn part2() -> anyhow::Result<i64> {
     const WINDOW: usize = 25;
 
-    let list = crate::util::read_ints("data/2020/9.txt")?;
+    let list = data_ints!()?;
     let mut invalid = None;
     for i in 0..(list.len() - WINDOW) {
         let set = &list[i..i + WINDOW];

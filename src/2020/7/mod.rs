@@ -3,7 +3,7 @@ use anyhow::Context as _;
 type Graph = std::collections::HashMap<String, Vec<(i64, String)>>;
 
 pub fn part1() -> anyhow::Result<i64> {
-    let input = crate::util::read_file_str("data/2020/7.txt")?;
+    let input = data_str!()?;
     let graph = parse(&input)?;
     let mut colors = 0;
     for color in graph.keys() {
@@ -15,7 +15,7 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let input = crate::util::read_file_str("data/2020/7.txt")?;
+    let input = data_str!()?;
     let graph = parse(&input)?;
     // subtract 1 to not count the shiny gold bag itself
     count_bags(&graph, "shiny gold").map(|i| i - 1)

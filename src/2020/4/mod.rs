@@ -4,7 +4,7 @@ const REQUIRED_KEYS: &[&str] =
     &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
 pub fn part1() -> anyhow::Result<i64> {
-    let batch = crate::util::read_file_str("data/2020/4.txt")?;
+    let batch = data_str!()?;
     let mut valid = 0;
     for passport in parse(&batch)? {
         let mut cur_valid = true;
@@ -22,7 +22,7 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let batch = crate::util::read_file_str("data/2020/4.txt")?;
+    let batch = data_str!()?;
     let mut valid = 0;
     for passport in parse(&batch)? {
         let mut cur_valid = true;
