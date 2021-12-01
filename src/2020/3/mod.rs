@@ -66,7 +66,7 @@ impl Map {
 
 pub fn part1() -> anyhow::Result<i64> {
     let map = read_map()?;
-    Ok(map.trees_for_slope(3, 1)?)
+    map.trees_for_slope(3, 1)
 }
 
 pub fn part2() -> anyhow::Result<i64> {

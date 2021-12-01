@@ -7,7 +7,7 @@ pub fn part1() -> anyhow::Result<i64> {
     let graph = parse(&input)?;
     let mut colors = 0;
     for color in graph.keys() {
-        if bag_contains(&graph, &color, "shiny gold")? {
+        if bag_contains(&graph, color, "shiny gold")? {
             colors += 1;
         }
     }

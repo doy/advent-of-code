@@ -79,15 +79,15 @@ fn parse(
 fn validate(key: &str, val: &str) -> anyhow::Result<bool> {
     match key {
         "byr" => match val.parse::<i32>() {
-            Ok(year) => Ok(year >= 1920 && year <= 2002),
+            Ok(year) => Ok((1920..=2002).contains(&year)),
             Err(_) => Ok(false),
         },
         "iyr" => match val.parse::<i32>() {
-            Ok(year) => Ok(year >= 2010 && year <= 2020),
+            Ok(year) => Ok((2010..=2020).contains(&year)),
             Err(_) => Ok(false),
         },
         "eyr" => match val.parse::<i32>() {
-            Ok(year) => Ok(year >= 2020 && year <= 2030),
+            Ok(year) => Ok((2020..=2030).contains(&year)),
             Err(_) => Ok(false),
         },
         "hgt" => {
@@ -95,12 +95,12 @@ fn validate(key: &str, val: &str) -> anyhow::Result<bool> {
                 Ok(false)
             } else if val.ends_with("in") {
                 match val[0..val.len() - 2].parse::<i32>() {
-                    Ok(inches) => Ok(inches >= 59 && inches <= 76),
+                    Ok(inches) => Ok((59..=76).contains(&inches)),
                     Err(_) => Ok(false),
                 }
             } else if val.ends_with("cm") {
                 match val[0..val.len() - 2].parse::<i32>() {
-                    Ok(inches) => Ok(inches >= 150 && inches <= 193),
+                    Ok(inches) => Ok((150..=193).contains(&inches)),
                     Err(_) => Ok(false),
                 }
             } else {

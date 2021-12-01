@@ -3,7 +3,7 @@ pub fn part1() -> anyhow::Result<i64> {
     let mut yes = std::collections::HashSet::new();
     let mut total = 0;
     for line in input.lines() {
-        if line == "" {
+        if line.is_empty() {
             total += yes.len() as i64;
             yes = std::collections::HashSet::new();
         } else {
@@ -24,7 +24,7 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     let mut total = 0;
     for line in input.lines() {
-        if line == "" {
+        if line.is_empty() {
             total += yes.len() as i64;
             yes = std::collections::HashSet::new();
             for c in 'a'..='z' {
