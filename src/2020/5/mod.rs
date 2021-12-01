@@ -2,7 +2,7 @@ use anyhow::Context as _;
 use std::convert::TryInto as _;
 
 pub fn part1() -> anyhow::Result<i64> {
-    let input = crate::util::read_file_str("data/5.txt")?;
+    let input = crate::util::read_file_str("data/2020/5.txt")?;
     let mut max = 0;
     for line in input.lines() {
         let id = seat_id(line)?;
@@ -15,7 +15,7 @@ pub fn part1() -> anyhow::Result<i64> {
 
 pub fn part2() -> anyhow::Result<i64> {
     let mut seats = vec![false; 1024];
-    let input = crate::util::read_file_str("data/5.txt")?;
+    let input = crate::util::read_file_str("data/2020/5.txt")?;
     for line in input.lines() {
         let id = seat_id(line)?;
         seats[id as usize] = true;

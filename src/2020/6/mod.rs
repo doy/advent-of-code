@@ -1,5 +1,5 @@
 pub fn part1() -> anyhow::Result<i64> {
-    let input = crate::util::read_file_str("data/6.txt")?;
+    let input = crate::util::read_file_str("data/2020/6.txt")?;
     let mut yes = std::collections::HashSet::new();
     let mut total = 0;
     for line in input.lines() {
@@ -17,7 +17,7 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let input = crate::util::read_file_str("data/6.txt")?;
+    let input = crate::util::read_file_str("data/2020/6.txt")?;
     let mut yes = std::collections::HashSet::new();
     for c in 'a'..='z' {
         yes.insert(c);
