@@ -1,0 +1,7 @@
+#!/bin/sh
+
+day=${1:-$(date +%-d)}
+year=${2:-$(date +%Y)}
+
+mkdir -p data/"$year"
+curl -b "$(cat .cookie)" -s https://adventofcode.com/"$year"/day/"$day"/input >data/"$year"/"$day".txt
