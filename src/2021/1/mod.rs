@@ -4,8 +4,7 @@ pub fn part1() -> anyhow::Result<i64> {
         .map(|a| a[1] - a[0])
         .filter(|x| *x > 0)
         .count()
-        .try_into()
-        .unwrap())
+        .try_into()?)
 }
 
 pub fn part2() -> anyhow::Result<i64> {
@@ -17,6 +16,5 @@ pub fn part2() -> anyhow::Result<i64> {
         .map(|a| a[1] - a[0])
         .filter(|x| *x > 0)
         .count()
-        .try_into()
-        .unwrap())
+        .try_into()?)
 }
