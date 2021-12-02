@@ -3,6 +3,7 @@ use std::io::{BufRead as _, Read as _};
 
 macro_rules! data {
     () => {{
+        use anyhow::Context as _;
         let file = crate::util::src_file_to_data_file(&std::file!());
         std::fs::File::open(file.clone())
             .with_context(|| format!("couldn't find data file {}", file))

@@ -1,4 +1,3 @@
-use anyhow::Context as _;
 use std::io::BufRead as _;
 
 pub fn part1() -> anyhow::Result<i64> {
