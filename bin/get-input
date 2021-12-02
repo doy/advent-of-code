@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 day=${1:-$(date +%-d)}
 year=${2:-$(date +%Y)}
