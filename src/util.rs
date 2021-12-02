@@ -34,6 +34,14 @@ macro_rules! data_str {
     };
 }
 
+macro_rules! data_lines {
+    () => {
+        crate::util::read_file_lines(&crate::util::src_file_to_data_file(
+            &std::file!(),
+        ))
+    };
+}
+
 pub fn src_file_to_data_file(file: &str) -> String {
     let parts: Vec<_> = file.split('/').collect();
     format!(
@@ -44,11 +52,7 @@ pub fn src_file_to_data_file(file: &str) -> String {
 }
 
 pub fn read_ints(filename: &str) -> anyhow::Result<Vec<i64>> {
-    let f = std::fs::File::open(filename)
-        .with_context(|| format!("couldn't find data file {}", filename))?;
-    let f = std::io::BufReader::new(f);
-    let ints: anyhow::Result<Vec<_>> = f
-        .lines()
+    let ints: anyhow::Result<Vec<_>> = read_file_lines(filename)?
         .map(|l| {
             l.context("failed to read a line")?
                 .parse()
@@ -74,4 +78,14 @@ pub fn read_file_str(filename: &str) -> anyhow::Result<String> {
     f.read_to_string(&mut s)
         .context("failed to read map contents")?;
     Ok(s)
+}
+
+pub fn read_file_lines(
+    filename: &str,
+) -> anyhow::Result<impl std::iter::Iterator<Item = std::io::Result<String>>>
+{
+    let f = std::fs::File::open(filename)
+        .with_context(|| format!("couldn't find data file {}", filename))?;
+    let f = std::io::BufReader::new(f);
+    Ok(f.lines())
 }

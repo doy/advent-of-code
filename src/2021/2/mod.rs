@@ -1,11 +1,7 @@
-use std::io::BufRead as _;
-
 pub fn part1() -> anyhow::Result<i64> {
-    let f = data!()?;
-    let f = std::io::BufReader::new(f);
     let mut horizontal = 0;
     let mut vertical = 0;
-    for line in f.lines() {
+    for line in data_lines!()? {
         let line = line?;
         if let Some(n) = line.strip_prefix("forward ") {
             horizontal += n.parse::<i64>().unwrap();
@@ -19,12 +15,10 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let f = data!()?;
-    let f = std::io::BufReader::new(f);
     let mut aim = 0;
     let mut horizontal = 0;
     let mut vertical = 0;
-    for line in f.lines() {
+    for line in data_lines!()? {
         let line = line?;
         if let Some(n) = line.strip_prefix("forward ") {
             let x = n.parse::<i64>().unwrap();
