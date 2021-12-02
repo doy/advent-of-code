@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+day=${1:-$(date +%-d)}
+year=${2:-$(date +%Y)}
+
+mkdir -p src/"$year"/"$day"
+cat >src/"$year"/"$day"/mod.rs <<EOF
+pub fn part1() -> anyhow::Result<i64> {
+    todo!()
+}
+
+pub fn part2() -> anyhow::Result<i64> {
+    todo!()
+}
+EOF
+
+perl -pi -E"\$seen_mod = 1 if /mod day$day/; if (!\$seen_mod && /NEXT MOD/) { say '#[path = \"$day/mod.rs\"]'; say 'mod day$day;'; }" src/"$year"/mod.rs
+perl -pi -E"\$seen_part = 1 if /day$day::part/; if (!\$seen_part && /NEXT PART/) { say '        ($day, 1) => day$day::part1(),'; say '        ($day, 2) => day$day::part2(),'; }" src/"$year"/mod.rs

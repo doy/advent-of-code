@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+./bin/stub-code "$@"
+./bin/get-input "$@"
