@@ -5,6 +5,9 @@ fn small(s: &str) -> bool {
 fn single_small<'a>(path: impl Iterator<Item = &'a str>) -> bool {
     let mut set = std::collections::HashSet::new();
     for s in path {
+        if !small(s) {
+            continue;
+        }
         if set.contains(s) {
             return false;
         }
