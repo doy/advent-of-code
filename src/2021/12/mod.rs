@@ -1,61 +1,65 @@
 fn small(s: &str) -> bool {
-    s.chars().all(|c| c.is_lowercase())
+    s.bytes().all(|c| c.is_ascii_lowercase())
 }
 
-fn single_small(path: &[String]) -> bool {
-    path.iter().filter(|s| small(s)).count()
-        == path
-            .iter()
-            .filter(|s| small(s))
-            .collect::<std::collections::HashSet<_>>()
-            .len()
+fn single_small<'a>(path: impl Iterator<Item = &'a str>) -> bool {
+    let mut set = std::collections::HashSet::new();
+    for s in path {
+        if set.contains(s) {
+            return false;
+        }
+        set.insert(s);
+    }
+    true
 }
 
-fn paths_from1(
-    graph: &std::collections::HashMap<
+fn paths_from1<'a>(
+    graph: &'a std::collections::HashMap<
         String,
         std::collections::HashSet<String>,
     >,
-    path: Vec<String>,
+    path: &mut Vec<&'a str>,
 ) -> i64 {
     let mut total = 0;
-    for neighbor in graph[&path[path.len() - 1]].iter() {
-        if small(neighbor) && path.contains(neighbor) {
+    for neighbor in graph[path[path.len() - 1]].iter() {
+        if small(neighbor) && path.contains(&neighbor.as_ref()) {
             continue;
         }
         if neighbor == "end" {
             total += 1;
         } else {
-            let mut path = path.clone();
-            path.push(neighbor.to_string());
+            path.push(neighbor);
             total += paths_from1(graph, path);
+            path.pop();
         }
     }
     total
 }
 
-fn paths_from2(
-    graph: &std::collections::HashMap<
+fn paths_from2<'a>(
+    graph: &'a std::collections::HashMap<
         String,
         std::collections::HashSet<String>,
     >,
-    path: Vec<String>,
+    path: &mut Vec<&'a str>,
 ) -> i64 {
     let mut total = 0;
-    for neighbor in graph[&path[path.len() - 1]].iter() {
+    for neighbor in graph[path[path.len() - 1]].iter() {
         if neighbor == "start" {
             continue;
         }
-        if small(neighbor) && path.contains(neighbor) && !single_small(&path)
+        if small(neighbor)
+            && path.contains(&neighbor.as_ref())
+            && !single_small(path.iter().copied())
         {
             continue;
         }
         if neighbor == "end" {
             total += 1;
         } else {
-            let mut path = path.clone();
-            path.push(neighbor.to_string());
+            path.push(neighbor);
             total += paths_from2(graph, path);
+            path.pop();
         }
     }
     total
@@ -76,7 +80,7 @@ pub fn part1() -> anyhow::Result<i64> {
             .or_insert_with(std::collections::HashSet::new);
         edges.insert(nodes[0].clone());
     }
-    Ok(paths_from1(&graph, vec!["start".to_string()]))
+    Ok(paths_from1(&graph, &mut vec!["start"]))
 }
 
 pub fn part2() -> anyhow::Result<i64> {
@@ -94,5 +98,5 @@ pub fn part2() -> anyhow::Result<i64> {
             .or_insert_with(std::collections::HashSet::new);
         edges.insert(nodes[0].clone());
     }
-    Ok(paths_from2(&graph, vec!["start".to_string()]))
+    Ok(paths_from2(&graph, &mut vec!["start"]))
 }
