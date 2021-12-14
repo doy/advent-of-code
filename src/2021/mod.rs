@@ -24,6 +24,8 @@ mod day11;
 mod day12;
 #[path = "13/mod.rs"]
 mod day13;
+#[path = "14/mod.rs"]
+mod day14;
 // NEXT MOD
 
 pub fn run(day: u8, puzzle: u8) -> anyhow::Result<i64> {
@@ -54,6 +56,8 @@ pub fn run(day: u8, puzzle: u8) -> anyhow::Result<i64> {
         (12, 2) => day12::part2(),
         (13, 1) => day13::part1(),
         (13, 2) => day13::part2(),
+        (14, 1) => day14::part1(),
+        (14, 2) => day14::part2(),
         // NEXT PART
         _ => Err(anyhow::anyhow!("unknown puzzle {}-{}", day, puzzle)),
     }
