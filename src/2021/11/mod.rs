@@ -1,37 +1,3 @@
-fn adjacent(
-    i: usize,
-    j: usize,
-    max_i: usize,
-    max_j: usize,
-) -> Vec<(usize, usize)> {
-    let mut ret = vec![];
-    if i > 0 {
-        if j > 0 {
-            ret.push((i - 1, j - 1));
-        }
-        ret.push((i - 1, j));
-        if j < max_j {
-            ret.push((i - 1, j + 1));
-        }
-    }
-    if j > 0 {
-        ret.push((i, j - 1));
-    }
-    if j < max_j {
-        ret.push((i, j + 1));
-    }
-    if i < max_i {
-        if j > 0 {
-            ret.push((i + 1, j - 1));
-        }
-        ret.push((i + 1, j));
-        if j < max_j {
-            ret.push((i + 1, j + 1));
-        }
-    }
-    ret
-}
-
 fn iterate(map: &mut Vec<Vec<(i64, bool)>>) -> i64 {
     let mut flashes = 0;
     for line in map.iter_mut() {
@@ -50,9 +16,13 @@ fn iterate(map: &mut Vec<Vec<(i64, bool)>>) -> i64 {
                 if map[i][j].0 > 9 {
                     map[i][j].1 = true;
                     new_flashes += 1;
-                    for (i, j) in
-                        adjacent(i, j, map.len() - 1, map[0].len() - 1)
-                    {
+                    for (i, j) in crate::util::adjacent(
+                        i,
+                        j,
+                        map.len() - 1,
+                        map[0].len() - 1,
+                        true,
+                    ) {
                         map[i][j].0 += 1;
                     }
                 }

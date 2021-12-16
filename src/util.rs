@@ -78,3 +78,60 @@ pub fn string(fh: std::fs::File) -> String {
     let bytes: Vec<_> = bytes(fh).collect();
     std::string::String::from_utf8(bytes).unwrap()
 }
+
+pub struct Adjacent {
+    x: usize,
+    y: usize,
+    max_x: usize,
+    max_y: usize,
+    diagonal: bool,
+    pos: u8,
+}
+
+impl Iterator for Adjacent {
+    type Item = (usize, usize);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            if self.pos >= 9 {
+                return None;
+            }
+            let pos_x = self.pos / 3;
+            let pos_y = self.pos - pos_x * 3;
+            self.pos += 1;
+            if pos_x == 0 && self.x == 0
+                || pos_y == 0 && self.y == 0
+                || pos_x == 2 && self.x == self.max_x
+                || pos_y == 2 && self.y == self.max_y
+                || pos_x == 1 && pos_y == 1
+                || (!self.diagonal
+                    && ((pos_x == pos_y)
+                        || (pos_x == 2 && pos_y == 0)
+                        || (pos_x == 0 && pos_y == 2)))
+            {
+                continue;
+            }
+            return Some((
+                self.x + usize::from(pos_x) - 1,
+                self.y + usize::from(pos_y) - 1,
+            ));
+        }
+    }
+}
+
+pub fn adjacent(
+    x: usize,
+    y: usize,
+    max_x: usize,
+    max_y: usize,
+    diagonal: bool,
+) -> Adjacent {
+    Adjacent {
+        x,
+        y,
+        max_x,
+        max_y,
+        diagonal,
+        pos: 0,
+    }
+}

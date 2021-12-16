@@ -1,25 +1,3 @@
-fn adjacent(
-    i: usize,
-    j: usize,
-    max_i: usize,
-    max_j: usize,
-) -> Vec<(usize, usize)> {
-    let mut ret = vec![];
-    if i > 0 {
-        ret.push((i - 1, j));
-    }
-    if j > 0 {
-        ret.push((i, j - 1));
-    }
-    if j < max_j {
-        ret.push((i, j + 1));
-    }
-    if i < max_i {
-        ret.push((i + 1, j));
-    }
-    ret
-}
-
 fn dijkstra(map: &[Vec<u8>]) -> i64 {
     let mut to_visit: priority_queue::PriorityQueue<_, _> = (0..map.len())
         .flat_map(|i| (0..map[0].len()).map(move |j| (i, j)))
@@ -40,9 +18,13 @@ fn dijkstra(map: &[Vec<u8>]) -> i64 {
             return distance;
         }
 
-        for neighbor in
-            adjacent(pos.0, pos.1, map.len() - 1, map[0].len() - 1)
-        {
+        for neighbor in crate::util::adjacent(
+            pos.0,
+            pos.1,
+            map.len() - 1,
+            map[0].len() - 1,
+            false,
+        ) {
             if to_visit.get(&neighbor).is_some() {
                 let new_distance =
                     distance + i64::from(map[neighbor.0][neighbor.1]);
