@@ -1,4 +1,4 @@
-fn iterate(map: &mut Vec<Vec<(i64, bool)>>) -> i64 {
+fn iterate(map: &mut Vec<Vec<(u8, bool)>>) -> i64 {
     let mut flashes = 0;
     for line in map.iter_mut() {
         for (cell, _) in line.iter_mut() {
@@ -47,14 +47,10 @@ fn iterate(map: &mut Vec<Vec<(i64, bool)>>) -> i64 {
 }
 
 pub fn part1() -> anyhow::Result<i64> {
-    let mut map = data_lines!()?
-        .map(|line| {
-            line.bytes()
-                .map(|b| ((b - b'0') as i64, false))
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-
+    let mut map: Vec<Vec<_>> = data_digit_grid!()
+        .iter()
+        .map(|line| line.iter().map(|i| (*i, false)).collect())
+        .collect();
     let mut flashes = 0;
     for _ in 0..100 {
         flashes += iterate(&mut map);
@@ -63,13 +59,10 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let mut map = data_lines!()?
-        .map(|line| {
-            line.bytes()
-                .map(|b| ((b - b'0') as i64, false))
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
+    let mut map: Vec<Vec<_>> = data_digit_grid!()
+        .iter()
+        .map(|line| line.iter().map(|i| (*i, false)).collect())
+        .collect();
 
     let mut step = 1;
     loop {

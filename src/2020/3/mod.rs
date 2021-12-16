@@ -5,30 +5,8 @@ struct Map {
 }
 
 impl Map {
-    fn parse(s: impl Iterator<Item = u8>) -> anyhow::Result<Self> {
-        let mut grid = vec![];
-        let mut current_row = vec![];
-        for c in s {
-            match c {
-                b'#' => {
-                    current_row.push(true);
-                }
-                b'.' => {
-                    current_row.push(false);
-                }
-                b'\n' => {
-                    grid.push(current_row);
-                    current_row = vec![];
-                }
-                _ => {
-                    return Err(anyhow::anyhow!("invalid map char: '{}'", c));
-                }
-            }
-        }
-        if !current_row.is_empty() {
-            grid.push(current_row);
-        }
-        Ok(Self { grid })
+    fn new(grid: Vec<Vec<bool>>) -> Self {
+        Self { grid }
     }
 
     fn rows(&self) -> usize {
@@ -65,21 +43,17 @@ impl Map {
 }
 
 pub fn part1() -> anyhow::Result<i64> {
-    let map = read_map()?;
+    let map = Map::new(data_bool_map!(b'#', b'.'));
     map.trees_for_slope(3, 1)
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let map = read_map()?;
+    let map = Map::new(data_bool_map!(b'#', b'.'));
     Ok(map.trees_for_slope(1, 1)?
         * map.trees_for_slope(3, 1)?
         * map.trees_for_slope(5, 1)?
         * map.trees_for_slope(7, 1)?
         * map.trees_for_slope(1, 2)?)
-}
-
-fn read_map() -> anyhow::Result<Map> {
-    Map::parse(data_bytes!()?)
 }
 
 #[test]

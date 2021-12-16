@@ -1,3 +1,6 @@
+#![allow(unused_macros)]
+#![allow(dead_code)]
+
 use std::io::{BufRead as _, Read as _};
 
 macro_rules! data {
@@ -33,6 +36,18 @@ macro_rules! data_bytes {
 macro_rules! data_str {
     () => {{
         data!().map(|fh| crate::util::string(fh))
+    }};
+}
+
+macro_rules! data_bool_map {
+    ($t:expr, $f:expr) => {{
+        crate::util::bool_map(data_lines!().unwrap(), $t, $f)
+    }};
+}
+
+macro_rules! data_digit_grid {
+    () => {{
+        crate::util::digit_map(data_lines!().unwrap())
     }};
 }
 
@@ -77,6 +92,36 @@ pub fn bytes(fh: std::fs::File) -> impl Iterator<Item = u8> {
 pub fn string(fh: std::fs::File) -> String {
     let bytes: Vec<_> = bytes(fh).collect();
     std::string::String::from_utf8(bytes).unwrap()
+}
+
+pub fn bool_map(
+    lines: impl Iterator<Item = String>,
+    t: u8,
+    f: u8,
+) -> Vec<Vec<bool>> {
+    lines
+        .map(|s| {
+            s.as_bytes()
+                .iter()
+                .copied()
+                .map(|b| {
+                    if b == f {
+                        false
+                    } else if b == t {
+                        true
+                    } else {
+                        panic!("unrecognized character {}", char::from(b))
+                    }
+                })
+                .collect()
+        })
+        .collect()
+}
+
+pub fn digit_map(lines: impl Iterator<Item = String>) -> Vec<Vec<u8>> {
+    lines
+        .map(|s| s.as_bytes().iter().copied().map(|b| b - b'0').collect())
+        .collect()
 }
 
 pub struct Adjacent {
