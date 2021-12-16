@@ -84,7 +84,7 @@ impl Packet {
             if bits.next().unwrap() {
                 let LiteralU16(subpacket_count) = bits.take(11).collect();
                 nbits += 11;
-                for i in 0..subpacket_count {
+                for _ in 0..subpacket_count {
                     let (packet, size) = Self::parse(bits);
                     packets.push(packet);
                     nbits += size;
