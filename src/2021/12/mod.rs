@@ -71,7 +71,6 @@ fn paths_from2<'a>(
 pub fn part1() -> anyhow::Result<i64> {
     let mut graph = std::collections::HashMap::new();
     for line in data_lines!()? {
-        let line = line?;
         let nodes: Vec<String> =
             line.split('-').map(|s| s.to_string()).collect();
         let edges = graph
@@ -89,7 +88,6 @@ pub fn part1() -> anyhow::Result<i64> {
 pub fn part2() -> anyhow::Result<i64> {
     let mut graph = std::collections::HashMap::new();
     for line in data_lines!()? {
-        let line = line?;
         let nodes: Vec<String> =
             line.split('-').map(|s| s.to_string()).collect();
         let edges = graph

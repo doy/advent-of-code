@@ -1,11 +1,5 @@
 pub fn part1() -> anyhow::Result<i64> {
-    let crabs: Vec<i64> = data_lines!()?
-        .next()
-        .unwrap()?
-        .split(',')
-        .map(|s| s.parse())
-        .collect::<Result<_, _>>()?;
-
+    let crabs: Vec<_> = data_ints!(b',')?.collect();
     Ok((0..=crabs.iter().copied().max().unwrap())
         .map(|start| {
             crabs.iter().copied().map(|crab| (crab - start).abs()).sum()
@@ -15,13 +9,7 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let crabs: Vec<i64> = data_lines!()?
-        .next()
-        .unwrap()?
-        .split(',')
-        .map(|s| s.parse())
-        .collect::<Result<_, _>>()?;
-
+    let crabs: Vec<_> = data_ints!(b',')?.collect();
     Ok((0..=crabs.iter().copied().max().unwrap())
         .map(|start| {
             crabs

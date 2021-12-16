@@ -108,7 +108,6 @@ pub fn part1() -> anyhow::Result<i64> {
     let mut map = Map::new();
     let mut folds = vec![];
     for line in data_lines!()? {
-        let line = line?;
         if line.is_empty() {
             continue;
         }
@@ -133,7 +132,6 @@ pub fn part2() -> anyhow::Result<i64> {
     let mut map = Map::new();
     let mut folds = vec![];
     for line in data_lines!()? {
-        let line = line?;
         if line.is_empty() {
             continue;
         }

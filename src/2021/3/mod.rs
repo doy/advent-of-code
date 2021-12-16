@@ -12,13 +12,12 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let mut oxygen: Vec<_> = data_lines!()?.collect::<Result<_, _>>()?;
+    let mut oxygen: Vec<_> = data_lines!()?.collect();
     for i in 0..oxygen[0].len() {
         if oxygen.len() == 1 {
             break;
         }
-        let (total_lines, by_pos) =
-            pos_counts(oxygen.iter().cloned().map(Ok))?;
+        let (total_lines, by_pos) = pos_counts(oxygen.iter().cloned())?;
         let keep = if by_pos[i] * 2 >= total_lines {
             '1'
         } else {
@@ -32,12 +31,12 @@ pub fn part2() -> anyhow::Result<i64> {
         oxygen = new_oxygen;
     }
 
-    let mut co2: Vec<_> = data_lines!()?.collect::<Result<_, _>>()?;
+    let mut co2: Vec<_> = data_lines!()?.collect();
     for i in 0..co2[0].len() {
         if co2.len() == 1 {
             break;
         }
-        let (total_lines, by_pos) = pos_counts(co2.iter().cloned().map(Ok))?;
+        let (total_lines, by_pos) = pos_counts(co2.iter().cloned())?;
         let keep = if by_pos[i] * 2 >= total_lines {
             '0'
         } else {
@@ -55,12 +54,11 @@ pub fn part2() -> anyhow::Result<i64> {
 }
 
 fn pos_counts(
-    lines: impl std::iter::Iterator<Item = std::io::Result<String>>,
+    lines: impl std::iter::Iterator<Item = String>,
 ) -> anyhow::Result<(i64, Vec<i64>)> {
     let mut by_pos = vec![];
     let mut total_lines = 0;
     for line in lines {
-        let line = line?;
         total_lines += 1;
         if by_pos.is_empty() {
             by_pos.resize(line.len(), 0);

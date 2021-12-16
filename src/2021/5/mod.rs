@@ -102,7 +102,6 @@ pub fn part1() -> anyhow::Result<i64> {
     let rx = regex::Regex::new("^(\\d+),(\\d+) -> (\\d+),(\\d+)$").unwrap();
     let mut map = Map::new();
     for line in data_lines!()? {
-        let line = line?;
         let nums: Vec<usize> = rx
             .captures(&line)
             .unwrap()
@@ -121,7 +120,6 @@ pub fn part2() -> anyhow::Result<i64> {
     let rx = regex::Regex::new("^(\\d+),(\\d+) -> (\\d+),(\\d+)$").unwrap();
     let mut map = Map::new();
     for line in data_lines!()? {
-        let line = line?;
         let nums: Vec<usize> = rx
             .captures(&line)
             .unwrap()

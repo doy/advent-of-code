@@ -2,12 +2,11 @@
 fn parse() -> anyhow::Result<(Vec<u8>, std::collections::HashMap<Vec<u8>, u8>)>
 {
     let mut lines = data_lines!()?;
-    let polymer = lines.next().unwrap()?;
+    let polymer = lines.next().unwrap();
     lines.next();
 
     let mut rules = std::collections::HashMap::new();
     for line in lines {
-        let line = line?;
         let rule: Vec<_> = line.split(" -> ").collect();
         rules.insert(rule[0].as_bytes().to_vec(), rule[1].as_bytes()[0]);
     }

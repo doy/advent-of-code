@@ -194,7 +194,7 @@ impl<'a> Iterator for Subpackets<'a> {
 }
 
 pub fn part1() -> anyhow::Result<i64> {
-    let line = data_lines!()?.next().unwrap()?;
+    let line = data_lines!()?.next().unwrap();
     let mut bits = bits(line.as_bytes().chunks(2).map(|bs| {
         u8::from_str_radix(std::str::from_utf8(bs).unwrap(), 16).unwrap()
     }));
@@ -206,7 +206,7 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let line = data_lines!()?.next().unwrap()?;
+    let line = data_lines!()?.next().unwrap();
     let mut bits = bits(line.as_bytes().chunks(2).map(|bs| {
         u8::from_str_radix(std::str::from_utf8(bs).unwrap(), 16).unwrap()
     }));

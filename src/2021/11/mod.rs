@@ -78,8 +78,6 @@ fn iterate(map: &mut Vec<Vec<(i64, bool)>>) -> i64 {
 
 pub fn part1() -> anyhow::Result<i64> {
     let mut map = data_lines!()?
-        .collect::<Result<Vec<String>, _>>()?
-        .iter()
         .map(|line| {
             line.bytes()
                 .map(|b| ((b - b'0') as i64, false))
@@ -96,8 +94,6 @@ pub fn part1() -> anyhow::Result<i64> {
 
 pub fn part2() -> anyhow::Result<i64> {
     let mut map = data_lines!()?
-        .collect::<Result<Vec<String>, _>>()?
-        .iter()
         .map(|line| {
             line.bytes()
                 .map(|b| ((b - b'0') as i64, false))

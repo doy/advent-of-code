@@ -5,7 +5,7 @@ struct Map {
 }
 
 impl Map {
-    fn parse(s: &[u8]) -> anyhow::Result<Self> {
+    fn parse(s: impl Iterator<Item = u8>) -> anyhow::Result<Self> {
         let mut grid = vec![];
         let mut current_row = vec![];
         for c in s {
@@ -79,7 +79,7 @@ pub fn part2() -> anyhow::Result<i64> {
 }
 
 fn read_map() -> anyhow::Result<Map> {
-    Map::parse(&data_bytes!()?)
+    Map::parse(data_bytes!()?)
 }
 
 #[test]

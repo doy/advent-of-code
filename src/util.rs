@@ -1,4 +1,3 @@
-use anyhow::Context as _;
 use std::io::{BufRead as _, Read as _};
 
 macro_rules! data {
@@ -10,36 +9,31 @@ macro_rules! data {
     }};
 }
 
+macro_rules! data_lines {
+    () => {
+        data!().map(|fh| crate::util::lines(fh))
+    };
+}
+
 macro_rules! data_ints {
     () => {
-        crate::util::read_ints(&crate::util::src_file_to_data_file(
-            &std::file!(),
-        ))
+        data!().map(|fh| crate::util::ints_by_line(fh))
+    };
+    ($sep:expr) => {
+        data!().map(|fh| crate::util::ints_by_split(fh, $sep))
     };
 }
 
 macro_rules! data_bytes {
     () => {
-        crate::util::read_file(&crate::util::src_file_to_data_file(
-            &std::file!(),
-        ))
+        data!().map(|fh| crate::util::bytes(fh))
     };
 }
 
 macro_rules! data_str {
-    () => {
-        crate::util::read_file_str(&crate::util::src_file_to_data_file(
-            &std::file!(),
-        ))
-    };
-}
-
-macro_rules! data_lines {
-    () => {
-        crate::util::read_file_lines(&crate::util::src_file_to_data_file(
-            &std::file!(),
-        ))
-    };
+    () => {{
+        data!().map(|fh| crate::util::string(fh))
+    }};
 }
 
 pub fn src_file_to_data_file(file: &str) -> String {
@@ -51,41 +45,36 @@ pub fn src_file_to_data_file(file: &str) -> String {
     )
 }
 
-pub fn read_ints(filename: &str) -> anyhow::Result<Vec<i64>> {
-    let ints: anyhow::Result<Vec<_>> = read_file_lines(filename)?
-        .map(|l| {
-            l.context("failed to read a line")?
-                .parse()
-                .context("failed to parse line into an integer")
-        })
-        .collect();
-    ints
+pub fn lines(fh: std::fs::File) -> impl Iterator<Item = String> {
+    let fh = std::io::BufReader::new(fh);
+    fh.lines().map(|res| res.unwrap())
 }
 
-pub fn read_file(filename: &str) -> anyhow::Result<Vec<u8>> {
-    let mut f = std::fs::File::open(filename)
-        .with_context(|| format!("couldn't find data file {}", filename))?;
-    let mut s = vec![];
-    f.read_to_end(&mut s)
-        .context("failed to read map contents")?;
-    Ok(s)
+pub fn ints_by_line(fh: std::fs::File) -> impl Iterator<Item = i64> {
+    lines(fh).map(|l| l.parse().unwrap())
 }
 
-pub fn read_file_str(filename: &str) -> anyhow::Result<String> {
-    let mut f = std::fs::File::open(filename)
-        .with_context(|| format!("couldn't find data file {}", filename))?;
-    let mut s = String::new();
-    f.read_to_string(&mut s)
-        .context("failed to read map contents")?;
-    Ok(s)
+pub fn ints_by_split(
+    fh: std::fs::File,
+    sep: u8,
+) -> impl Iterator<Item = i64> {
+    let fh = std::io::BufReader::new(fh);
+    fh.split(sep).filter_map(|res| {
+        let res = res.unwrap();
+        let s = std::str::from_utf8(&res).unwrap().trim();
+        if s.is_empty() {
+            None
+        } else {
+            Some(s.parse().unwrap())
+        }
+    })
 }
 
-pub fn read_file_lines(
-    filename: &str,
-) -> anyhow::Result<impl std::iter::Iterator<Item = std::io::Result<String>>>
-{
-    let f = std::fs::File::open(filename)
-        .with_context(|| format!("couldn't find data file {}", filename))?;
-    let f = std::io::BufReader::new(f);
-    Ok(f.lines())
+pub fn bytes(fh: std::fs::File) -> impl Iterator<Item = u8> {
+    fh.bytes().map(|res| res.unwrap())
+}
+
+pub fn string(fh: std::fs::File) -> String {
+    let bytes: Vec<_> = bytes(fh).collect();
+    std::string::String::from_utf8(bytes).unwrap()
 }

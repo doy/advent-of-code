@@ -1,7 +1,6 @@
 pub fn part1() -> anyhow::Result<i64> {
     let mut map = vec![];
     for line in data_lines!()? {
-        let line = line?;
         let mut row = vec![];
         for c in line.bytes() {
             row.push(c - b'0');
@@ -39,7 +38,6 @@ pub fn part1() -> anyhow::Result<i64> {
 pub fn part2() -> anyhow::Result<i64> {
     let mut map = vec![];
     for line in data_lines!()? {
-        let line = line?;
         let mut row = vec![];
         for c in line.bytes() {
             row.push(c - b'0');

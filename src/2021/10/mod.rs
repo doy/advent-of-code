@@ -1,7 +1,6 @@
 pub fn part1() -> anyhow::Result<i64> {
     let mut total = 0;
     for line in data_lines!()? {
-        let line = line?;
         let mut open = vec![];
         for c in line.chars() {
             match c {
@@ -42,7 +41,6 @@ pub fn part1() -> anyhow::Result<i64> {
 pub fn part2() -> anyhow::Result<i64> {
     let mut scores = vec![];
     for line in data_lines!()? {
-        let line = line?;
         let mut open = vec![];
         let mut skip = false;
         for c in line.chars() {

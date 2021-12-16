@@ -1,7 +1,7 @@
 pub fn part1() -> anyhow::Result<i64> {
     const WINDOW: usize = 25;
 
-    let list = data_ints!()?;
+    let list: Vec<_> = data_ints!()?.collect();
     for i in 0..(list.len() - WINDOW) {
         let set = &list[i..i + WINDOW];
         let n = list[i + WINDOW];
@@ -16,7 +16,7 @@ pub fn part1() -> anyhow::Result<i64> {
 pub fn part2() -> anyhow::Result<i64> {
     const WINDOW: usize = 25;
 
-    let list = data_ints!()?;
+    let list: Vec<_> = data_ints!()?.collect();
     let mut invalid = None;
     for i in 0..(list.len() - WINDOW) {
         let set = &list[i..i + WINDOW];

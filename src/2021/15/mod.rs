@@ -61,15 +61,15 @@ fn dijkstra(map: &[Vec<u8>]) -> i64 {
 
 pub fn part1() -> anyhow::Result<i64> {
     let map: Vec<Vec<_>> = data_lines!()?
-        .map(|line| line.map(|line| line.bytes().map(|b| b - b'0').collect()))
-        .collect::<Result<_, _>>()?;
+        .map(|line| line.bytes().map(|b| b - b'0').collect())
+        .collect();
     Ok(dijkstra(&map))
 }
 
 pub fn part2() -> anyhow::Result<i64> {
     let map: Vec<Vec<_>> = data_lines!()?
-        .map(|line| line.map(|line| line.bytes().map(|b| b - b'0').collect()))
-        .collect::<Result<_, _>>()?;
+        .map(|line| line.bytes().map(|b| b - b'0').collect())
+        .collect();
     let mut large_map = vec![vec![0; map.len() * 5]; map[0].len() * 5];
     for li in 0..5 {
         for lj in 0..5 {

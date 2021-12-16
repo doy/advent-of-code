@@ -1,5 +1,5 @@
 pub fn part1() -> anyhow::Result<i64> {
-    let ints = data_ints!()?;
+    let ints: Vec<_> = data_ints!()?.collect();
     for i in &ints {
         for j in &ints {
             if i + j == 2020 {
@@ -11,7 +11,7 @@ pub fn part1() -> anyhow::Result<i64> {
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let ints = data_ints!()?;
+    let ints: Vec<_> = data_ints!()?.collect();
     for i in &ints {
         for j in &ints {
             for k in &ints {

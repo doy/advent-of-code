@@ -1,7 +1,6 @@
 pub fn part1() -> anyhow::Result<i64> {
     let mut count = 0i64;
     for line in data_lines!()? {
-        let line = line?;
         let mut parts = line.split(" | ");
         let output = parts.nth(1).unwrap();
         let line_count: i64 = output
@@ -25,7 +24,6 @@ pub fn part1() -> anyhow::Result<i64> {
 pub fn part2() -> anyhow::Result<i64> {
     let mut total = 0;
     for line in data_lines!()? {
-        let line = line?;
         let mut parts = line.split(" | ");
         let numbers = parts.next().unwrap();
         let numbers: Vec<_> = numbers.split(' ').collect();
