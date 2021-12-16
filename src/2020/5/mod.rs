@@ -83,3 +83,9 @@ fn seat_id(desc: &str) -> anyhow::Result<i64> {
 
     Ok(row * 8 + col)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 978);
+    assert_eq!(part2().unwrap(), 727);
+}

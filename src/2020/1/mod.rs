@@ -23,3 +23,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Err(anyhow::anyhow!("no numbers summing to 2020 found"))
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 445536);
+    assert_eq!(part2().unwrap(), 138688160);
+}

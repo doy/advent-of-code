@@ -39,3 +39,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Ok(by_age.iter().sum())
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 379114);
+    assert_eq!(part2().unwrap(), 1702631502303);
+}

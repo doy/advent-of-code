@@ -99,3 +99,9 @@ fn count_bags(graph: &Graph, color: &str) -> anyhow::Result<i64> {
         .iter()
         .sum::<i64>())
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 169);
+    assert_eq!(part2().unwrap(), 82372);
+}

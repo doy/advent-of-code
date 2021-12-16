@@ -81,3 +81,9 @@ pub fn part2() -> anyhow::Result<i64> {
 fn read_map() -> anyhow::Result<Map> {
     Map::parse(&data_bytes!()?)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 292);
+    assert_eq!(part2().unwrap(), 9354744432);
+}

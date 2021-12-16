@@ -91,3 +91,9 @@ pub fn part2() -> anyhow::Result<i64> {
     scores.sort_unstable();
     Ok(scores[scores.len() / 2])
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 166191);
+    assert_eq!(part2().unwrap(), 1152088313);
+}

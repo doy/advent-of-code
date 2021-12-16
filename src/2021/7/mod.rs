@@ -36,3 +36,9 @@ pub fn part2() -> anyhow::Result<i64> {
         .min()
         .unwrap())
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 333755);
+    assert_eq!(part2().unwrap(), 94017638);
+}

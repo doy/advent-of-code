@@ -164,3 +164,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Ok(total.try_into()?)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 355);
+    assert_eq!(part2().unwrap(), 983030);
+}

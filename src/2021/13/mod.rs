@@ -157,3 +157,9 @@ pub fn part2() -> anyhow::Result<i64> {
     map.print();
     Ok(map.total())
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 678);
+    assert_eq!(part2().unwrap(), 95);
+}

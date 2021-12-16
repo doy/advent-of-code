@@ -213,3 +213,9 @@ pub fn part2() -> anyhow::Result<i64> {
     let (packet, _) = Packet::parse(bits.by_ref());
     Ok(packet.eval())
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 979);
+    assert_eq!(part2().unwrap(), 277110354175);
+}

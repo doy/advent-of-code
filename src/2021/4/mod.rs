@@ -150,3 +150,9 @@ pub fn part2() -> anyhow::Result<i64> {
         anyhow::bail!("couldn't find winner")
     }
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 2745);
+    assert_eq!(part2().unwrap(), 6594);
+}

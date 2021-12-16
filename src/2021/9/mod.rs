@@ -105,3 +105,9 @@ pub fn part2() -> anyhow::Result<i64> {
         * sizes[sizes.len() - 2]
         * sizes[sizes.len() - 3])
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 570);
+    assert_eq!(part2().unwrap(), 899392);
+}

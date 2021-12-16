@@ -84,3 +84,9 @@ pub fn part2() -> anyhow::Result<i64> {
     Ok(elements.values().max().unwrap() / 2
         - elements.values().min().unwrap() / 2)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 2874);
+    assert_eq!(part2().unwrap(), 5208377027195);
+}

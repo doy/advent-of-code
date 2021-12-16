@@ -137,3 +137,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Ok(map.count_overlapping().try_into()?)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 6311);
+    assert_eq!(part2().unwrap(), 19929);
+}

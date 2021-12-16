@@ -41,3 +41,9 @@ pub fn part2() -> anyhow::Result<i64> {
     total += yes.len() as i64;
     Ok(total)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 6930);
+    assert_eq!(part2().unwrap(), 3585);
+}

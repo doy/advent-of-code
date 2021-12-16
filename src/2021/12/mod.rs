@@ -103,3 +103,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Ok(paths_from2(&graph, &mut vec!["start"]))
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 3230);
+    assert_eq!(part2().unwrap(), 83475);
+}

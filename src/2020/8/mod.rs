@@ -123,3 +123,9 @@ fn run(opcodes: &[Op]) -> anyhow::Result<(i64, bool)> {
         }
     }
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 1928);
+    assert_eq!(part2().unwrap(), 1319);
+}

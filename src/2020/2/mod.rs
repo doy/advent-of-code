@@ -71,3 +71,9 @@ fn read_lines() -> anyhow::Result<Vec<Line>> {
         .map(|l| Line::parse(&l.context("failed to read a line")?))
         .collect()
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 638);
+    assert_eq!(part2().unwrap(), 699);
+}

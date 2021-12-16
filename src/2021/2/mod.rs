@@ -32,3 +32,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Ok(horizontal * vertical)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 1694130);
+    assert_eq!(part2().unwrap(), 1698850445);
+}

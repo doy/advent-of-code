@@ -87,3 +87,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Ok(dijkstra(&large_map))
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 441);
+    assert_eq!(part2().unwrap(), 2849);
+}

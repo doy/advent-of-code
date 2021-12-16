@@ -128,3 +128,9 @@ fn validate(key: &str, val: &str) -> anyhow::Result<bool> {
         _ => Err(anyhow::anyhow!("invalid key found: {}", key)),
     }
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 247);
+    assert_eq!(part2().unwrap(), 145);
+}

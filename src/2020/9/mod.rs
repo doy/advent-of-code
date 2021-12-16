@@ -60,3 +60,9 @@ fn valid(set: &[i64], n: i64) -> bool {
     }
     false
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 373803594);
+    assert_eq!(part2().unwrap(), 51152360);
+}

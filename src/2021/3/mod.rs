@@ -83,3 +83,9 @@ fn bin_str_to_int(s: &str) -> i64 {
     }
     ret
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 3009600);
+    assert_eq!(part2().unwrap(), 6940518);
+}
