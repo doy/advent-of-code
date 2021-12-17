@@ -1,27 +1,15 @@
+use crate::util::grid::*;
+
 pub fn part1() -> anyhow::Result<i64> {
     let map = data_digit_grid!();
     let mut risk = 0;
-    for i in 0..map.len() {
-        for j in 0..map[0].len() {
-            let pos = map[i][j];
-            let neighbors = [
-                map.get(i + 1).and_then(|v| v.get(j)),
-                map.get(i).and_then(|v| v.get(j + 1)),
-                if i == 0 {
-                    None
-                } else {
-                    map.get(i - 1).and_then(|v| v.get(j))
-                },
-                if j == 0 {
-                    None
-                } else {
-                    map.get(i).and_then(|v| v.get(j - 1))
-                },
-            ];
-            let neighbors: Vec<_> = neighbors.into_iter().flatten().collect();
-            if neighbors.iter().all(|n| pos < **n) {
-                risk += 1 + pos as i64;
-            }
+    for ((row, col), pos) in map.indexed_cells() {
+        if map
+            .adjacent(row, col, false)
+            .map(|(row, col)| map[row][col])
+            .all(|n| *pos < n)
+        {
+            risk += 1 + *pos as i64;
         }
     }
     Ok(risk)
@@ -30,54 +18,34 @@ pub fn part1() -> anyhow::Result<i64> {
 pub fn part2() -> anyhow::Result<i64> {
     let map = data_digit_grid!();
     let mut low = vec![];
-    for i in 0..map.len() {
-        for j in 0..map[0].len() {
-            let pos = map[i][j];
-            let neighbors = [
-                map.get(i + 1).and_then(|v| v.get(j)),
-                map.get(i).and_then(|v| v.get(j + 1)),
-                if i == 0 {
-                    None
-                } else {
-                    map.get(i - 1).and_then(|v| v.get(j))
-                },
-                if j == 0 {
-                    None
-                } else {
-                    map.get(i).and_then(|v| v.get(j - 1))
-                },
-            ];
-            let neighbors: Vec<_> = neighbors.into_iter().flatten().collect();
-            if neighbors.iter().all(|n| pos < **n) {
-                low.push((i, j));
-            }
+    for ((row, col), pos) in map.indexed_cells() {
+        if map
+            .adjacent(row, col, false)
+            .map(|(row, col)| map[row][col])
+            .all(|n| *pos < n)
+        {
+            low.push((row, col));
         }
     }
 
     let mut sizes = vec![];
-    for (i, j) in low {
-        let mut basin = vec![vec![false; map[0].len()]; map.len()];
-        let mut check = vec![(i, j)];
+    for (row, col) in low {
+        let mut basin: Grid<bool> = Grid::default();
+        basin.grow(map.rows(), map.cols());
+        let mut check = vec![(row, col)];
         let mut count = 0;
-        while let Some((i, j)) = check.pop() {
-            if basin[i][j] || map[i][j] == 9 {
+        while let Some((row, col)) = check.pop() {
+            if basin[row][col] || map[row][col] == 9 {
                 continue;
             }
 
-            basin[i][j] = true;
+            basin[row][col] = true;
             count += 1;
 
-            if i < map.len() - 1 && !basin[i + 1][j] {
-                check.push((i + 1, j));
-            }
-            if i > 0 && !basin[i - 1][j] {
-                check.push((i - 1, j));
-            }
-            if j < map[0].len() - 1 && !basin[i][j + 1] {
-                check.push((i, j + 1));
-            }
-            if j > 0 && !basin[i][j - 1] {
-                check.push((i, j - 1));
+            for (row, col) in basin.adjacent(row, col, false) {
+                if !basin[row][col] {
+                    check.push((row, col));
+                }
             }
         }
         sizes.push(count);

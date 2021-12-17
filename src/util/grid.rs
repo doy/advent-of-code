@@ -1,0 +1,216 @@
+#[derive(Copy, Clone, Hash, Eq, PartialEq)]
+pub struct Row(pub usize);
+#[derive(Copy, Clone, Hash, Eq, PartialEq)]
+pub struct Col(pub usize);
+
+#[derive(Default, Clone)]
+pub struct GridRow<T: Default + Clone> {
+    cells: Vec<T>,
+}
+
+impl<T: Default + Clone> GridRow<T> {
+    pub fn iter(&self) -> impl Iterator<Item = &T> + Clone {
+        self.cells.iter()
+    }
+}
+
+impl<T: Default + Clone> std::ops::Index<Col> for GridRow<T> {
+    type Output = T;
+    fn index(&self, col: Col) -> &Self::Output {
+        &self.cells[col.0]
+    }
+}
+
+impl<T: Default + Clone> std::ops::IndexMut<Col> for GridRow<T> {
+    fn index_mut(&mut self, col: Col) -> &mut Self::Output {
+        &mut self.cells[col.0]
+    }
+}
+
+#[derive(Default, Clone)]
+pub struct Grid<T: Default + Clone> {
+    rows: Vec<GridRow<T>>,
+}
+
+impl<T: Default + Clone> Grid<T> {
+    pub fn grow(&mut self, rows: Row, cols: Col) {
+        self.rows
+            .resize_with(rows.0.max(self.rows.len()), GridRow::default);
+        for row in &mut self.rows {
+            row.cells
+                .resize_with(cols.0.max(row.cells.len()), T::default);
+        }
+    }
+
+    pub fn rows(&self) -> Row {
+        Row(self.rows.len())
+    }
+
+    pub fn cols(&self) -> Col {
+        Col(self.rows[0].cells.len())
+    }
+
+    pub fn cells(&self) -> impl Iterator<Item = &T> {
+        self.rows.iter().flat_map(|row| row.cells.iter())
+    }
+
+    pub fn cells_mut(&mut self) -> impl Iterator<Item = &mut T> {
+        self.rows.iter_mut().flat_map(|row| row.cells.iter_mut())
+    }
+
+    pub fn indexed_cells(&self) -> impl Iterator<Item = ((Row, Col), &T)> {
+        self.rows.iter().enumerate().flat_map(|(i, row)| {
+            row.cells
+                .iter()
+                .enumerate()
+                .map(move |(j, cell)| ((Row(i), Col(j)), cell))
+        })
+    }
+
+    pub fn indexed_cells_mut(
+        &mut self,
+    ) -> impl Iterator<Item = ((Row, Col), &mut T)> {
+        self.rows.iter_mut().enumerate().flat_map(|(i, row)| {
+            row.cells
+                .iter_mut()
+                .enumerate()
+                .map(move |(j, cell)| ((Row(i), Col(j)), cell))
+        })
+    }
+
+    pub fn adjacent(&self, row: Row, col: Col, diagonal: bool) -> Adjacent {
+        Adjacent {
+            row: row.0,
+            col: col.0,
+            rows: self.rows().0,
+            cols: self.cols().0,
+            diagonal,
+            pos: 0,
+        }
+    }
+}
+
+impl<T: Default + Clone + std::fmt::Display> Grid<T> {
+    pub fn display_packed<F: Fn(&T) -> char>(
+        &self,
+        f: F,
+    ) -> DisplayPacked<T, F> {
+        DisplayPacked(self, f)
+    }
+}
+
+impl<T: Default + Clone + std::fmt::Display> std::fmt::Display for Grid<T> {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> Result<(), std::fmt::Error> {
+        for row in &self.rows {
+            for col in &row.cells {
+                write!(f, "{} ", col)?;
+            }
+            writeln!(f)?;
+        }
+        Ok(())
+    }
+}
+
+impl<T: Default + Clone> std::ops::Index<Row> for Grid<T> {
+    type Output = GridRow<T>;
+    fn index(&self, row: Row) -> &Self::Output {
+        &self.rows[row.0]
+    }
+}
+
+impl<T: Default + Clone> std::ops::IndexMut<Row> for Grid<T> {
+    fn index_mut(&mut self, row: Row) -> &mut Self::Output {
+        &mut self.rows[row.0]
+    }
+}
+
+impl<T: Default + Clone> FromIterator<Vec<T>> for Grid<T> {
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = Vec<T>>,
+    {
+        Self {
+            rows: iter.into_iter().map(|v| GridRow { cells: v }).collect(),
+        }
+    }
+}
+
+impl<T: Default + Clone> FromIterator<((Row, Col), T)> for Grid<T> {
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = ((Row, Col), T)>,
+    {
+        let mut self_ = Self::default();
+        for ((row, col), cell) in iter {
+            self_.grow(Row(row.0 + 1), Col(col.0 + 1));
+            self_[row][col] = cell;
+        }
+        self_
+    }
+}
+
+pub struct DisplayPacked<
+    'a,
+    T: Default + Clone + std::fmt::Display,
+    F: Fn(&'a T) -> char,
+>(&'a Grid<T>, F);
+
+impl<'a, T: Default + Clone + std::fmt::Display, F: Fn(&'a T) -> char>
+    std::fmt::Display for DisplayPacked<'a, T, F>
+{
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> Result<(), std::fmt::Error> {
+        for row in &self.0.rows {
+            for col in &row.cells {
+                write!(f, "{}", self.1(col))?;
+            }
+            writeln!(f)?;
+        }
+        Ok(())
+    }
+}
+
+pub struct Adjacent {
+    row: usize,
+    col: usize,
+    rows: usize,
+    cols: usize,
+    diagonal: bool,
+    pos: u8,
+}
+
+impl Iterator for Adjacent {
+    type Item = (Row, Col);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            if self.pos >= 9 {
+                return None;
+            }
+            let pos_row = self.pos / 3;
+            let pos_col = self.pos - pos_row * 3;
+            self.pos += 1;
+            if pos_row == 0 && self.row == 0
+                || pos_col == 0 && self.col == 0
+                || pos_row == 2 && self.row == self.rows - 1
+                || pos_col == 2 && self.col == self.cols - 1
+                || pos_row == 1 && pos_col == 1
+                || (!self.diagonal
+                    && ((pos_row == pos_col)
+                        || (pos_row == 2 && pos_col == 0)
+                        || (pos_row == 0 && pos_col == 2)))
+            {
+                continue;
+            }
+            return Some((
+                Row(self.row + usize::from(pos_row) - 1),
+                Col(self.col + usize::from(pos_col) - 1),
+            ));
+        }
+    }
+}

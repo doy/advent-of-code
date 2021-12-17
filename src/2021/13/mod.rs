@@ -1,75 +1,73 @@
 #![allow(clippy::collapsible_else_if)]
 #![allow(clippy::comparison_chain)]
 
-struct Map {
-    width: usize,
-    height: usize,
-    cells: Vec<Vec<bool>>,
+use crate::util::grid::*;
+
+#[derive(Default)]
+struct Paper {
+    grid: Grid<bool>,
 }
 
-impl Map {
-    fn new() -> Self {
-        Self {
-            width: 0,
-            height: 0,
-            cells: vec![],
-        }
-    }
-
-    fn resize(&mut self, width: usize, height: usize) {
-        self.cells.resize_with(height, std::vec::Vec::new);
-        for row in &mut self.cells {
-            row.resize(width, false);
-        }
-        self.width = width;
-        self.height = height;
-    }
-
-    fn set(&mut self, x: usize, y: usize) {
-        self.resize((x + 1).max(self.width), (y + 1).max(self.height));
-        self.cells[y][x] = true;
+impl Paper {
+    fn set(&mut self, row: Row, col: Col) {
+        self.grid.grow(Row(row.0 + 1), Col(col.0 + 1));
+        self.grid[row][col] = true;
     }
 
     fn fold(&mut self, horizontal: bool, coord: usize) {
-        let mut clone = Self::new();
+        let mut clone = Self::default();
         if horizontal {
-            clone.resize(coord.max(self.width - coord - 1), self.height);
-            for (j, row) in self.cells.iter().enumerate() {
-                for (i, cell) in row.iter().enumerate() {
-                    if *cell {
-                        if coord > self.width - coord - 1 {
-                            if i < coord {
-                                clone.set(i, j);
-                            } else if i > coord {
-                                clone.set(coord * 2 - i, j);
-                            }
-                        } else {
-                            if i < coord {
-                                clone.set(self.width - coord * 2 - 1 + i, j);
-                            } else if i > coord {
-                                clone.set(self.width - i - 1, j);
-                            }
+            clone.grid.grow(
+                self.grid.rows(),
+                Col(coord.max(self.grid.cols().0 - coord - 1)),
+            );
+            for ((Row(row), Col(col)), cell) in self.grid.indexed_cells() {
+                if *cell {
+                    if coord > self.grid.cols().0 - coord - 1 {
+                        if col < coord {
+                            clone.set(Row(row), Col(col));
+                        } else if col > coord {
+                            clone.set(Row(row), Col(coord * 2 - col));
+                        }
+                    } else {
+                        if col < coord {
+                            clone.set(
+                                Row(row),
+                                Col(self.grid.cols().0 - coord * 2 - 1 + col),
+                            );
+                        } else if col > coord {
+                            clone.set(
+                                Row(row),
+                                Col(self.grid.cols().0 - col - 1),
+                            );
                         }
                     }
                 }
             }
         } else {
-            clone.resize(self.width, coord.max(self.height - coord - 1));
-            for (j, row) in self.cells.iter().enumerate() {
-                for (i, cell) in row.iter().enumerate() {
-                    if *cell {
-                        if coord > self.height - coord - 1 {
-                            if j < coord {
-                                clone.set(i, j);
-                            } else if j > coord {
-                                clone.set(i, coord * 2 - j);
-                            }
-                        } else {
-                            if j < coord {
-                                clone.set(i, self.height - coord * 2 - 1 + j);
-                            } else if j > coord {
-                                clone.set(i, self.height - j - 1);
-                            }
+            clone.grid.grow(
+                Row(coord.max(self.grid.rows().0 - coord - 1)),
+                self.grid.cols(),
+            );
+            for ((Row(row), Col(col)), cell) in self.grid.indexed_cells() {
+                if *cell {
+                    if coord > self.grid.rows().0 - coord - 1 {
+                        if row < coord {
+                            clone.set(Row(row), Col(col));
+                        } else if row > coord {
+                            clone.set(Row(coord * 2 - row), Col(col));
+                        }
+                    } else {
+                        if row < coord {
+                            clone.set(
+                                Row(self.grid.rows().0 - coord * 2 - 1 + row),
+                                Col(col),
+                            );
+                        } else if row > coord {
+                            clone.set(
+                                Row(self.grid.rows().0 - row - 1),
+                                Col(col),
+                            );
                         }
                     }
                 }
@@ -79,33 +77,25 @@ impl Map {
     }
 
     fn total(&self) -> i64 {
-        let mut total = 0;
-        for row in &self.cells {
-            for cell in row {
-                if *cell {
-                    total += 1;
-                }
-            }
-        }
-        total
+        self.grid.cells().map(|b| if *b { 1 } else { 0 }).sum()
     }
+}
 
-    fn print(&self) {
-        for row in &self.cells {
-            for cell in row {
-                if *cell {
-                    print!("#");
-                } else {
-                    print!(".");
-                }
-            }
-            println!();
-        }
+impl std::fmt::Display for Paper {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> Result<(), std::fmt::Error> {
+        write!(
+            f,
+            "{}",
+            self.grid.display_packed(|b| if *b { '#' } else { '.' })
+        )
     }
 }
 
 pub fn part1() -> anyhow::Result<i64> {
-    let mut map = Map::new();
+    let mut paper = Paper::default();
     let mut folds = vec![];
     for line in data_lines!()? {
         if line.is_empty() {
@@ -120,16 +110,16 @@ pub fn part1() -> anyhow::Result<i64> {
             let mut coords = line.split(',');
             let x: usize = coords.next().unwrap().parse()?;
             let y: usize = coords.next().unwrap().parse()?;
-            map.set(x, y);
+            paper.set(Row(y), Col(x));
         }
     }
 
-    map.fold(folds[0].0, folds[0].1);
-    Ok(map.total())
+    paper.fold(folds[0].0, folds[0].1);
+    Ok(paper.total())
 }
 
 pub fn part2() -> anyhow::Result<i64> {
-    let mut map = Map::new();
+    let mut paper = Paper::default();
     let mut folds = vec![];
     for line in data_lines!()? {
         if line.is_empty() {
@@ -144,16 +134,16 @@ pub fn part2() -> anyhow::Result<i64> {
             let mut coords = line.split(',');
             let x: usize = coords.next().unwrap().parse()?;
             let y: usize = coords.next().unwrap().parse()?;
-            map.set(x, y);
+            paper.set(Row(y), Col(x));
         }
     }
 
     for fold in folds {
-        map.fold(fold.0, fold.1);
+        paper.fold(fold.0, fold.1);
     }
 
-    map.print();
-    Ok(map.total())
+    println!("{}", paper);
+    Ok(paper.total())
 }
 
 #[test]
