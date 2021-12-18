@@ -1,8 +1,7 @@
 use anyhow::Context as _;
 use std::convert::TryInto as _;
-use std::io::BufRead as _;
 
-struct Line {
+pub struct Line {
     c: char,
     n1: usize,
     n2: usize,
@@ -52,28 +51,30 @@ impl Line {
     }
 }
 
-pub fn part1() -> anyhow::Result<i64> {
-    let lines = read_lines()?;
-    let count = lines.iter().filter(|l| l.valid_part_1()).count();
+pub fn parse(
+    fh: std::fs::File,
+) -> anyhow::Result<impl Iterator<Item = Line>> {
+    Ok(crate::util::parse::lines(fh).map(|line| Line::parse(&line).unwrap()))
+}
+
+pub fn part1(lines: impl Iterator<Item = Line>) -> anyhow::Result<i64> {
+    let count = lines.filter(|l| l.valid_part_1()).count();
     Ok(count.try_into()?)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let lines = read_lines()?;
-    let count = lines.iter().filter(|l| l.valid_part_2()).count();
+pub fn part2(lines: impl Iterator<Item = Line>) -> anyhow::Result<i64> {
+    let count = lines.filter(|l| l.valid_part_2()).count();
     Ok(count.try_into()?)
-}
-
-fn read_lines() -> anyhow::Result<Vec<Line>> {
-    let f = data!()?;
-    let f = std::io::BufReader::new(f);
-    f.lines()
-        .map(|l| Line::parse(&l.context("failed to read a line")?))
-        .collect()
 }
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 638);
-    assert_eq!(part2().unwrap(), 699);
+    assert_eq!(
+        part1(parse(crate::util::data(2020, 2).unwrap()).unwrap()).unwrap(),
+        638
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2020, 2).unwrap()).unwrap()).unwrap(),
+        699
+    );
 }

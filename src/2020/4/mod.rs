@@ -3,56 +3,12 @@ use anyhow::Context as _;
 const REQUIRED_KEYS: &[&str] =
     &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
-pub fn part1() -> anyhow::Result<i64> {
-    let batch = data_str!()?;
-    let mut valid = 0;
-    for passport in parse(&batch)? {
-        let mut cur_valid = true;
-        for key in REQUIRED_KEYS {
-            if !passport.contains_key(&key.to_string()) {
-                cur_valid = false;
-                break;
-            }
-        }
-        if cur_valid {
-            valid += 1;
-        }
-    }
-    Ok(valid)
-}
-
-pub fn part2() -> anyhow::Result<i64> {
-    let batch = data_str!()?;
-    let mut valid = 0;
-    for passport in parse(&batch)? {
-        let mut cur_valid = true;
-        for key in REQUIRED_KEYS {
-            match passport.get(&key.to_string()) {
-                Some(val) => {
-                    if !validate(key, val)? {
-                        cur_valid = false;
-                        break;
-                    }
-                }
-                None => {
-                    cur_valid = false;
-                    break;
-                }
-            }
-        }
-        if cur_valid {
-            valid += 1;
-        }
-    }
-    Ok(valid)
-}
-
-fn parse(
-    batch: &str,
+pub fn parse(
+    fh: std::fs::File,
 ) -> anyhow::Result<Vec<std::collections::HashMap<String, String>>> {
     let mut res = vec![];
     let mut cur = std::collections::HashMap::new();
-    for line in batch.lines() {
+    for line in crate::util::parse::lines(fh) {
         if line.is_empty() {
             res.push(cur);
             cur = std::collections::HashMap::new();
@@ -74,6 +30,52 @@ fn parse(
         res.push(cur);
     }
     Ok(res)
+}
+
+pub fn part1(
+    passports: Vec<std::collections::HashMap<String, String>>,
+) -> anyhow::Result<i64> {
+    let mut valid = 0;
+    for passport in passports {
+        let mut cur_valid = true;
+        for key in REQUIRED_KEYS {
+            if !passport.contains_key(&key.to_string()) {
+                cur_valid = false;
+                break;
+            }
+        }
+        if cur_valid {
+            valid += 1;
+        }
+    }
+    Ok(valid)
+}
+
+pub fn part2(
+    passports: Vec<std::collections::HashMap<String, String>>,
+) -> anyhow::Result<i64> {
+    let mut valid = 0;
+    for passport in passports {
+        let mut cur_valid = true;
+        for key in REQUIRED_KEYS {
+            match passport.get(&key.to_string()) {
+                Some(val) => {
+                    if !validate(key, val)? {
+                        cur_valid = false;
+                        break;
+                    }
+                }
+                None => {
+                    cur_valid = false;
+                    break;
+                }
+            }
+        }
+        if cur_valid {
+            valid += 1;
+        }
+    }
+    Ok(valid)
 }
 
 fn validate(key: &str, val: &str) -> anyhow::Result<bool> {
@@ -131,6 +133,12 @@ fn validate(key: &str, val: &str) -> anyhow::Result<bool> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 247);
-    assert_eq!(part2().unwrap(), 145);
+    assert_eq!(
+        part1(parse(crate::util::data(2020, 4).unwrap()).unwrap()).unwrap(),
+        247
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2020, 4).unwrap()).unwrap()).unwrap(),
+        145
+    );
 }

@@ -2,9 +2,17 @@ use anyhow::Context as _;
 
 type Graph = std::collections::HashMap<String, Vec<(i64, String)>>;
 
-pub fn part1() -> anyhow::Result<i64> {
-    let input = data_str!()?;
-    let graph = parse(&input)?;
+pub fn parse(fh: std::fs::File) -> anyhow::Result<Graph> {
+    let input = crate::util::parse::string(fh);
+    let mut graph = Graph::new();
+    for line in input.lines() {
+        let (k, v) = parse_line(line)?;
+        graph.insert(k, v);
+    }
+    Ok(graph)
+}
+
+pub fn part1(graph: Graph) -> anyhow::Result<i64> {
     let mut colors = 0;
     for color in graph.keys() {
         if bag_contains(&graph, color, "shiny gold")? {
@@ -14,20 +22,9 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(colors)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let input = data_str!()?;
-    let graph = parse(&input)?;
+pub fn part2(graph: Graph) -> anyhow::Result<i64> {
     // subtract 1 to not count the shiny gold bag itself
     count_bags(&graph, "shiny gold").map(|i| i - 1)
-}
-
-fn parse(input: &str) -> anyhow::Result<Graph> {
-    let mut graph = Graph::new();
-    for line in input.lines() {
-        let (k, v) = parse_line(line)?;
-        graph.insert(k, v);
-    }
-    Ok(graph)
 }
 
 fn parse_line(line: &str) -> anyhow::Result<(String, Vec<(i64, String)>)> {
@@ -102,6 +99,12 @@ fn count_bags(graph: &Graph, color: &str) -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 169);
-    assert_eq!(part2().unwrap(), 82372);
+    assert_eq!(
+        part1(parse(crate::util::data(2020, 7).unwrap()).unwrap()).unwrap(),
+        169
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2020, 7).unwrap()).unwrap()).unwrap(),
+        82372
+    );
 }

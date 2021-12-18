@@ -1,10 +1,22 @@
-pub fn part1() -> anyhow::Result<i64> {
+pub fn parse(
+    fh: std::fs::File,
+) -> anyhow::Result<impl Iterator<Item = (Vec<String>, Vec<String>)>> {
+    Ok(crate::util::parse::lines(fh).map(|line| {
+        let parts: Vec<_> = line.split(" | ").collect();
+        (
+            parts[0].split(' ').map(str::to_string).collect(),
+            parts[1].split(' ').map(str::to_string).collect(),
+        )
+    }))
+}
+
+pub fn part1(
+    lines: impl Iterator<Item = (Vec<String>, Vec<String>)>,
+) -> anyhow::Result<i64> {
     let mut count = 0i64;
-    for line in data_lines!()? {
-        let mut parts = line.split(" | ");
-        let output = parts.nth(1).unwrap();
+    for (_, output) in lines {
         let line_count: i64 = output
-            .split(' ')
+            .iter()
             .filter(|s| [2, 3, 4, 7].contains(&s.len()))
             .count()
             .try_into()
@@ -21,13 +33,11 @@ pub fn part1() -> anyhow::Result<i64> {
 // 4  5
 // 4  5
 //  66
-pub fn part2() -> anyhow::Result<i64> {
+pub fn part2(
+    lines: impl Iterator<Item = (Vec<String>, Vec<String>)>,
+) -> anyhow::Result<i64> {
     let mut total = 0;
-    for line in data_lines!()? {
-        let mut parts = line.split(" | ");
-        let numbers = parts.next().unwrap();
-        let numbers: Vec<_> = numbers.split(' ').collect();
-
+    for (numbers, output) in lines {
         let mut segments = ['x'; 7];
 
         // zero: 6
@@ -150,9 +160,8 @@ pub fn part2() -> anyhow::Result<i64> {
         let numbers =
             [zero, one, two, three, four, five, six, seven, eight, nine];
 
-        let output = parts.next().unwrap();
         let value: Vec<_> = output
-            .split(' ')
+            .iter()
             .map(|s| s.chars().collect::<std::collections::HashSet<_>>())
             .map(|set| numbers.iter().position(|num| &set == num).unwrap())
             .collect();
@@ -165,6 +174,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 355);
-    assert_eq!(part2().unwrap(), 983030);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 8).unwrap()).unwrap()).unwrap(),
+        355
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 8).unwrap()).unwrap()).unwrap(),
+        983030
+    );
 }

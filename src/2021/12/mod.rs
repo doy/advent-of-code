@@ -68,9 +68,13 @@ fn paths_from2<'a>(
     total
 }
 
-pub fn part1() -> anyhow::Result<i64> {
+pub fn parse(
+    fh: std::fs::File,
+) -> anyhow::Result<
+    std::collections::HashMap<String, std::collections::HashSet<String>>,
+> {
     let mut graph = std::collections::HashMap::new();
-    for line in data_lines!()? {
+    for line in crate::util::parse::lines(fh) {
         let nodes: Vec<String> =
             line.split('-').map(|s| s.to_string()).collect();
         let edges = graph
@@ -82,28 +86,35 @@ pub fn part1() -> anyhow::Result<i64> {
             .or_insert_with(std::collections::HashSet::new);
         edges.insert(nodes[0].clone());
     }
+    Ok(graph)
+}
+
+pub fn part1(
+    graph: std::collections::HashMap<
+        String,
+        std::collections::HashSet<String>,
+    >,
+) -> anyhow::Result<i64> {
     Ok(paths_from1(&graph, &mut vec!["start"]))
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let mut graph = std::collections::HashMap::new();
-    for line in data_lines!()? {
-        let nodes: Vec<String> =
-            line.split('-').map(|s| s.to_string()).collect();
-        let edges = graph
-            .entry(nodes[0].clone())
-            .or_insert_with(std::collections::HashSet::new);
-        edges.insert(nodes[1].clone());
-        let edges = graph
-            .entry(nodes[1].clone())
-            .or_insert_with(std::collections::HashSet::new);
-        edges.insert(nodes[0].clone());
-    }
+pub fn part2(
+    graph: std::collections::HashMap<
+        String,
+        std::collections::HashSet<String>,
+    >,
+) -> anyhow::Result<i64> {
     Ok(paths_from2(&graph, &mut vec!["start"]))
 }
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 3230);
-    assert_eq!(part2().unwrap(), 83475);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 12).unwrap()).unwrap()).unwrap(),
+        3230
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 12).unwrap()).unwrap()).unwrap(),
+        83475
+    );
 }

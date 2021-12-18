@@ -1,11 +1,13 @@
 use anyhow::Context as _;
 use std::convert::TryInto as _;
 
-pub fn part1() -> anyhow::Result<i64> {
-    let input = data_str!()?;
+pub fn parse(fh: std::fs::File) -> anyhow::Result<impl Iterator<Item = i64>> {
+    Ok(crate::util::parse::lines(fh).map(|line| seat_id(&line).unwrap()))
+}
+
+pub fn part1(ids: impl Iterator<Item = i64>) -> anyhow::Result<i64> {
     let mut max = 0;
-    for line in input.lines() {
-        let id = seat_id(line)?;
+    for id in ids {
         if id > max {
             max = id;
         }
@@ -13,11 +15,9 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(max)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
+pub fn part2(ids: impl Iterator<Item = i64>) -> anyhow::Result<i64> {
     let mut seats = vec![false; 1024];
-    let input = data_str!()?;
-    for line in input.lines() {
-        let id = seat_id(line)?;
+    for id in ids {
         seats[id as usize] = true;
     }
     let first = seats
@@ -86,6 +86,12 @@ fn seat_id(desc: &str) -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 978);
-    assert_eq!(part2().unwrap(), 727);
+    assert_eq!(
+        part1(parse(crate::util::data(2020, 5).unwrap()).unwrap()).unwrap(),
+        978
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2020, 5).unwrap()).unwrap()).unwrap(),
+        727
+    );
 }

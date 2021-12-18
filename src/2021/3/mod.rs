@@ -1,5 +1,11 @@
-pub fn part1() -> anyhow::Result<i64> {
-    let (total_lines, by_pos) = pos_counts(data_lines!()?)?;
+pub fn parse(
+    fh: std::fs::File,
+) -> anyhow::Result<impl Iterator<Item = String>> {
+    Ok(crate::util::parse::lines(fh))
+}
+
+pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
+    let (total_lines, by_pos) = pos_counts(lines)?;
     let gamma: String = by_pos
         .iter()
         .map(|pos| if pos * 2 >= total_lines { '1' } else { '0' })
@@ -11,8 +17,8 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(bin_str_to_int(&gamma) * bin_str_to_int(&epsilon))
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let mut oxygen: Vec<_> = data_lines!()?.collect();
+pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
+    let mut oxygen: Vec<_> = lines.collect();
     for i in 0..oxygen[0].len() {
         if oxygen.len() == 1 {
             break;
@@ -84,6 +90,12 @@ fn bin_str_to_int(s: &str) -> i64 {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 3009600);
-    assert_eq!(part2().unwrap(), 6940518);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 3).unwrap()).unwrap()).unwrap(),
+        3009600
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 3).unwrap()).unwrap()).unwrap(),
+        6940518
+    );
 }

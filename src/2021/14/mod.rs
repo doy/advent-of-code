@@ -1,18 +1,3 @@
-#[allow(clippy::type_complexity)]
-fn parse() -> anyhow::Result<(Vec<u8>, std::collections::HashMap<Vec<u8>, u8>)>
-{
-    let mut lines = data_lines!()?;
-    let polymer = lines.next().unwrap();
-    lines.next();
-
-    let mut rules = std::collections::HashMap::new();
-    for line in lines {
-        let rule: Vec<_> = line.split(" -> ").collect();
-        rules.insert(rule[0].as_bytes().to_vec(), rule[1].as_bytes()[0]);
-    }
-    Ok((polymer.as_bytes().to_vec(), rules))
-}
-
 fn process(
     polymer: &[u8],
     rules: &std::collections::HashMap<Vec<u8>, u8>,
@@ -32,9 +17,25 @@ fn process(
     polymer
 }
 
-pub fn part1() -> anyhow::Result<i64> {
-    let (mut polymer, rules) = parse()?;
+#[allow(clippy::type_complexity)]
+pub fn parse(
+    fh: std::fs::File,
+) -> anyhow::Result<(Vec<u8>, std::collections::HashMap<Vec<u8>, u8>)> {
+    let mut lines = crate::util::parse::lines(fh);
+    let polymer = lines.next().unwrap();
+    lines.next();
 
+    let mut rules = std::collections::HashMap::new();
+    for line in lines {
+        let rule: Vec<_> = line.split(" -> ").collect();
+        rules.insert(rule[0].as_bytes().to_vec(), rule[1].as_bytes()[0]);
+    }
+    Ok((polymer.as_bytes().to_vec(), rules))
+}
+
+pub fn part1(
+    (mut polymer, rules): (Vec<u8>, std::collections::HashMap<Vec<u8>, u8>),
+) -> anyhow::Result<i64> {
     for _ in 0..10 {
         polymer = process(&polymer, &rules);
     }
@@ -46,9 +47,9 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(elements.values().max().unwrap() - elements.values().min().unwrap())
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let (polymer, rules) = parse()?;
-
+pub fn part2(
+    (polymer, rules): (Vec<u8>, std::collections::HashMap<Vec<u8>, u8>),
+) -> anyhow::Result<i64> {
     let mut pairs = std::collections::HashMap::new();
     for pair in polymer.windows(2) {
         let count = pairs.entry([pair[0], pair[1]]).or_insert(0);
@@ -86,6 +87,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 2874);
-    assert_eq!(part2().unwrap(), 5208377027195);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 14).unwrap()).unwrap()).unwrap(),
+        2874
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 14).unwrap()).unwrap()).unwrap(),
+        5208377027195
+    );
 }

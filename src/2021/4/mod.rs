@@ -51,7 +51,7 @@ impl Board {
 }
 
 #[derive(Debug)]
-struct Game {
+pub struct Game {
     inputs: Vec<u8>,
     boards: Vec<Board>,
 }
@@ -133,8 +133,11 @@ impl Game {
     }
 }
 
-pub fn part1() -> anyhow::Result<i64> {
-    let game = Game::parse(data!()?)?;
+pub fn parse(fh: std::fs::File) -> anyhow::Result<Game> {
+    Game::parse(fh)
+}
+
+pub fn part1(game: Game) -> anyhow::Result<i64> {
     if let Some((n, board)) = game.find_first_winner() {
         Ok((n as i64) * board.value())
     } else {
@@ -142,8 +145,7 @@ pub fn part1() -> anyhow::Result<i64> {
     }
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let game = Game::parse(data!()?)?;
+pub fn part2(game: Game) -> anyhow::Result<i64> {
     if let Some((n, board)) = game.find_last_winner() {
         Ok((n as i64) * board.value())
     } else {
@@ -153,6 +155,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 2745);
-    assert_eq!(part2().unwrap(), 6594);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 4).unwrap()).unwrap()).unwrap(),
+        2745
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 4).unwrap()).unwrap()).unwrap(),
+        6594
+    );
 }

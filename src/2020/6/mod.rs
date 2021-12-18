@@ -1,8 +1,13 @@
-pub fn part1() -> anyhow::Result<i64> {
-    let input = data_str!()?;
+pub fn parse(
+    fh: std::fs::File,
+) -> anyhow::Result<impl Iterator<Item = String>> {
+    Ok(crate::util::parse::lines(fh))
+}
+
+pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
     let mut yes = std::collections::HashSet::new();
     let mut total = 0;
-    for line in input.lines() {
+    for line in lines {
         if line.is_empty() {
             total += yes.len() as i64;
             yes = std::collections::HashSet::new();
@@ -16,14 +21,13 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(total)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let input = data_str!()?;
+pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
     let mut yes = std::collections::HashSet::new();
     for c in 'a'..='z' {
         yes.insert(c);
     }
     let mut total = 0;
-    for line in input.lines() {
+    for line in lines {
         if line.is_empty() {
             total += yes.len() as i64;
             yes = std::collections::HashSet::new();
@@ -44,6 +48,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 6930);
-    assert_eq!(part2().unwrap(), 3585);
+    assert_eq!(
+        part1(parse(crate::util::data(2020, 6).unwrap()).unwrap()).unwrap(),
+        6930
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2020, 6).unwrap()).unwrap()).unwrap(),
+        3585
+    );
 }

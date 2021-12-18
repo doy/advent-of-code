@@ -21,7 +21,7 @@ impl std::str::FromStr for OpType {
 }
 
 #[derive(Clone, Copy)]
-struct Op {
+pub struct Op {
     ty: OpType,
     arg: i64,
 }
@@ -43,9 +43,13 @@ impl std::str::FromStr for Op {
     }
 }
 
-pub fn part1() -> anyhow::Result<i64> {
-    let input = data_str!()?;
-    let opcodes = parse(&input)?;
+pub fn parse(fh: std::fs::File) -> anyhow::Result<Vec<Op>> {
+    crate::util::parse::lines(fh)
+        .map(|line| line.parse())
+        .collect()
+}
+
+pub fn part1(opcodes: Vec<Op>) -> anyhow::Result<i64> {
     let (acc, success) = run(&opcodes)?;
     if success {
         return Err(anyhow::anyhow!("unexpectedly succeeded"));
@@ -53,9 +57,7 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(acc)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let input = data_str!()?;
-    let opcodes = parse(&input)?;
+pub fn part2(opcodes: Vec<Op>) -> anyhow::Result<i64> {
     for i in 0..opcodes.len() {
         match opcodes[i].ty {
             OpType::Nop => {
@@ -78,10 +80,6 @@ pub fn part2() -> anyhow::Result<i64> {
         }
     }
     Err(anyhow::anyhow!("failed to find corrupted opcode"))
-}
-
-fn parse(input: &str) -> anyhow::Result<Vec<Op>> {
-    input.lines().map(|line| line.parse()).collect()
 }
 
 fn run(opcodes: &[Op]) -> anyhow::Result<(i64, bool)> {
@@ -126,6 +124,12 @@ fn run(opcodes: &[Op]) -> anyhow::Result<(i64, bool)> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 1928);
-    assert_eq!(part2().unwrap(), 1319);
+    assert_eq!(
+        part1(parse(crate::util::data(2020, 8).unwrap()).unwrap()).unwrap(),
+        1928
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2020, 8).unwrap()).unwrap()).unwrap(),
+        1319
+    );
 }

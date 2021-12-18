@@ -1,7 +1,12 @@
 use crate::util::grid::*;
 
-pub fn part1() -> anyhow::Result<i64> {
-    let map = data_digit_grid!();
+pub fn parse(fh: std::fs::File) -> anyhow::Result<Grid<u8>> {
+    Ok(crate::util::parse::digit_grid(crate::util::parse::lines(
+        fh,
+    )))
+}
+
+pub fn part1(map: Grid<u8>) -> anyhow::Result<i64> {
     let mut risk = 0;
     for ((row, col), pos) in map.indexed_cells() {
         if map
@@ -15,8 +20,7 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(risk)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let map = data_digit_grid!();
+pub fn part2(map: Grid<u8>) -> anyhow::Result<i64> {
     let mut low = vec![];
     for ((row, col), pos) in map.indexed_cells() {
         if map
@@ -58,6 +62,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 570);
-    assert_eq!(part2().unwrap(), 899392);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 9).unwrap()).unwrap()).unwrap(),
+        570
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 9).unwrap()).unwrap()).unwrap(),
+        899392
+    );
 }

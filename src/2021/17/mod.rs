@@ -35,18 +35,31 @@ fn fire(
     }
 }
 
-pub fn part1() -> anyhow::Result<i64> {
+pub fn parse(
+    fh: std::fs::File,
+) -> anyhow::Result<(
+    std::ops::RangeInclusive<i64>,
+    std::ops::RangeInclusive<i64>,
+)> {
     let rx = regex::Regex::new(
         r"target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)",
     )
     .unwrap();
-    let line = data_lines!()?.next().unwrap();
+    let line = crate::util::parse::lines(fh).next().unwrap();
     let captures = rx.captures(&line).unwrap();
     let xrange: std::ops::RangeInclusive<i64> =
         captures[1].parse().unwrap()..=captures[2].parse().unwrap();
     let yrange: std::ops::RangeInclusive<i64> =
         captures[3].parse().unwrap()..=captures[4].parse().unwrap();
+    Ok((xrange, yrange))
+}
 
+pub fn part1(
+    (xrange, yrange): (
+        std::ops::RangeInclusive<i64>,
+        std::ops::RangeInclusive<i64>,
+    ),
+) -> anyhow::Result<i64> {
     let mut max_height = 0;
     for xv in *xrange.start().min(&0)..=*xrange.end().max(&0) {
         for yv in *yrange.start().min(&0)
@@ -62,18 +75,12 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(max_height)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let rx = regex::Regex::new(
-        r"target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)",
-    )
-    .unwrap();
-    let line = data_lines!()?.next().unwrap();
-    let captures = rx.captures(&line).unwrap();
-    let xrange: std::ops::RangeInclusive<i64> =
-        captures[1].parse().unwrap()..=captures[2].parse().unwrap();
-    let yrange: std::ops::RangeInclusive<i64> =
-        captures[3].parse().unwrap()..=captures[4].parse().unwrap();
-
+pub fn part2(
+    (xrange, yrange): (
+        std::ops::RangeInclusive<i64>,
+        std::ops::RangeInclusive<i64>,
+    ),
+) -> anyhow::Result<i64> {
     let mut count = 0;
     for xv in *xrange.start().min(&0)..=*xrange.end().max(&0) {
         for yv in *yrange.start().min(&0)
@@ -89,6 +96,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 5886);
-    assert_eq!(part2().unwrap(), 1806);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 17).unwrap()).unwrap()).unwrap(),
+        5886
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 17).unwrap()).unwrap()).unwrap(),
+        1806
+    );
 }

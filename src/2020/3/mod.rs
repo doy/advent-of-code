@@ -1,6 +1,6 @@
 use crate::util::grid::*;
 
-struct Map {
+pub struct Map {
     grid: Grid<bool>,
 }
 
@@ -35,13 +35,19 @@ impl Map {
     }
 }
 
-pub fn part1() -> anyhow::Result<i64> {
-    let map = Map::new(data_bool_grid!(b'#', b'.'));
+pub fn parse(fh: std::fs::File) -> anyhow::Result<Map> {
+    Ok(Map::new(crate::util::parse::bool_grid(
+        crate::util::parse::lines(fh),
+        b'#',
+        b'.',
+    )))
+}
+
+pub fn part1(map: Map) -> anyhow::Result<i64> {
     map.trees_for_slope(1, 3)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let map = Map::new(data_bool_grid!(b'#', b'.'));
+pub fn part2(map: Map) -> anyhow::Result<i64> {
     Ok(map.trees_for_slope(1, 1)?
         * map.trees_for_slope(1, 3)?
         * map.trees_for_slope(1, 5)?
@@ -51,6 +57,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 292);
-    assert_eq!(part2().unwrap(), 9354744432);
+    assert_eq!(
+        part1(parse(crate::util::data(2020, 3).unwrap()).unwrap()).unwrap(),
+        292
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2020, 3).unwrap()).unwrap()).unwrap(),
+        9354744432
+    );
 }

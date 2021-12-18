@@ -4,7 +4,7 @@
 use crate::util::grid::*;
 
 #[derive(Default)]
-struct Paper {
+pub struct Paper {
     grid: Grid<bool>,
 }
 
@@ -94,10 +94,12 @@ impl std::fmt::Display for Paper {
     }
 }
 
-pub fn part1() -> anyhow::Result<i64> {
+pub fn parse(
+    fh: std::fs::File,
+) -> anyhow::Result<(Paper, Vec<(bool, usize)>)> {
     let mut paper = Paper::default();
     let mut folds = vec![];
-    for line in data_lines!()? {
+    for line in crate::util::parse::lines(fh) {
         if line.is_empty() {
             continue;
         }
@@ -113,31 +115,19 @@ pub fn part1() -> anyhow::Result<i64> {
             paper.set(Row(y), Col(x));
         }
     }
+    Ok((paper, folds))
+}
 
+pub fn part1(
+    (mut paper, folds): (Paper, Vec<(bool, usize)>),
+) -> anyhow::Result<i64> {
     paper.fold(folds[0].0, folds[0].1);
     Ok(paper.total())
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let mut paper = Paper::default();
-    let mut folds = vec![];
-    for line in data_lines!()? {
-        if line.is_empty() {
-            continue;
-        }
-        if let Some(fold) = line.strip_prefix("fold along ") {
-            let mut fold = fold.split('=');
-            let horizontal = fold.next().unwrap() == "x";
-            let coord: usize = fold.next().unwrap().parse()?;
-            folds.push((horizontal, coord));
-        } else {
-            let mut coords = line.split(',');
-            let x: usize = coords.next().unwrap().parse()?;
-            let y: usize = coords.next().unwrap().parse()?;
-            paper.set(Row(y), Col(x));
-        }
-    }
-
+pub fn part2(
+    (mut paper, folds): (Paper, Vec<(bool, usize)>),
+) -> anyhow::Result<i64> {
     for fold in folds {
         paper.fold(fold.0, fold.1);
     }
@@ -148,6 +138,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 678);
-    assert_eq!(part2().unwrap(), 95);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 13).unwrap()).unwrap()).unwrap(),
+        678
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 13).unwrap()).unwrap()).unwrap(),
+        95
+    );
 }

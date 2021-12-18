@@ -17,10 +17,13 @@ macro_rules! data_lines {
 
 macro_rules! data_ints {
     () => {
-        data!().map(|fh| crate::util::parse::ints_by_line(fh))
+        data!()
+            .map(|fh| crate::util::parse::ints(crate::util::parse::lines(fh)))
     };
     ($sep:expr) => {
-        data!().map(|fh| crate::util::parse::ints_by_split(fh, $sep))
+        data!().map(|fh| {
+            crate::util::parse::ints(crate::util::parse::split(fh, $sep))
+        })
     };
 }
 
@@ -62,24 +65,14 @@ pub fn lines(fh: std::fs::File) -> impl Iterator<Item = String> {
     fh.lines().map(|res| res.unwrap())
 }
 
-pub fn ints_by_line(fh: std::fs::File) -> impl Iterator<Item = i64> {
-    lines(fh).map(|l| l.parse().unwrap())
+pub fn split(fh: std::fs::File, sep: u8) -> impl Iterator<Item = String> {
+    let fh = std::io::BufReader::new(fh);
+    fh.split(sep)
+        .map(|res| String::from_utf8(res.unwrap()).unwrap())
 }
 
-pub fn ints_by_split(
-    fh: std::fs::File,
-    sep: u8,
-) -> impl Iterator<Item = i64> {
-    let fh = std::io::BufReader::new(fh);
-    fh.split(sep).filter_map(|res| {
-        let res = res.unwrap();
-        let s = std::str::from_utf8(&res).unwrap().trim();
-        if s.is_empty() {
-            None
-        } else {
-            Some(s.parse().unwrap())
-        }
-    })
+pub fn ints(iter: impl Iterator<Item = String>) -> impl Iterator<Item = i64> {
+    iter.map(|s| s.trim().parse().unwrap())
 }
 
 pub fn bytes(fh: std::fs::File) -> impl Iterator<Item = u8> {
@@ -88,7 +81,7 @@ pub fn bytes(fh: std::fs::File) -> impl Iterator<Item = u8> {
 
 pub fn string(fh: std::fs::File) -> String {
     let bytes: Vec<_> = bytes(fh).collect();
-    std::string::String::from_utf8(bytes).unwrap()
+    String::from_utf8(bytes).unwrap()
 }
 
 pub fn bool_grid(

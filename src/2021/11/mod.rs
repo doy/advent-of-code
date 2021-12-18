@@ -42,11 +42,16 @@ fn iterate(grid: &mut Grid<(u8, bool)>) -> i64 {
     flashes
 }
 
-pub fn part1() -> anyhow::Result<i64> {
-    let mut map = data_digit_grid!()
-        .indexed_cells()
-        .map(|((row, col), cell)| ((row, col), (*cell, false)))
-        .collect();
+pub fn parse(fh: std::fs::File) -> anyhow::Result<Grid<(u8, bool)>> {
+    Ok(
+        crate::util::parse::digit_grid(crate::util::parse::lines(fh))
+            .indexed_cells()
+            .map(|((row, col), cell)| ((row, col), (*cell, false)))
+            .collect(),
+    )
+}
+
+pub fn part1(mut map: Grid<(u8, bool)>) -> anyhow::Result<i64> {
     let mut flashes = 0;
     for _ in 0..100 {
         flashes += iterate(&mut map);
@@ -54,12 +59,7 @@ pub fn part1() -> anyhow::Result<i64> {
     Ok(flashes)
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let mut map = data_digit_grid!()
-        .indexed_cells()
-        .map(|((row, col), cell)| ((row, col), (*cell, false)))
-        .collect();
-
+pub fn part2(mut map: Grid<(u8, bool)>) -> anyhow::Result<i64> {
     let mut step = 1;
     loop {
         let flashes = iterate(&mut map);
@@ -73,6 +73,12 @@ pub fn part2() -> anyhow::Result<i64> {
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 1673);
-    assert_eq!(part2().unwrap(), 279);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 11).unwrap()).unwrap()).unwrap(),
+        1673
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 11).unwrap()).unwrap()).unwrap(),
+        279
+    );
 }

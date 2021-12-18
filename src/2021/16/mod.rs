@@ -58,7 +58,7 @@ impl FromIterator<bool> for LiteralU16 {
     }
 }
 
-struct Packet {
+pub struct Packet {
     version: u8,
     id: u8,
     contents: PacketContents,
@@ -193,29 +193,34 @@ impl<'a> Iterator for Subpackets<'a> {
     }
 }
 
-pub fn part1() -> anyhow::Result<i64> {
-    let line = data_lines!()?.next().unwrap();
+pub fn parse(fh: std::fs::File) -> anyhow::Result<Packet> {
+    let line = crate::util::parse::lines(fh).next().unwrap();
     let mut bits = bits(line.as_bytes().chunks(2).map(|bs| {
         u8::from_str_radix(std::str::from_utf8(bs).unwrap(), 16).unwrap()
     }));
     let (packet, _) = Packet::parse(bits.by_ref());
+    Ok(packet)
+}
+
+pub fn part1(packet: Packet) -> anyhow::Result<i64> {
     Ok(packet
         .subpackets()
         .map(|packet| i64::from(packet.version))
         .sum())
 }
 
-pub fn part2() -> anyhow::Result<i64> {
-    let line = data_lines!()?.next().unwrap();
-    let mut bits = bits(line.as_bytes().chunks(2).map(|bs| {
-        u8::from_str_radix(std::str::from_utf8(bs).unwrap(), 16).unwrap()
-    }));
-    let (packet, _) = Packet::parse(bits.by_ref());
+pub fn part2(packet: Packet) -> anyhow::Result<i64> {
     Ok(packet.eval())
 }
 
 #[test]
 fn test() {
-    assert_eq!(part1().unwrap(), 979);
-    assert_eq!(part2().unwrap(), 277110354175);
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 16).unwrap()).unwrap()).unwrap(),
+        979
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 16).unwrap()).unwrap()).unwrap(),
+        277110354175
+    );
 }
