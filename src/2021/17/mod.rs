@@ -86,3 +86,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Ok(count)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 5886);
+    assert_eq!(part2().unwrap(), 1806);
+}

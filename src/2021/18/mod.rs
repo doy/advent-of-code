@@ -232,3 +232,9 @@ pub fn part2() -> anyhow::Result<i64> {
     }
     Ok(max)
 }
+
+#[test]
+fn test() {
+    assert_eq!(part1().unwrap(), 3806);
+    assert_eq!(part2().unwrap(), 4727);
+}
