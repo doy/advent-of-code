@@ -3,6 +3,34 @@ pub struct Row(pub usize);
 #[derive(Copy, Clone, Hash, Eq, PartialEq)]
 pub struct Col(pub usize);
 
+impl std::ops::Add<usize> for Row {
+    type Output = Self;
+    fn add(self, other: usize) -> Self::Output {
+        Self(self.0 + other)
+    }
+}
+
+impl std::ops::Add<Row> for usize {
+    type Output = Row;
+    fn add(self, other: Row) -> Self::Output {
+        Row(self + other.0)
+    }
+}
+
+impl std::ops::Add<usize> for Col {
+    type Output = Self;
+    fn add(self, other: usize) -> Self::Output {
+        Self(self.0 + other)
+    }
+}
+
+impl std::ops::Add<Col> for usize {
+    type Output = Col;
+    fn add(self, other: Col) -> Self::Output {
+        Col(self + other.0)
+    }
+}
+
 #[derive(Default, Clone)]
 pub struct GridRow<T: Default + Clone> {
     cells: Vec<T>,
@@ -11,6 +39,10 @@ pub struct GridRow<T: Default + Clone> {
 impl<T: Default + Clone> GridRow<T> {
     pub fn iter(&self) -> impl Iterator<Item = &T> + Clone {
         self.cells.iter()
+    }
+
+    pub fn get(&self, col: Col) -> Option<&T> {
+        self.cells.get(col.0)
     }
 }
 
@@ -48,6 +80,10 @@ impl<T: Default + Clone> Grid<T> {
 
     pub fn cols(&self) -> Col {
         Col(self.rows[0].cells.len())
+    }
+
+    pub fn get(&self, row: Row) -> Option<&GridRow<T>> {
+        self.rows.get(row.0)
     }
 
     pub fn cells(&self) -> impl Iterator<Item = &T> {
