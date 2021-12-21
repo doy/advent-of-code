@@ -1,6 +1,6 @@
-#[derive(Copy, Clone, Hash, Eq, PartialEq)]
+#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug)]
 pub struct Row(pub usize);
-#[derive(Copy, Clone, Hash, Eq, PartialEq)]
+#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug)]
 pub struct Col(pub usize);
 
 impl std::ops::Add<usize> for Row {
@@ -31,7 +31,7 @@ impl std::ops::Add<Col> for usize {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct GridRow<T: Default + Clone> {
     cells: Vec<T>,
 }
@@ -59,7 +59,7 @@ impl<T: Default + Clone> std::ops::IndexMut<Col> for GridRow<T> {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Grid<T: Default + Clone> {
     rows: Vec<GridRow<T>>,
 }
