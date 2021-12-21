@@ -24,6 +24,18 @@ pub fn part1(_: Todo) -> Result<i64> {
 pub fn part2(_: Todo) -> Result<i64> {
     todo!()
 }
+
+#[test]
+fn test() {
+    assert_eq!(
+        part1(parse(parse::data($year, $day).unwrap()).unwrap()).unwrap(),
+        0
+    );
+    assert_eq!(
+        part2(parse(parse::data($year, $day).unwrap()).unwrap()).unwrap(),
+        0
+    );
+}
 EOF
 
 perl -pi -E"\$seen_mod = 1 if /mod day$day/; if (!\$seen_mod && /NEXT MOD/) { say '#[path = \"$day/mod.rs\"]'; say 'mod day$day;'; }" src/"$year"/mod.rs
