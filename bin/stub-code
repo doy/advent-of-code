@@ -6,14 +6,25 @@ year=${2:-$(date +%Y)}
 
 mkdir -p src/"$year"/"$day"
 cat >src/"$year"/"$day"/mod.rs <<EOF
-pub fn part1() -> anyhow::Result<i64> {
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
+use crate::prelude::*;
+
+pub struct Todo;
+
+pub fn parse(fh: File) -> Result<Todo> {
     todo!()
 }
 
-pub fn part2() -> anyhow::Result<i64> {
+pub fn part1(_: Todo) -> Result<i64> {
+    todo!()
+}
+
+pub fn part2(_: Todo) -> Result<i64> {
     todo!()
 }
 EOF
 
 perl -pi -E"\$seen_mod = 1 if /mod day$day/; if (!\$seen_mod && /NEXT MOD/) { say '#[path = \"$day/mod.rs\"]'; say 'mod day$day;'; }" src/"$year"/mod.rs
-perl -pi -E"\$seen_part = 1 if /day$day::part/; if (!\$seen_part && /NEXT PART/) { say '        ($day, 1) => day$day::part1(),'; say '        ($day, 2) => day$day::part2(),'; }" src/"$year"/mod.rs
+perl -pi -E"\$seen_part = 1 if /day$day::part/; if (!\$seen_part && /NEXT PART/) { say '        ($day, 1) => day$day::part1(day$day::parse(parse::data($year, $day)?)?),'; say '        ($day, 2) => day$day::part2(day$day::parse(parse::data($year, $day)?)?),'; }" src/"$year"/mod.rs
