@@ -16,7 +16,6 @@ fn process(polymer: &[u8], rules: &HashMap<Vec<u8>, u8>) -> Vec<u8> {
     polymer
 }
 
-#[allow(clippy::type_complexity)]
 pub fn parse(fh: File) -> Result<(Vec<u8>, HashMap<Vec<u8>, u8>)> {
     let mut lines = parse::lines(fh);
     let polymer = lines.next().unwrap();

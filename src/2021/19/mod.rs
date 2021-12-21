@@ -1,6 +1,5 @@
 use crate::prelude::*;
 
-#[allow(clippy::type_complexity)]
 const ORIENTATIONS: &[&dyn Fn(Point) -> Point] = &[
     &|p| Point::new(p.y, p.z, p.x),
     &|p| Point::new(-p.y, -p.z, p.x),
