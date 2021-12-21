@@ -1,5 +1,5 @@
-pub use crate::util::grid::{Col, Grid, Row};
-pub use crate::util::parse;
+pub use crate::grid::{Col, Grid, Row};
+pub use crate::parse;
 
 pub use std::cmp::Ordering;
 pub use std::collections::VecDeque;

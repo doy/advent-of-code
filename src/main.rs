@@ -9,8 +9,9 @@
 #![allow(clippy::collapsible_if)]
 #![allow(clippy::comparison_chain)]
 
-mod prelude;
-mod util;
+pub mod grid;
+pub mod parse;
+pub mod prelude;
 
 #[path = "2020/mod.rs"]
 mod year2020;
