@@ -115,15 +115,16 @@ impl Scanner {
     fn matches(&self, other: &HashSet<Point>) -> Option<(usize, Point)> {
         for (i, beacons) in self.each_orientation().enumerate() {
             let mut offsets = vec![];
-            for beacon1 in beacons.clone() {
+            for beacon1 in &beacons {
                 for beacon2 in other {
-                    offsets.push(*beacon2 - beacon1);
+                    offsets.push(*beacon2 - *beacon1);
                 }
             }
             for offset in offsets {
-                let set1: HashSet<_> =
-                    beacons.iter().map(|beacon| *beacon + offset).collect();
-                let matches = set1.intersection(other).count();
+                let matches = beacons
+                    .iter()
+                    .filter(|beacon| other.contains(&(**beacon + offset)))
+                    .count();
                 if matches == 0 {
                     panic!("bug");
                 }
