@@ -40,11 +40,12 @@ fn fire(
 pub fn parse(
     fh: File,
 ) -> Result<(std::ops::RangeInclusive<i64>, std::ops::RangeInclusive<i64>)> {
-    let rx =
-        Regex::new(r"target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)")
-            .unwrap();
     let line = parse::lines(fh).next().unwrap();
-    let captures = rx.captures(&line).unwrap();
+    let captures = regex_captures!(
+        r"target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)",
+        &line,
+    )
+    .unwrap();
     let xrange: std::ops::RangeInclusive<i64> =
         captures[1].parse().unwrap()..=captures[2].parse().unwrap();
     let yrange: std::ops::RangeInclusive<i64> =

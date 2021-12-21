@@ -28,11 +28,7 @@ pub fn part2(graph: Graph) -> Result<i64> {
 }
 
 fn parse_line(line: &str) -> Result<(String, Vec<(i64, String)>)> {
-    let main_rx = Regex::new(r"^(.*) bags contain (.*)\.$").unwrap();
-    let contents_rx = Regex::new(r"^([0-9]+) (.*) bags?").unwrap();
-
-    let captures = main_rx
-        .captures(line)
+    let captures = regex_captures!(r"^(.*) bags contain (.*)\.$", line)
         .context("line failed to match regex")?;
     let color = captures.get(1).unwrap().as_str();
     let contents = captures.get(2).unwrap().as_str();
@@ -44,9 +40,9 @@ fn parse_line(line: &str) -> Result<(String, Vec<(i64, String)>)> {
             contents
                 .split(", ")
                 .map(|s| {
-                    let captures = contents_rx
-                        .captures(s)
-                        .context("line failed to match regex")?;
+                    let captures =
+                        regex_captures!(r"^([0-9]+) (.*) bags?", s)
+                            .context("line failed to match regex")?;
                     Ok((
                         captures
                             .get(1)

@@ -9,9 +9,9 @@ pub struct Line {
 
 impl Line {
     fn parse(line: &str) -> Result<Self> {
-        let rx = Regex::new(r"^([0-9]+)-([0-9]+) (.): (.*)$").unwrap();
         let captures =
-            rx.captures(line).context("line failed to match regex")?;
+            regex_captures!(r"^([0-9]+)-([0-9]+) (.): (.*)$", line)
+                .context("line failed to match regex")?;
         let c = captures
             .get(3)
             .unwrap()

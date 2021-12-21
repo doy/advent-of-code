@@ -73,9 +73,8 @@ impl Map {
 }
 
 pub fn parse(fh: File) -> Result<impl Iterator<Item = Vec<usize>>> {
-    let rx = Regex::new("^(\\d+),(\\d+) -> (\\d+),(\\d+)$")?;
     Ok(parse::lines(fh).map(move |line| {
-        rx.captures(&line)
+        regex_captures!(r"^(\d+),(\d+) -> (\d+),(\d+)$", &line)
             .unwrap()
             .iter()
             .skip(1)

@@ -30,8 +30,8 @@ impl std::str::FromStr for Op {
     type Err = Error;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        let rx = Regex::new(r"^([^ ]*) ((?:-|\+)[0-9]+)$").unwrap();
-        let captures = rx.captures(s).context("failed to parse line")?;
+        let captures = regex_captures!(r"^([^ ]*) ((?:-|\+)[0-9]+)$", s)
+            .context("failed to parse line")?;
         let ty = captures.get(1).unwrap().as_str().parse()?;
         let arg = captures
             .get(2)

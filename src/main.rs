@@ -9,6 +9,9 @@
 #![allow(clippy::collapsible_if)]
 #![allow(clippy::comparison_chain)]
 
+#[macro_use]
+pub mod regex;
+
 pub mod grid;
 pub mod parse;
 pub mod prelude;
