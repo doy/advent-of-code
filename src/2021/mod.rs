@@ -38,6 +38,8 @@ mod day18;
 mod day19;
 #[path = "20/mod.rs"]
 mod day20;
+#[path = "21/mod.rs"]
+mod day21;
 // NEXT MOD
 
 pub fn run(day: u8, puzzle: u8) -> anyhow::Result<i64> {
@@ -82,6 +84,8 @@ pub fn run(day: u8, puzzle: u8) -> anyhow::Result<i64> {
         (19, 2) => day19::part2(day19::parse(crate::util::data(2021, 19)?)?),
         (20, 1) => day20::part1(day20::parse(crate::util::data(2021, 20)?)?),
         (20, 2) => day20::part2(day20::parse(crate::util::data(2021, 20)?)?),
+        (21, 1) => day21::part1(day21::parse(crate::util::data(2021, 21)?)?),
+        (21, 2) => day21::part2(day21::parse(crate::util::data(2021, 21)?)?),
         // NEXT PART
         _ => Err(anyhow::anyhow!("unknown puzzle {}-{}", day, puzzle)),
     }
