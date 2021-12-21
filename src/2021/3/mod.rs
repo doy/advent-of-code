@@ -19,6 +19,8 @@ pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
 
 pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
     let mut oxygen: Vec<_> = lines.collect();
+    let mut co2 = oxygen.clone();
+
     for i in 0..oxygen[0].len() {
         if oxygen.len() == 1 {
             break;
@@ -37,7 +39,6 @@ pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
         oxygen = new_oxygen;
     }
 
-    let mut co2: Vec<_> = data_lines!()?.collect();
     for i in 0..co2[0].len() {
         if co2.len() == 1 {
             break;
