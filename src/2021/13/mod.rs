@@ -1,7 +1,4 @@
-#![allow(clippy::collapsible_else_if)]
-#![allow(clippy::comparison_chain)]
-
-use crate::util::grid::*;
+use crate::prelude::*;
 
 #[derive(Default)]
 pub struct Paper {
@@ -94,12 +91,10 @@ impl std::fmt::Display for Paper {
     }
 }
 
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<(Paper, Vec<(bool, usize)>)> {
+pub fn parse(fh: File) -> Result<(Paper, Vec<(bool, usize)>)> {
     let mut paper = Paper::default();
     let mut folds = vec![];
-    for line in crate::util::parse::lines(fh) {
+    for line in parse::lines(fh) {
         if line.is_empty() {
             continue;
         }
@@ -118,16 +113,12 @@ pub fn parse(
     Ok((paper, folds))
 }
 
-pub fn part1(
-    (mut paper, folds): (Paper, Vec<(bool, usize)>),
-) -> anyhow::Result<i64> {
+pub fn part1((mut paper, folds): (Paper, Vec<(bool, usize)>)) -> Result<i64> {
     paper.fold(folds[0].0, folds[0].1);
     Ok(paper.total())
 }
 
-pub fn part2(
-    (mut paper, folds): (Paper, Vec<(bool, usize)>),
-) -> anyhow::Result<i64> {
+pub fn part2((mut paper, folds): (Paper, Vec<(bool, usize)>)) -> Result<i64> {
     for fold in folds {
         paper.fold(fold.0, fold.1);
     }
@@ -139,11 +130,11 @@ pub fn part2(
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 13).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 13).unwrap()).unwrap()).unwrap(),
         678
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 13).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 13).unwrap()).unwrap()).unwrap(),
         95
     );
 }

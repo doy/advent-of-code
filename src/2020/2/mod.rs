@@ -1,5 +1,4 @@
-use anyhow::Context as _;
-use std::convert::TryInto as _;
+use crate::prelude::*;
 
 pub struct Line {
     c: char,
@@ -9,8 +8,8 @@ pub struct Line {
 }
 
 impl Line {
-    fn parse(line: &str) -> anyhow::Result<Self> {
-        let rx = regex::Regex::new(r"^([0-9]+)-([0-9]+) (.): (.*)$").unwrap();
+    fn parse(line: &str) -> Result<Self> {
+        let rx = Regex::new(r"^([0-9]+)-([0-9]+) (.): (.*)$").unwrap();
         let captures =
             rx.captures(line).context("line failed to match regex")?;
         let c = captures
@@ -51,18 +50,16 @@ impl Line {
     }
 }
 
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<impl Iterator<Item = Line>> {
-    Ok(crate::util::parse::lines(fh).map(|line| Line::parse(&line).unwrap()))
+pub fn parse(fh: File) -> Result<impl Iterator<Item = Line>> {
+    Ok(parse::lines(fh).map(|line| Line::parse(&line).unwrap()))
 }
 
-pub fn part1(lines: impl Iterator<Item = Line>) -> anyhow::Result<i64> {
+pub fn part1(lines: impl Iterator<Item = Line>) -> Result<i64> {
     let count = lines.filter(|l| l.valid_part_1()).count();
     Ok(count.try_into()?)
 }
 
-pub fn part2(lines: impl Iterator<Item = Line>) -> anyhow::Result<i64> {
+pub fn part2(lines: impl Iterator<Item = Line>) -> Result<i64> {
     let count = lines.filter(|l| l.valid_part_2()).count();
     Ok(count.try_into()?)
 }
@@ -70,11 +67,11 @@ pub fn part2(lines: impl Iterator<Item = Line>) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2020, 2).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2020, 2).unwrap()).unwrap()).unwrap(),
         638
     );
     assert_eq!(
-        part2(parse(crate::util::data(2020, 2).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2020, 2).unwrap()).unwrap()).unwrap(),
         699
     );
 }

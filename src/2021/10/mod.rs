@@ -1,10 +1,10 @@
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<impl Iterator<Item = String>> {
-    Ok(crate::util::parse::lines(fh))
+use crate::prelude::*;
+
+pub fn parse(fh: File) -> Result<impl Iterator<Item = String>> {
+    Ok(parse::lines(fh))
 }
 
-pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
+pub fn part1(lines: impl Iterator<Item = String>) -> Result<i64> {
     let mut total = 0;
     for line in lines {
         let mut open = vec![];
@@ -44,7 +44,7 @@ pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
     Ok(total)
 }
 
-pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
+pub fn part2(lines: impl Iterator<Item = String>) -> Result<i64> {
     let mut scores = vec![];
     for line in lines {
         let mut open = vec![];
@@ -99,11 +99,11 @@ pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 10).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 10).unwrap()).unwrap()).unwrap(),
         166191
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 10).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 10).unwrap()).unwrap()).unwrap(),
         1152088313
     );
 }

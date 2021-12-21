@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 struct BitIter {
     byte: u8,
     pos: u8,
@@ -113,7 +115,7 @@ impl Packet {
     }
 
     fn subpackets(&self) -> impl Iterator<Item = &Self> {
-        let mut to_return = std::collections::VecDeque::new();
+        let mut to_return = VecDeque::new();
         to_return.push_back(self);
         Subpackets { to_return }
     }
@@ -173,7 +175,7 @@ fn read_varnum(bits: &mut impl Iterator<Item = bool>) -> (u64, usize) {
 }
 
 struct Subpackets<'a> {
-    to_return: std::collections::VecDeque<&'a Packet>,
+    to_return: VecDeque<&'a Packet>,
 }
 
 impl<'a> Iterator for Subpackets<'a> {
@@ -193,8 +195,8 @@ impl<'a> Iterator for Subpackets<'a> {
     }
 }
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Packet> {
-    let line = crate::util::parse::lines(fh).next().unwrap();
+pub fn parse(fh: File) -> Result<Packet> {
+    let line = parse::lines(fh).next().unwrap();
     let mut bits = bits(line.as_bytes().chunks(2).map(|bs| {
         u8::from_str_radix(std::str::from_utf8(bs).unwrap(), 16).unwrap()
     }));
@@ -202,25 +204,25 @@ pub fn parse(fh: std::fs::File) -> anyhow::Result<Packet> {
     Ok(packet)
 }
 
-pub fn part1(packet: Packet) -> anyhow::Result<i64> {
+pub fn part1(packet: Packet) -> Result<i64> {
     Ok(packet
         .subpackets()
         .map(|packet| i64::from(packet.version))
         .sum())
 }
 
-pub fn part2(packet: Packet) -> anyhow::Result<i64> {
+pub fn part2(packet: Packet) -> Result<i64> {
     Ok(packet.eval())
 }
 
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 16).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 16).unwrap()).unwrap()).unwrap(),
         979
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 16).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 16).unwrap()).unwrap()).unwrap(),
         277110354175
     );
 }

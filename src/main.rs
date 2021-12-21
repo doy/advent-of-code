@@ -1,5 +1,6 @@
 #![allow(clippy::collapsible_if)]
 
+mod prelude;
 mod util;
 
 #[path = "2020/mod.rs"]

@@ -1,4 +1,4 @@
-use std::io::BufRead as _;
+use crate::prelude::*;
 
 #[derive(Debug)]
 struct Board {
@@ -57,7 +57,7 @@ pub struct Game {
 }
 
 impl Game {
-    fn parse<T: std::io::Read>(input: T) -> anyhow::Result<Self> {
+    fn parse<T: std::io::Read>(input: T) -> Result<Self> {
         let mut input = std::io::BufReader::new(input);
         let mut line = String::new();
         input.read_line(&mut line)?;
@@ -133,34 +133,34 @@ impl Game {
     }
 }
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Game> {
+pub fn parse(fh: File) -> Result<Game> {
     Game::parse(fh)
 }
 
-pub fn part1(game: Game) -> anyhow::Result<i64> {
+pub fn part1(game: Game) -> Result<i64> {
     if let Some((n, board)) = game.find_first_winner() {
         Ok((n as i64) * board.value())
     } else {
-        anyhow::bail!("couldn't find winner")
+        bail!("couldn't find winner")
     }
 }
 
-pub fn part2(game: Game) -> anyhow::Result<i64> {
+pub fn part2(game: Game) -> Result<i64> {
     if let Some((n, board)) = game.find_last_winner() {
         Ok((n as i64) * board.value())
     } else {
-        anyhow::bail!("couldn't find winner")
+        bail!("couldn't find winner")
     }
 }
 
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 4).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 4).unwrap()).unwrap()).unwrap(),
         2745
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 4).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 4).unwrap()).unwrap()).unwrap(),
         6594
     );
 }

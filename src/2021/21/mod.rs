@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 #[derive(Clone)]
 pub struct Game {
     p1_pos: i64,
@@ -164,8 +166,8 @@ impl Game {
     }
 }
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Game> {
-    let mut lines = crate::util::parse::lines(fh);
+pub fn parse(fh: File) -> Result<Game> {
+    let mut lines = parse::lines(fh);
     let p1 = lines
         .next()
         .unwrap()
@@ -183,7 +185,7 @@ pub fn parse(fh: std::fs::File) -> anyhow::Result<Game> {
     Ok(Game::new(p1, p2))
 }
 
-pub fn part1(mut game: Game) -> anyhow::Result<i64> {
+pub fn part1(mut game: Game) -> Result<i64> {
     let mut p1 = true;
     loop {
         if let Some(value) = game.value(1000) {
@@ -195,7 +197,7 @@ pub fn part1(mut game: Game) -> anyhow::Result<i64> {
     }
 }
 
-pub fn part2(game: Game) -> anyhow::Result<i64> {
+pub fn part2(game: Game) -> Result<i64> {
     let (p1, p2) = game.run_dirac(true);
     Ok(p1.max(p2))
 }
@@ -203,11 +205,11 @@ pub fn part2(game: Game) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 21).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 21).unwrap()).unwrap()).unwrap(),
         1004670
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 21).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 21).unwrap()).unwrap()).unwrap(),
         492043106122795
     );
 }

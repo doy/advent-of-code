@@ -1,7 +1,6 @@
-fn process(
-    polymer: &[u8],
-    rules: &std::collections::HashMap<Vec<u8>, u8>,
-) -> Vec<u8> {
+use crate::prelude::*;
+
+fn process(polymer: &[u8], rules: &HashMap<Vec<u8>, u8>) -> Vec<u8> {
     let mut insertions = vec![];
     for (i, elements) in polymer.windows(2).enumerate() {
         for (pattern, insert) in rules {
@@ -18,14 +17,12 @@ fn process(
 }
 
 #[allow(clippy::type_complexity)]
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<(Vec<u8>, std::collections::HashMap<Vec<u8>, u8>)> {
-    let mut lines = crate::util::parse::lines(fh);
+pub fn parse(fh: File) -> Result<(Vec<u8>, HashMap<Vec<u8>, u8>)> {
+    let mut lines = parse::lines(fh);
     let polymer = lines.next().unwrap();
     lines.next();
 
-    let mut rules = std::collections::HashMap::new();
+    let mut rules = HashMap::new();
     for line in lines {
         let rule: Vec<_> = line.split(" -> ").collect();
         rules.insert(rule[0].as_bytes().to_vec(), rule[1].as_bytes()[0]);
@@ -34,12 +31,12 @@ pub fn parse(
 }
 
 pub fn part1(
-    (mut polymer, rules): (Vec<u8>, std::collections::HashMap<Vec<u8>, u8>),
-) -> anyhow::Result<i64> {
+    (mut polymer, rules): (Vec<u8>, HashMap<Vec<u8>, u8>),
+) -> Result<i64> {
     for _ in 0..10 {
         polymer = process(&polymer, &rules);
     }
-    let mut elements = std::collections::HashMap::new();
+    let mut elements = HashMap::new();
     for element in polymer {
         let count = elements.entry(element).or_insert(0);
         *count += 1;
@@ -48,16 +45,16 @@ pub fn part1(
 }
 
 pub fn part2(
-    (polymer, rules): (Vec<u8>, std::collections::HashMap<Vec<u8>, u8>),
-) -> anyhow::Result<i64> {
-    let mut pairs = std::collections::HashMap::new();
+    (polymer, rules): (Vec<u8>, HashMap<Vec<u8>, u8>),
+) -> Result<i64> {
+    let mut pairs = HashMap::new();
     for pair in polymer.windows(2) {
         let count = pairs.entry([pair[0], pair[1]]).or_insert(0);
         *count += 1;
     }
 
     for _ in 0..40 {
-        let mut next = std::collections::HashMap::new();
+        let mut next = HashMap::new();
         for (pair, count) in &mut pairs {
             let insert = rules[&pair[..]];
             let new_pair1 = [pair[0], insert];
@@ -69,7 +66,7 @@ pub fn part2(
         }
         pairs = next;
     }
-    let mut elements = std::collections::HashMap::new();
+    let mut elements = HashMap::new();
     for (pair, count) in pairs {
         let element_count = elements.entry(pair[0]).or_insert(0);
         *element_count += count;
@@ -88,11 +85,11 @@ pub fn part2(
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 14).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 14).unwrap()).unwrap()).unwrap(),
         2874
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 14).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 14).unwrap()).unwrap()).unwrap(),
         5208377027195
     );
 }

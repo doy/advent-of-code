@@ -1,11 +1,10 @@
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Vec<i64>> {
-    Ok(
-        crate::util::parse::ints(crate::util::parse::split(fh, b','))
-            .collect(),
-    )
+use crate::prelude::*;
+
+pub fn parse(fh: File) -> Result<Vec<i64>> {
+    Ok(parse::ints(parse::split(fh, b',')).collect())
 }
 
-pub fn part1(crabs: Vec<i64>) -> anyhow::Result<i64> {
+pub fn part1(crabs: Vec<i64>) -> Result<i64> {
     Ok((0..=crabs.iter().copied().max().unwrap())
         .map(|start| {
             crabs.iter().copied().map(|crab| (crab - start).abs()).sum()
@@ -14,7 +13,7 @@ pub fn part1(crabs: Vec<i64>) -> anyhow::Result<i64> {
         .unwrap())
 }
 
-pub fn part2(crabs: Vec<i64>) -> anyhow::Result<i64> {
+pub fn part2(crabs: Vec<i64>) -> Result<i64> {
     Ok((0..=crabs.iter().copied().max().unwrap())
         .map(|start| {
             crabs
@@ -33,11 +32,11 @@ pub fn part2(crabs: Vec<i64>) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 7).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 7).unwrap()).unwrap()).unwrap(),
         333755
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 7).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 7).unwrap()).unwrap()).unwrap(),
         94017638
     );
 }

@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 #[allow(clippy::type_complexity)]
 const ORIENTATIONS: &[&dyn Fn(Point) -> Point] = &[
     &|p| Point::new(p.y, p.z, p.x),
@@ -111,10 +113,7 @@ impl Scanner {
         }
     }
 
-    fn matches(
-        &self,
-        other: &std::collections::HashSet<Point>,
-    ) -> Option<(usize, Point)> {
+    fn matches(&self, other: &HashSet<Point>) -> Option<(usize, Point)> {
         for (i, beacons) in self.each_orientation().enumerate() {
             let mut offsets = vec![];
             for beacon1 in beacons.clone() {
@@ -123,7 +122,7 @@ impl Scanner {
                 }
             }
             for offset in offsets {
-                let set1: std::collections::HashSet<_> =
+                let set1: HashSet<_> =
                     beacons.iter().map(|beacon| *beacon + offset).collect();
                 let matches = set1.intersection(other).count();
                 if matches == 0 {
@@ -178,13 +177,12 @@ impl Scan {
     }
 }
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Scan> {
-    Ok(Scan::parse(crate::util::parse::lines(fh)))
+pub fn parse(fh: File) -> Result<Scan> {
+    Ok(Scan::parse(parse::lines(fh)))
 }
 
-pub fn part1(scan: Scan) -> anyhow::Result<i64> {
-    let mut beacons: std::collections::HashSet<Point> =
-        std::collections::HashSet::new();
+pub fn part1(scan: Scan) -> Result<i64> {
+    let mut beacons: HashSet<Point> = HashSet::new();
     let mut skip = None;
     for (i, scanner1) in scan.scanners().iter().enumerate() {
         for (j, scanner2) in scan.scanners().iter().enumerate().skip(i + 1) {
@@ -229,9 +227,8 @@ pub fn part1(scan: Scan) -> anyhow::Result<i64> {
     Ok(beacons.len().try_into()?)
 }
 
-pub fn part2(scan: Scan) -> anyhow::Result<i64> {
-    let mut beacons: std::collections::HashSet<Point> =
-        std::collections::HashSet::new();
+pub fn part2(scan: Scan) -> Result<i64> {
+    let mut beacons: HashSet<Point> = HashSet::new();
     let mut skip = None;
     let mut offsets = vec![];
     for (i, scanner1) in scan.scanners().iter().enumerate() {
@@ -293,11 +290,11 @@ pub fn part2(scan: Scan) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 19).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 19).unwrap()).unwrap()).unwrap(),
         338
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 19).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 19).unwrap()).unwrap()).unwrap(),
         9862
     );
 }

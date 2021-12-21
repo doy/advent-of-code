@@ -1,4 +1,4 @@
-use crate::util::grid::*;
+use crate::prelude::*;
 
 pub struct Image {
     algorithm: Vec<bool>,
@@ -64,8 +64,8 @@ impl Image {
     }
 }
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Image> {
-    let mut lines = crate::util::parse::lines(fh);
+pub fn parse(fh: File) -> Result<Image> {
+    let mut lines = parse::lines(fh);
     let algorithm = lines.next().unwrap();
     let algorithm: Vec<_> = algorithm
         .as_bytes()
@@ -77,18 +77,18 @@ pub fn parse(fh: std::fs::File) -> anyhow::Result<Image> {
         })
         .collect();
     lines.next().unwrap();
-    let map = crate::util::parse::bool_grid(lines, b'#', b'.');
+    let map = parse::bool_grid(lines, b'#', b'.');
     Ok(Image::new(algorithm, map))
 }
 
-pub fn part1(mut image: Image) -> anyhow::Result<i64> {
+pub fn part1(mut image: Image) -> Result<i64> {
     for _ in 0..2 {
         image.enhance();
     }
     Ok(image.count_true())
 }
 
-pub fn part2(mut image: Image) -> anyhow::Result<i64> {
+pub fn part2(mut image: Image) -> Result<i64> {
     for _ in 0..50 {
         image.enhance();
     }
@@ -98,11 +98,11 @@ pub fn part2(mut image: Image) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 20).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 20).unwrap()).unwrap()).unwrap(),
         5306
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 20).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 20).unwrap()).unwrap()).unwrap(),
         17497
     );
 }

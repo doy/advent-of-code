@@ -1,11 +1,10 @@
-use anyhow::Context as _;
-use std::convert::TryInto as _;
+use crate::prelude::*;
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<impl Iterator<Item = i64>> {
-    Ok(crate::util::parse::lines(fh).map(|line| seat_id(&line).unwrap()))
+pub fn parse(fh: File) -> Result<impl Iterator<Item = i64>> {
+    Ok(parse::lines(fh).map(|line| seat_id(&line).unwrap()))
 }
 
-pub fn part1(ids: impl Iterator<Item = i64>) -> anyhow::Result<i64> {
+pub fn part1(ids: impl Iterator<Item = i64>) -> Result<i64> {
     let mut max = 0;
     for id in ids {
         if id > max {
@@ -15,7 +14,7 @@ pub fn part1(ids: impl Iterator<Item = i64>) -> anyhow::Result<i64> {
     Ok(max)
 }
 
-pub fn part2(ids: impl Iterator<Item = i64>) -> anyhow::Result<i64> {
+pub fn part2(ids: impl Iterator<Item = i64>) -> Result<i64> {
     let mut seats = vec![false; 1024];
     for id in ids {
         seats[id as usize] = true;
@@ -31,14 +30,14 @@ pub fn part2(ids: impl Iterator<Item = i64>) -> anyhow::Result<i64> {
         .context("failed to find free seat")?
         + first;
     if !seats[seat - 1] || seats[seat] || !seats[seat + 1] {
-        return Err(anyhow::anyhow!("invalid seat found"));
+        return Err(anyhow!("invalid seat found"));
     }
     Ok(seat.try_into()?)
 }
 
-fn seat_id(desc: &str) -> anyhow::Result<i64> {
+fn seat_id(desc: &str) -> Result<i64> {
     if desc.len() != 10 {
-        return Err(anyhow::anyhow!("invalid desc {}", desc));
+        return Err(anyhow!("invalid desc {}", desc));
     }
     let row_desc = &desc[0..7];
     let col_desc = &desc[7..10];
@@ -54,11 +53,11 @@ fn seat_id(desc: &str) -> anyhow::Result<i64> {
             'B' => {
                 min_row = mid + 1;
             }
-            _ => return Err(anyhow::anyhow!("invalid desc {}", desc)),
+            _ => return Err(anyhow!("invalid desc {}", desc)),
         }
     }
     if min_row != max_row {
-        return Err(anyhow::anyhow!("bug"));
+        return Err(anyhow!("bug"));
     }
     let row = min_row;
 
@@ -73,11 +72,11 @@ fn seat_id(desc: &str) -> anyhow::Result<i64> {
             'R' => {
                 min_col = mid + 1;
             }
-            _ => return Err(anyhow::anyhow!("invalid desc {}", desc)),
+            _ => return Err(anyhow!("invalid desc {}", desc)),
         }
     }
     if min_col != max_col {
-        return Err(anyhow::anyhow!("bug"));
+        return Err(anyhow!("bug"));
     }
     let col = min_col;
 
@@ -87,11 +86,11 @@ fn seat_id(desc: &str) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2020, 5).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2020, 5).unwrap()).unwrap()).unwrap(),
         978
     );
     assert_eq!(
-        part2(parse(crate::util::data(2020, 5).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2020, 5).unwrap()).unwrap()).unwrap(),
         727
     );
 }

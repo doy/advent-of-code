@@ -1,4 +1,4 @@
-#![allow(clippy::collapsible_else_if)]
+use crate::prelude::*;
 
 #[derive(Clone)]
 pub enum Number {
@@ -210,18 +210,16 @@ impl std::fmt::Display for Number {
     }
 }
 
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<impl Iterator<Item = Number>> {
-    Ok(crate::util::parse::lines(fh).map(|line| Number::parse(&line)))
+pub fn parse(fh: File) -> Result<impl Iterator<Item = Number>> {
+    Ok(parse::lines(fh).map(|line| Number::parse(&line)))
 }
 
-pub fn part1(numbers: impl Iterator<Item = Number>) -> anyhow::Result<i64> {
+pub fn part1(numbers: impl Iterator<Item = Number>) -> Result<i64> {
     let sum: Number = numbers.sum();
     Ok(sum.magnitude())
 }
 
-pub fn part2(numbers: impl Iterator<Item = Number>) -> anyhow::Result<i64> {
+pub fn part2(numbers: impl Iterator<Item = Number>) -> Result<i64> {
     let nums: Vec<_> = numbers.collect();
     let mut max = 0;
     for (i, n1) in nums.iter().enumerate() {
@@ -241,11 +239,11 @@ pub fn part2(numbers: impl Iterator<Item = Number>) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 18).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 18).unwrap()).unwrap()).unwrap(),
         3806
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 18).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 18).unwrap()).unwrap()).unwrap(),
         4727
     );
 }

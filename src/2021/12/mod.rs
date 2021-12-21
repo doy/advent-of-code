@@ -1,9 +1,11 @@
+use crate::prelude::*;
+
 fn small(s: &str) -> bool {
     s.bytes().all(|c| c.is_ascii_lowercase())
 }
 
 fn single_small<'a>(path: impl Iterator<Item = &'a str>) -> bool {
-    let mut set = std::collections::HashSet::new();
+    let mut set = HashSet::new();
     for s in path {
         if !small(s) {
             continue;
@@ -17,10 +19,7 @@ fn single_small<'a>(path: impl Iterator<Item = &'a str>) -> bool {
 }
 
 fn paths_from1<'a>(
-    graph: &'a std::collections::HashMap<
-        String,
-        std::collections::HashSet<String>,
-    >,
+    graph: &'a HashMap<String, HashSet<String>>,
     path: &mut Vec<&'a str>,
 ) -> i64 {
     let mut total = 0;
@@ -40,10 +39,7 @@ fn paths_from1<'a>(
 }
 
 fn paths_from2<'a>(
-    graph: &'a std::collections::HashMap<
-        String,
-        std::collections::HashSet<String>,
-    >,
+    graph: &'a HashMap<String, HashSet<String>>,
     path: &mut Vec<&'a str>,
 ) -> i64 {
     let mut total = 0;
@@ -68,53 +64,37 @@ fn paths_from2<'a>(
     total
 }
 
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<
-    std::collections::HashMap<String, std::collections::HashSet<String>>,
-> {
-    let mut graph = std::collections::HashMap::new();
-    for line in crate::util::parse::lines(fh) {
+pub fn parse(fh: File) -> Result<HashMap<String, HashSet<String>>> {
+    let mut graph = HashMap::new();
+    for line in parse::lines(fh) {
         let nodes: Vec<String> =
             line.split('-').map(|s| s.to_string()).collect();
-        let edges = graph
-            .entry(nodes[0].clone())
-            .or_insert_with(std::collections::HashSet::new);
+        let edges =
+            graph.entry(nodes[0].clone()).or_insert_with(HashSet::new);
         edges.insert(nodes[1].clone());
-        let edges = graph
-            .entry(nodes[1].clone())
-            .or_insert_with(std::collections::HashSet::new);
+        let edges =
+            graph.entry(nodes[1].clone()).or_insert_with(HashSet::new);
         edges.insert(nodes[0].clone());
     }
     Ok(graph)
 }
 
-pub fn part1(
-    graph: std::collections::HashMap<
-        String,
-        std::collections::HashSet<String>,
-    >,
-) -> anyhow::Result<i64> {
+pub fn part1(graph: HashMap<String, HashSet<String>>) -> Result<i64> {
     Ok(paths_from1(&graph, &mut vec!["start"]))
 }
 
-pub fn part2(
-    graph: std::collections::HashMap<
-        String,
-        std::collections::HashSet<String>,
-    >,
-) -> anyhow::Result<i64> {
+pub fn part2(graph: HashMap<String, HashSet<String>>) -> Result<i64> {
     Ok(paths_from2(&graph, &mut vec!["start"]))
 }
 
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 12).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 12).unwrap()).unwrap()).unwrap(),
         3230
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 12).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 12).unwrap()).unwrap()).unwrap(),
         83475
     );
 }

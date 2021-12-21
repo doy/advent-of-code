@@ -1,4 +1,4 @@
-use crate::util::grid::*;
+use crate::prelude::*;
 
 #[derive(Default, Clone)]
 struct Map {
@@ -72,11 +72,9 @@ impl Map {
     }
 }
 
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<impl Iterator<Item = Vec<usize>>> {
-    let rx = regex::Regex::new("^(\\d+),(\\d+) -> (\\d+),(\\d+)$")?;
-    Ok(crate::util::parse::lines(fh).map(move |line| {
+pub fn parse(fh: File) -> Result<impl Iterator<Item = Vec<usize>>> {
+    let rx = Regex::new("^(\\d+),(\\d+) -> (\\d+),(\\d+)$")?;
+    Ok(parse::lines(fh).map(move |line| {
         rx.captures(&line)
             .unwrap()
             .iter()
@@ -87,9 +85,7 @@ pub fn parse(
     }))
 }
 
-pub fn part1(
-    coords: impl Iterator<Item = Vec<usize>>,
-) -> anyhow::Result<i64> {
+pub fn part1(coords: impl Iterator<Item = Vec<usize>>) -> Result<i64> {
     let mut map = Map::default();
     for nums in coords {
         let _ = map.mark_horizontal(nums[0], nums[1], nums[2], nums[3])
@@ -98,9 +94,7 @@ pub fn part1(
     Ok(map.count_overlapping().try_into()?)
 }
 
-pub fn part2(
-    coords: impl Iterator<Item = Vec<usize>>,
-) -> anyhow::Result<i64> {
+pub fn part2(coords: impl Iterator<Item = Vec<usize>>) -> Result<i64> {
     let mut map = Map::default();
     for nums in coords {
         let _ = map.mark_horizontal(nums[0], nums[1], nums[2], nums[3])
@@ -114,11 +108,11 @@ pub fn part2(
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 5).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 5).unwrap()).unwrap()).unwrap(),
         6311
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 5).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 5).unwrap()).unwrap()).unwrap(),
         19929
     );
 }

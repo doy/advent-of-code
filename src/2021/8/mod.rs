@@ -1,7 +1,9 @@
+use crate::prelude::*;
+
 pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<impl Iterator<Item = (Vec<String>, Vec<String>)>> {
-    Ok(crate::util::parse::lines(fh).map(|line| {
+    fh: File,
+) -> Result<impl Iterator<Item = (Vec<String>, Vec<String>)>> {
+    Ok(parse::lines(fh).map(|line| {
         let parts: Vec<_> = line.split(" | ").collect();
         (
             parts[0].split(' ').map(str::to_string).collect(),
@@ -12,7 +14,7 @@ pub fn parse(
 
 pub fn part1(
     lines: impl Iterator<Item = (Vec<String>, Vec<String>)>,
-) -> anyhow::Result<i64> {
+) -> Result<i64> {
     let mut count = 0i64;
     for (_, output) in lines {
         let line_count: i64 = output
@@ -35,31 +37,31 @@ pub fn part1(
 //  66
 pub fn part2(
     lines: impl Iterator<Item = (Vec<String>, Vec<String>)>,
-) -> anyhow::Result<i64> {
+) -> Result<i64> {
     let mut total = 0;
     for (numbers, output) in lines {
         let mut segments = ['x'; 7];
 
         // zero: 6
         let one = numbers.iter().find(|s| s.len() == 2).unwrap();
-        let one: std::collections::HashSet<char> = one.chars().collect();
+        let one: HashSet<char> = one.chars().collect();
         // two: 5
         // three: 5
         let four = numbers.iter().find(|s| s.len() == 4).unwrap();
-        let four: std::collections::HashSet<char> = four.chars().collect();
+        let four: HashSet<char> = four.chars().collect();
         // five: 5
         // six: 6
         let seven = numbers.iter().find(|s| s.len() == 3).unwrap();
-        let seven: std::collections::HashSet<char> = seven.chars().collect();
+        let seven: HashSet<char> = seven.chars().collect();
         let eight = numbers.iter().find(|s| s.len() == 7).unwrap();
-        let eight: std::collections::HashSet<char> = eight.chars().collect();
+        let eight: HashSet<char> = eight.chars().collect();
         // nine: 6
 
         let mut length_five: Vec<_> = numbers
             .iter()
             .filter_map(|s| {
                 if s.len() == 5 {
-                    Some(s.chars().collect::<std::collections::HashSet<_>>())
+                    Some(s.chars().collect::<HashSet<_>>())
                 } else {
                     None
                 }
@@ -69,7 +71,7 @@ pub fn part2(
             .iter()
             .filter_map(|s| {
                 if s.len() == 6 {
-                    Some(s.chars().collect::<std::collections::HashSet<_>>())
+                    Some(s.chars().collect::<HashSet<_>>())
                 } else {
                     None
                 }
@@ -162,7 +164,7 @@ pub fn part2(
 
         let value: Vec<_> = output
             .iter()
-            .map(|s| s.chars().collect::<std::collections::HashSet<_>>())
+            .map(|s| s.chars().collect::<HashSet<_>>())
             .map(|set| numbers.iter().position(|num| &set == num).unwrap())
             .collect();
         let value =
@@ -175,11 +177,11 @@ pub fn part2(
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 8).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 8).unwrap()).unwrap()).unwrap(),
         355
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 8).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 8).unwrap()).unwrap()).unwrap(),
         983030
     );
 }

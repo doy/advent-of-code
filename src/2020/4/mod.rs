@@ -1,17 +1,15 @@
-use anyhow::Context as _;
+use crate::prelude::*;
 
 const REQUIRED_KEYS: &[&str] =
     &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<Vec<std::collections::HashMap<String, String>>> {
+pub fn parse(fh: File) -> Result<Vec<HashMap<String, String>>> {
     let mut res = vec![];
-    let mut cur = std::collections::HashMap::new();
-    for line in crate::util::parse::lines(fh) {
+    let mut cur = HashMap::new();
+    for line in parse::lines(fh) {
         if line.is_empty() {
             res.push(cur);
-            cur = std::collections::HashMap::new();
+            cur = HashMap::new();
             continue;
         }
 
@@ -32,9 +30,7 @@ pub fn parse(
     Ok(res)
 }
 
-pub fn part1(
-    passports: Vec<std::collections::HashMap<String, String>>,
-) -> anyhow::Result<i64> {
+pub fn part1(passports: Vec<HashMap<String, String>>) -> Result<i64> {
     let mut valid = 0;
     for passport in passports {
         let mut cur_valid = true;
@@ -51,9 +47,7 @@ pub fn part1(
     Ok(valid)
 }
 
-pub fn part2(
-    passports: Vec<std::collections::HashMap<String, String>>,
-) -> anyhow::Result<i64> {
+pub fn part2(passports: Vec<HashMap<String, String>>) -> Result<i64> {
     let mut valid = 0;
     for passport in passports {
         let mut cur_valid = true;
@@ -78,7 +72,7 @@ pub fn part2(
     Ok(valid)
 }
 
-fn validate(key: &str, val: &str) -> anyhow::Result<bool> {
+fn validate(key: &str, val: &str) -> Result<bool> {
     match key {
         "byr" => match val.parse::<i32>() {
             Ok(year) => Ok((1920..=2002).contains(&year)),
@@ -127,18 +121,18 @@ fn validate(key: &str, val: &str) -> anyhow::Result<bool> {
                 == val
                     .matches(|c: char| c.is_ascii_digit())
                     .collect::<String>()),
-        _ => Err(anyhow::anyhow!("invalid key found: {}", key)),
+        _ => Err(anyhow!("invalid key found: {}", key)),
     }
 }
 
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2020, 4).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2020, 4).unwrap()).unwrap()).unwrap(),
         247
     );
     assert_eq!(
-        part2(parse(crate::util::data(2020, 4).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2020, 4).unwrap()).unwrap()).unwrap(),
         145
     );
 }

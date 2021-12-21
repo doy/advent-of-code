@@ -1,10 +1,10 @@
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<impl Iterator<Item = String>> {
-    Ok(crate::util::parse::lines(fh))
+use crate::prelude::*;
+
+pub fn parse(fh: File) -> Result<impl Iterator<Item = String>> {
+    Ok(parse::lines(fh))
 }
 
-pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
+pub fn part1(lines: impl Iterator<Item = String>) -> Result<i64> {
     let (total_lines, by_pos) = pos_counts(lines)?;
     let gamma: String = by_pos
         .iter()
@@ -17,7 +17,7 @@ pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
     Ok(bin_str_to_int(&gamma) * bin_str_to_int(&epsilon))
 }
 
-pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
+pub fn part2(lines: impl Iterator<Item = String>) -> Result<i64> {
     let mut oxygen: Vec<_> = lines.collect();
     let mut co2 = oxygen.clone();
 
@@ -61,8 +61,8 @@ pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
 }
 
 fn pos_counts(
-    lines: impl std::iter::Iterator<Item = String>,
-) -> anyhow::Result<(i64, Vec<i64>)> {
+    lines: impl Iterator<Item = String>,
+) -> Result<(i64, Vec<i64>)> {
     let mut by_pos = vec![];
     let mut total_lines = 0;
     for line in lines {
@@ -92,11 +92,11 @@ fn bin_str_to_int(s: &str) -> i64 {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 3).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 3).unwrap()).unwrap()).unwrap(),
         3009600
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 3).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 3).unwrap()).unwrap()).unwrap(),
         6940518
     );
 }

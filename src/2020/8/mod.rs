@@ -1,4 +1,4 @@
-use anyhow::Context as _;
+use crate::prelude::*;
 
 #[derive(Clone, Copy)]
 enum OpType {
@@ -8,14 +8,14 @@ enum OpType {
 }
 
 impl std::str::FromStr for OpType {
-    type Err = anyhow::Error;
+    type Err = Error;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         Ok(match s {
             "nop" => Self::Nop,
             "acc" => Self::Acc,
             "jmp" => Self::Jmp,
-            _ => return Err(anyhow::anyhow!("invalid optype {}", s)),
+            _ => return Err(anyhow!("invalid optype {}", s)),
         })
     }
 }
@@ -27,10 +27,10 @@ pub struct Op {
 }
 
 impl std::str::FromStr for Op {
-    type Err = anyhow::Error;
+    type Err = Error;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        let rx = regex::Regex::new(r"^([^ ]*) ((?:-|\+)[0-9]+)$").unwrap();
+        let rx = Regex::new(r"^([^ ]*) ((?:-|\+)[0-9]+)$").unwrap();
         let captures = rx.captures(s).context("failed to parse line")?;
         let ty = captures.get(1).unwrap().as_str().parse()?;
         let arg = captures
@@ -43,21 +43,19 @@ impl std::str::FromStr for Op {
     }
 }
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Vec<Op>> {
-    crate::util::parse::lines(fh)
-        .map(|line| line.parse())
-        .collect()
+pub fn parse(fh: File) -> Result<Vec<Op>> {
+    parse::lines(fh).map(|line| line.parse()).collect()
 }
 
-pub fn part1(opcodes: Vec<Op>) -> anyhow::Result<i64> {
+pub fn part1(opcodes: Vec<Op>) -> Result<i64> {
     let (acc, success) = run(&opcodes)?;
     if success {
-        return Err(anyhow::anyhow!("unexpectedly succeeded"));
+        return Err(anyhow!("unexpectedly succeeded"));
     }
     Ok(acc)
 }
 
-pub fn part2(opcodes: Vec<Op>) -> anyhow::Result<i64> {
+pub fn part2(opcodes: Vec<Op>) -> Result<i64> {
     for i in 0..opcodes.len() {
         match opcodes[i].ty {
             OpType::Nop => {
@@ -79,10 +77,10 @@ pub fn part2(opcodes: Vec<Op>) -> anyhow::Result<i64> {
             }
         }
     }
-    Err(anyhow::anyhow!("failed to find corrupted opcode"))
+    Err(anyhow!("failed to find corrupted opcode"))
 }
 
-fn run(opcodes: &[Op]) -> anyhow::Result<(i64, bool)> {
+fn run(opcodes: &[Op]) -> Result<(i64, bool)> {
     let mut seen = vec![false; opcodes.len()];
     let mut pc = 0;
     let mut acc = 0;
@@ -108,12 +106,12 @@ fn run(opcodes: &[Op]) -> anyhow::Result<(i64, bool)> {
                     if arg as usize > opcodes.len()
                         || pc > opcodes.len() - arg as usize
                     {
-                        return Err(anyhow::anyhow!("invalid jmp"));
+                        return Err(anyhow!("invalid jmp"));
                     }
                     pc += arg as usize;
                 } else {
                     if pc < (-arg as usize) {
-                        return Err(anyhow::anyhow!("invalid jmp"));
+                        return Err(anyhow!("invalid jmp"));
                     }
                     pc -= -arg as usize;
                 }
@@ -125,11 +123,11 @@ fn run(opcodes: &[Op]) -> anyhow::Result<(i64, bool)> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2020, 8).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2020, 8).unwrap()).unwrap()).unwrap(),
         1928
     );
     assert_eq!(
-        part2(parse(crate::util::data(2020, 8).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2020, 8).unwrap()).unwrap()).unwrap(),
         1319
     );
 }

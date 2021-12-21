@@ -1,4 +1,4 @@
-use crate::util::grid::*;
+use crate::prelude::*;
 
 pub struct Map {
     grid: Grid<bool>,
@@ -13,7 +13,7 @@ impl Map {
         self.grid.rows().0
     }
 
-    fn tree_at(&self, row: Row, col: Col) -> anyhow::Result<bool> {
+    fn tree_at(&self, row: Row, col: Col) -> Result<bool> {
         // unwrap safe because cycle().nth() can never fail
         Ok(*self.grid[row].iter().cycle().nth(col.0).unwrap())
     }
@@ -22,7 +22,7 @@ impl Map {
         &self,
         row_incr: usize,
         col_incr: usize,
-    ) -> anyhow::Result<i64> {
+    ) -> Result<i64> {
         let mut trees = 0;
         for r in 0..self.rows() / row_incr {
             let row = r * row_incr;
@@ -35,19 +35,15 @@ impl Map {
     }
 }
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Map> {
-    Ok(Map::new(crate::util::parse::bool_grid(
-        crate::util::parse::lines(fh),
-        b'#',
-        b'.',
-    )))
+pub fn parse(fh: File) -> Result<Map> {
+    Ok(Map::new(parse::bool_grid(parse::lines(fh), b'#', b'.')))
 }
 
-pub fn part1(map: Map) -> anyhow::Result<i64> {
+pub fn part1(map: Map) -> Result<i64> {
     map.trees_for_slope(1, 3)
 }
 
-pub fn part2(map: Map) -> anyhow::Result<i64> {
+pub fn part2(map: Map) -> Result<i64> {
     Ok(map.trees_for_slope(1, 1)?
         * map.trees_for_slope(1, 3)?
         * map.trees_for_slope(1, 5)?
@@ -58,11 +54,11 @@ pub fn part2(map: Map) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2020, 3).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2020, 3).unwrap()).unwrap()).unwrap(),
         292
     );
     assert_eq!(
-        part2(parse(crate::util::data(2020, 3).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2020, 3).unwrap()).unwrap()).unwrap(),
         9354744432
     );
 }

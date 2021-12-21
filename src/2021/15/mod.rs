@@ -1,4 +1,4 @@
-use crate::util::grid::*;
+use crate::prelude::*;
 
 fn dijkstra(map: &Grid<u8>) -> i64 {
     let mut to_visit: priority_queue::PriorityQueue<_, _> = (0..map.rows().0)
@@ -40,17 +40,15 @@ fn dijkstra(map: &Grid<u8>) -> i64 {
     unreachable!()
 }
 
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Grid<u8>> {
-    Ok(crate::util::parse::digit_grid(crate::util::parse::lines(
-        fh,
-    )))
+pub fn parse(fh: File) -> Result<Grid<u8>> {
+    Ok(parse::digit_grid(parse::lines(fh)))
 }
 
-pub fn part1(grid: Grid<u8>) -> anyhow::Result<i64> {
+pub fn part1(grid: Grid<u8>) -> Result<i64> {
     Ok(dijkstra(&grid))
 }
 
-pub fn part2(grid: Grid<u8>) -> anyhow::Result<i64> {
+pub fn part2(grid: Grid<u8>) -> Result<i64> {
     let mut large_grid = Grid::default();
     large_grid.grow(Row(grid.rows().0 * 5), Col(grid.cols().0 * 5));
     for lrow in 0..5 {
@@ -71,11 +69,11 @@ pub fn part2(grid: Grid<u8>) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 15).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 15).unwrap()).unwrap()).unwrap(),
         441
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 15).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 15).unwrap()).unwrap()).unwrap(),
         2849
     );
 }

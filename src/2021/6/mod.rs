@@ -1,11 +1,10 @@
-pub fn parse(fh: std::fs::File) -> anyhow::Result<Vec<i64>> {
-    Ok(
-        crate::util::parse::ints(crate::util::parse::split(fh, b','))
-            .collect(),
-    )
+use crate::prelude::*;
+
+pub fn parse(fh: File) -> Result<Vec<i64>> {
+    Ok(parse::ints(parse::split(fh, b',')).collect())
 }
 
-pub fn part1(mut fishes: Vec<i64>) -> anyhow::Result<i64> {
+pub fn part1(mut fishes: Vec<i64>) -> Result<i64> {
     for _ in 0..80 {
         let mut new = 0;
         for fish in fishes.iter_mut() {
@@ -21,8 +20,8 @@ pub fn part1(mut fishes: Vec<i64>) -> anyhow::Result<i64> {
     Ok(fishes.len().try_into()?)
 }
 
-pub fn part2(fishes: Vec<i64>) -> anyhow::Result<i64> {
-    let mut by_age = std::collections::VecDeque::new();
+pub fn part2(fishes: Vec<i64>) -> Result<i64> {
+    let mut by_age = VecDeque::new();
     by_age.resize(9, 0);
     for fish in fishes {
         by_age[fish as usize] += 1;
@@ -38,11 +37,11 @@ pub fn part2(fishes: Vec<i64>) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 6).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 6).unwrap()).unwrap()).unwrap(),
         379114
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 6).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 6).unwrap()).unwrap()).unwrap(),
         1702631502303
     );
 }

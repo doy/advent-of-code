@@ -1,16 +1,16 @@
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<impl Iterator<Item = String>> {
-    Ok(crate::util::parse::lines(fh))
+use crate::prelude::*;
+
+pub fn parse(fh: File) -> Result<impl Iterator<Item = String>> {
+    Ok(parse::lines(fh))
 }
 
-pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
-    let mut yes = std::collections::HashSet::new();
+pub fn part1(lines: impl Iterator<Item = String>) -> Result<i64> {
+    let mut yes = HashSet::new();
     let mut total = 0;
     for line in lines {
         if line.is_empty() {
             total += yes.len() as i64;
-            yes = std::collections::HashSet::new();
+            yes = HashSet::new();
         } else {
             for c in line.chars() {
                 yes.insert(c);
@@ -21,8 +21,8 @@ pub fn part1(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
     Ok(total)
 }
 
-pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
-    let mut yes = std::collections::HashSet::new();
+pub fn part2(lines: impl Iterator<Item = String>) -> Result<i64> {
+    let mut yes = HashSet::new();
     for c in 'a'..='z' {
         yes.insert(c);
     }
@@ -30,7 +30,7 @@ pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
     for line in lines {
         if line.is_empty() {
             total += yes.len() as i64;
-            yes = std::collections::HashSet::new();
+            yes = HashSet::new();
             for c in 'a'..='z' {
                 yes.insert(c);
             }
@@ -49,11 +49,11 @@ pub fn part2(lines: impl Iterator<Item = String>) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2020, 6).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2020, 6).unwrap()).unwrap()).unwrap(),
         6930
     );
     assert_eq!(
-        part2(parse(crate::util::data(2020, 6).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2020, 6).unwrap()).unwrap()).unwrap(),
         3585
     );
 }

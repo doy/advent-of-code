@@ -1,13 +1,13 @@
+use crate::prelude::*;
+
 pub enum Command {
     Forward(i64),
     Down(i64),
     Up(i64),
 }
 
-pub fn parse(
-    fh: std::fs::File,
-) -> anyhow::Result<impl Iterator<Item = Command>> {
-    Ok(crate::util::parse::lines(fh).map(|line| {
+pub fn parse(fh: File) -> Result<impl Iterator<Item = Command>> {
+    Ok(parse::lines(fh).map(|line| {
         if let Some(n) = line.strip_prefix("forward ") {
             Command::Forward(n.parse().unwrap())
         } else if let Some(n) = line.strip_prefix("down ") {
@@ -20,7 +20,7 @@ pub fn parse(
     }))
 }
 
-pub fn part1(commands: impl Iterator<Item = Command>) -> anyhow::Result<i64> {
+pub fn part1(commands: impl Iterator<Item = Command>) -> Result<i64> {
     let mut horizontal = 0;
     let mut vertical = 0;
     for command in commands {
@@ -39,7 +39,7 @@ pub fn part1(commands: impl Iterator<Item = Command>) -> anyhow::Result<i64> {
     Ok(horizontal * vertical)
 }
 
-pub fn part2(commands: impl Iterator<Item = Command>) -> anyhow::Result<i64> {
+pub fn part2(commands: impl Iterator<Item = Command>) -> Result<i64> {
     let mut aim = 0;
     let mut horizontal = 0;
     let mut vertical = 0;
@@ -63,11 +63,11 @@ pub fn part2(commands: impl Iterator<Item = Command>) -> anyhow::Result<i64> {
 #[test]
 fn test() {
     assert_eq!(
-        part1(parse(crate::util::data(2021, 2).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2021, 2).unwrap()).unwrap()).unwrap(),
         1694130
     );
     assert_eq!(
-        part2(parse(crate::util::data(2021, 2).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2021, 2).unwrap()).unwrap()).unwrap(),
         1698850445
     );
 }
