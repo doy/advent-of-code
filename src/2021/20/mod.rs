@@ -94,3 +94,15 @@ pub fn part2(mut image: Image) -> anyhow::Result<i64> {
     }
     Ok(image.count_true())
 }
+
+#[test]
+fn test() {
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 20).unwrap()).unwrap()).unwrap(),
+        5306
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 20).unwrap()).unwrap()).unwrap(),
+        17497
+    );
+}

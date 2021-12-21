@@ -199,3 +199,15 @@ pub fn part2(game: Game) -> anyhow::Result<i64> {
     let (p1, p2) = game.run_dirac(true);
     Ok(p1.max(p2))
 }
+
+#[test]
+fn test() {
+    assert_eq!(
+        part1(parse(crate::util::data(2021, 21).unwrap()).unwrap()).unwrap(),
+        1004670
+    );
+    assert_eq!(
+        part2(parse(crate::util::data(2021, 21).unwrap()).unwrap()).unwrap(),
+        492043106122795
+    );
+}
