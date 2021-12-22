@@ -34,6 +34,84 @@ impl Range3D {
             && self.y.contains(&point.y)
             && self.z.contains(&point.z)
     }
+
+    fn intersects(&self, other: &Self) -> bool {
+        (self.x.contains(other.x.start())
+            || self.x.contains(other.x.end())
+            || other.x.contains(self.x.start())
+            || other.x.contains(self.x.end()))
+            && (self.y.contains(other.y.start())
+                || self.y.contains(other.y.end())
+                || other.y.contains(self.y.start())
+                || other.y.contains(self.y.end()))
+            && (self.z.contains(other.z.start())
+                || self.z.contains(other.z.end())
+                || other.z.contains(self.z.start())
+                || other.z.contains(self.z.end()))
+    }
+
+    fn intersected_ranges(&self, other: &Self) -> Vec<Self> {
+        let mut ret = vec![];
+        let mut found = false;
+        for x in Self::split_dimension(&self.x, &other.x) {
+            for y in Self::split_dimension(&self.y, &other.y) {
+                for z in Self::split_dimension(&self.z, &other.z) {
+                    let new = Self::new(x.clone(), y.clone(), z.clone());
+                    if other.intersects(&new) {
+                        if found {
+                            panic!("bug 1");
+                        }
+                        found = true;
+                    } else {
+                        ret.push(new);
+                    }
+                }
+            }
+        }
+        if !found {
+            panic!("bug 2");
+        }
+        ret
+    }
+
+    fn split_dimension(
+        to_split: &std::ops::RangeInclusive<i64>,
+        split_by: &std::ops::RangeInclusive<i64>,
+    ) -> Vec<std::ops::RangeInclusive<i64>> {
+        if split_by.start() <= to_split.start() {
+            if split_by.end() < to_split.start() {
+                panic!("bug 3");
+            } else if split_by.end() >= to_split.end() {
+                vec![to_split.clone()]
+            } else {
+                vec![
+                    *to_split.start()..=*split_by.end(),
+                    (*split_by.end() + 1)..=*to_split.end(),
+                ]
+            }
+        } else if split_by.start() > to_split.end() {
+            panic!("bug 4");
+        } else {
+            if split_by.end() >= to_split.end() {
+                vec![
+                    *to_split.start()..=(*split_by.start() - 1),
+                    *split_by.start()..=*to_split.end(),
+                ]
+            } else {
+                vec![
+                    *to_split.start()..=(*split_by.start() - 1),
+                    split_by.clone(),
+                    (*split_by.end() + 1)..=*to_split.end(),
+                ]
+            }
+        }
+    }
+
+    fn size(&self) -> i64 {
+        (self.x.end() - self.x.start() + 1)
+            * (self.y.end() - self.y.start() + 1)
+            * (self.z.end() - self.z.start() + 1)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -109,34 +187,20 @@ pub fn part1(reactor: Reactor) -> Result<i64> {
 }
 
 pub fn part2(reactor: Reactor) -> Result<i64> {
-    let mut x = vec![];
-    let mut y = vec![];
-    let mut z = vec![];
-    for rule in &reactor.rules {
-        x.push(*rule.range.x.start());
-        x.push(rule.range.x.end() + 1);
-        y.push(*rule.range.y.start());
-        y.push(rule.range.y.end() + 1);
-        z.push(*rule.range.z.start());
-        z.push(rule.range.z.end() + 1);
-    }
-    x.sort_unstable();
-    y.sort_unstable();
-    z.sort_unstable();
-
-    let mut total = 0;
-    for i in 0..(x.len() - 1) {
-        for j in 0..(y.len() - 1) {
-            for k in 0..(z.len() - 1) {
-                if reactor.on(&Point3D::new(x[i], y[j], z[k])) {
-                    total += (x[i + 1] - x[i])
-                        * (y[j + 1] - y[j])
-                        * (z[k + 1] - z[k])
-                }
-            }
+    let mut on: HashSet<Range3D> = HashSet::new();
+    for rule in reactor.rules {
+        let (intersected, nonintersected) = on
+            .into_iter()
+            .partition(|range| rule.range.intersects(range));
+        on = nonintersected;
+        for range in intersected {
+            on.extend(range.intersected_ranges(&rule.range));
+        }
+        if rule.on {
+            on.insert(rule.range);
         }
     }
-    Ok(total)
+    Ok(on.iter().map(|range| range.size()).sum())
 }
 
 #[test]
