@@ -144,10 +144,10 @@ pub fn part2(reactor: Reactor) -> Result<i64> {
 fn test() {
     assert_eq!(
         part1(parse(parse::data(2021, 22).unwrap()).unwrap()).unwrap(),
-        0
+        570915
     );
     assert_eq!(
         part2(parse(parse::data(2021, 22).unwrap()).unwrap()).unwrap(),
-        0
+        1268313839428137
     );
 }
