@@ -8,7 +8,7 @@ version = "0.1.0"
 dependencies = [
  "ahash",
  "anyhow",
- "lazy_static",
+ "once_cell",
  "paw",
  "priority-queue",
  "regex",
