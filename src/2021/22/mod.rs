@@ -126,7 +126,6 @@ pub fn part2(reactor: Reactor) -> Result<i64> {
 
     let mut total = 0;
     for i in 0..(x.len() - 1) {
-        eprintln!("{}", i);
         for j in 0..(y.len() - 1) {
             for k in 0..(z.len() - 1) {
                 if reactor.on(&Point3D::new(x[i], y[j], z[k])) {
