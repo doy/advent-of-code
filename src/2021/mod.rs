@@ -42,6 +42,8 @@ mod day19;
 mod day20;
 #[path = "21/mod.rs"]
 mod day21;
+#[path = "22/mod.rs"]
+mod day22;
 // NEXT MOD
 
 pub fn run(day: u8, puzzle: u8) -> Result<i64> {
@@ -88,6 +90,8 @@ pub fn run(day: u8, puzzle: u8) -> Result<i64> {
         (20, 2) => day20::part2(day20::parse(parse::data(2021, 20)?)?),
         (21, 1) => day21::part1(day21::parse(parse::data(2021, 21)?)?),
         (21, 2) => day21::part2(day21::parse(parse::data(2021, 21)?)?),
+        (22, 1) => day22::part1(day22::parse(parse::data(2021, 22)?)?),
+        (22, 2) => day22::part2(day22::parse(parse::data(2021, 22)?)?),
         // NEXT PART
         _ => Err(anyhow!("unknown puzzle {}-{}", day, puzzle)),
     }
