@@ -1753,10 +1753,10 @@ pub fn part2(burrow: Burrow) -> Result<i64> {
 fn test() {
     assert_eq!(
         part1(parse(parse::data(2021, 23).unwrap()).unwrap()).unwrap(),
-        0
+        10607
     );
     assert_eq!(
         part2(parse(parse::data(2021, 23).unwrap()).unwrap()).unwrap(),
-        0
+        59071
     );
 }
