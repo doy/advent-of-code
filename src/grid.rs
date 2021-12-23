@@ -31,6 +31,34 @@ impl std::ops::Add<Col> for usize {
     }
 }
 
+impl std::ops::Sub<usize> for Row {
+    type Output = Self;
+    fn sub(self, other: usize) -> Self::Output {
+        Self(self.0 - other)
+    }
+}
+
+impl std::ops::Sub<Row> for usize {
+    type Output = Row;
+    fn sub(self, other: Row) -> Self::Output {
+        Row(self - other.0)
+    }
+}
+
+impl std::ops::Sub<usize> for Col {
+    type Output = Self;
+    fn sub(self, other: usize) -> Self::Output {
+        Self(self.0 - other)
+    }
+}
+
+impl std::ops::Sub<Col> for usize {
+    type Output = Col;
+    fn sub(self, other: Col) -> Self::Output {
+        Col(self - other.0)
+    }
+}
+
 #[derive(Default, Clone, Debug)]
 pub struct GridRow<T: Default + Clone> {
     cells: Vec<T>,

@@ -12,6 +12,7 @@
 #[macro_use]
 pub mod regex;
 
+pub mod graph;
 pub mod grid;
 pub mod parse;
 pub mod prelude;

@@ -1,3 +1,4 @@
+pub use crate::graph::Graph as _;
 pub use crate::grid::{Col, Grid, Row};
 pub use crate::parse;
 

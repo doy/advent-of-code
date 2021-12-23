@@ -1277,24 +1277,31 @@ impl Burrow {
         }
     }
 
-    fn done(&self) -> bool {
-        self.spaces[11] == Some(A)
-            && self.spaces[15] == Some(A)
-            && self.spaces[12] == Some(B)
-            && self.spaces[16] == Some(B)
-            && self.spaces[13] == Some(C)
-            && self.spaces[17] == Some(C)
-            && self.spaces[14] == Some(D)
-            && self.spaces[18] == Some(D)
-            && (!self.big
-                || (self.spaces[19] == Some(A)
-                    && self.spaces[23] == Some(A)
-                    && self.spaces[20] == Some(B)
-                    && self.spaces[24] == Some(B)
-                    && self.spaces[21] == Some(C)
-                    && self.spaces[25] == Some(C)
-                    && self.spaces[22] == Some(D)
-                    && self.spaces[26] == Some(D)))
+    fn done(big: bool) -> Self {
+        let mut done = Self::default();
+
+        done.spaces[11] = Some(A);
+        done.spaces[15] = Some(A);
+        done.spaces[12] = Some(B);
+        done.spaces[16] = Some(B);
+        done.spaces[13] = Some(C);
+        done.spaces[17] = Some(C);
+        done.spaces[14] = Some(D);
+        done.spaces[18] = Some(D);
+
+        if big {
+            done.spaces[19] = Some(A);
+            done.spaces[23] = Some(A);
+            done.spaces[20] = Some(B);
+            done.spaces[24] = Some(B);
+            done.spaces[21] = Some(C);
+            done.spaces[25] = Some(C);
+            done.spaces[22] = Some(D);
+            done.spaces[26] = Some(D);
+            done.big = true;
+        }
+
+        done
     }
 
     fn move_cost(&self, mv: Move) -> i64 {
@@ -1664,6 +1671,20 @@ impl Move {
     }
 }
 
+struct Pathfinder;
+
+impl crate::graph::Graph<Burrow, Move> for Pathfinder {
+    type Edges = Vec<Move>;
+
+    fn edges(&self, v: Burrow) -> Self::Edges {
+        v.legal_moves()
+    }
+
+    fn edge(&self, v: Burrow, e: Move) -> (Burrow, i64) {
+        (v.make_move(e), v.move_cost(e))
+    }
+}
+
 pub fn parse(fh: File) -> Result<Burrow> {
     let mut burrow = Burrow::default();
     let lines: Vec<_> = parse::lines(fh).collect();
@@ -1685,56 +1706,8 @@ pub fn parse(fh: File) -> Result<Burrow> {
     Ok(burrow)
 }
 
-#[allow(dead_code)]
-fn organize_recursive(burrow: Burrow, so_far: &mut Vec<Move>) -> bool {
-    if burrow.done() {
-        return true;
-    }
-    for mv in burrow.legal_moves() {
-        so_far.push(mv);
-        if organize_recursive(burrow.make_move(mv), so_far) {
-            return true;
-        }
-        so_far.pop();
-    }
-    false
-}
-
-fn organize_dijkstra(burrow: Burrow) -> (i64, Vec<Burrow>) {
-    let mut to_visit = priority_queue::PriorityQueue::new();
-    let mut prev = HashMap::new();
-    to_visit.push(burrow, std::cmp::Reverse(0));
-    while let Some((burrow, std::cmp::Reverse(distance))) = to_visit.pop() {
-        if burrow.done() {
-            let mut path = vec![burrow];
-            let mut cur = burrow;
-            while let Some(next) = prev.get(&cur) {
-                path.insert(0, *next);
-                cur = *next;
-            }
-            return (distance, path);
-        }
-        for mv in burrow.legal_moves() {
-            let next = burrow.make_move(mv);
-            prev.insert(next, burrow);
-            let new_distance = distance + burrow.move_cost(mv);
-            if to_visit.get(&next).is_some() {
-                if new_distance < to_visit.get_priority(&next).unwrap().0 {
-                    to_visit.change_priority(
-                        &next,
-                        std::cmp::Reverse(new_distance),
-                    );
-                }
-            } else {
-                to_visit.push(next, std::cmp::Reverse(new_distance));
-            }
-        }
-    }
-    unreachable!()
-}
-
 pub fn part1(burrow: Burrow) -> Result<i64> {
-    let (cost, _path) = organize_dijkstra(burrow);
+    let (cost, _path) = Pathfinder.dijkstra(burrow, Burrow::done(false));
     // for burrow in path {
     //     eprintln!("{}", burrow);
     // }
@@ -1742,7 +1715,8 @@ pub fn part1(burrow: Burrow) -> Result<i64> {
 }
 
 pub fn part2(burrow: Burrow) -> Result<i64> {
-    let (cost, _path) = organize_dijkstra(burrow.to_big());
+    let (cost, _path) =
+        Pathfinder.dijkstra(burrow.to_big(), Burrow::done(true));
     // for burrow in path {
     //     eprintln!("{}", burrow);
     // }
