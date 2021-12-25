@@ -63,3 +63,21 @@ pub fn digit_grid(lines: impl Iterator<Item = String>) -> Grid<u8> {
         })
         .collect()
 }
+
+// false positive, doing its suggestion gives borrow checker errors
+#[allow(clippy::redundant_closure)]
+pub fn grid<F, T>(lines: impl Iterator<Item = String>, f: F) -> Grid<T>
+where
+    F: Fn(u8) -> T,
+    T: Clone + Default + Eq + PartialEq,
+{
+    lines
+        .map(|s| {
+            s.as_bytes()
+                .iter()
+                .copied()
+                .map(|b| f(b))
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}

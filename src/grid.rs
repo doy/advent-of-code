@@ -59,12 +59,12 @@ impl std::ops::Sub<Col> for usize {
     }
 }
 
-#[derive(Default, Clone, Debug)]
-pub struct GridRow<T: Default + Clone> {
+#[derive(Default, Clone, Debug, Eq, PartialEq)]
+pub struct GridRow<T: Default + Clone + Eq + PartialEq> {
     cells: Vec<T>,
 }
 
-impl<T: Default + Clone> GridRow<T> {
+impl<T: Default + Clone + Eq + PartialEq> GridRow<T> {
     pub fn iter(&self) -> impl Iterator<Item = &T> + Clone {
         self.cells.iter()
     }
@@ -74,25 +74,29 @@ impl<T: Default + Clone> GridRow<T> {
     }
 }
 
-impl<T: Default + Clone> std::ops::Index<Col> for GridRow<T> {
+impl<T: Default + Clone + Eq + PartialEq> std::ops::Index<Col>
+    for GridRow<T>
+{
     type Output = T;
     fn index(&self, col: Col) -> &Self::Output {
         &self.cells[col.0]
     }
 }
 
-impl<T: Default + Clone> std::ops::IndexMut<Col> for GridRow<T> {
+impl<T: Default + Clone + Eq + PartialEq> std::ops::IndexMut<Col>
+    for GridRow<T>
+{
     fn index_mut(&mut self, col: Col) -> &mut Self::Output {
         &mut self.cells[col.0]
     }
 }
 
-#[derive(Default, Clone, Debug)]
-pub struct Grid<T: Default + Clone> {
+#[derive(Default, Clone, Debug, Eq, PartialEq)]
+pub struct Grid<T: Default + Clone + Eq + PartialEq> {
     rows: Vec<GridRow<T>>,
 }
 
-impl<T: Default + Clone> Grid<T> {
+impl<T: Default + Clone + Eq + PartialEq> Grid<T> {
     pub fn grow(&mut self, rows: Row, cols: Col) {
         self.rows
             .resize_with(rows.0.max(self.rows.len()), GridRow::default);
@@ -154,7 +158,7 @@ impl<T: Default + Clone> Grid<T> {
     }
 }
 
-impl<T: Default + Clone + std::fmt::Display> Grid<T> {
+impl<T: Default + Clone + Eq + PartialEq + std::fmt::Display> Grid<T> {
     pub fn display_packed<F: Fn(&T) -> char>(
         &self,
         f: F,
@@ -163,7 +167,9 @@ impl<T: Default + Clone + std::fmt::Display> Grid<T> {
     }
 }
 
-impl<T: Default + Clone + std::fmt::Display> std::fmt::Display for Grid<T> {
+impl<T: Default + Clone + Eq + PartialEq + std::fmt::Display>
+    std::fmt::Display for Grid<T>
+{
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,
@@ -178,20 +184,22 @@ impl<T: Default + Clone + std::fmt::Display> std::fmt::Display for Grid<T> {
     }
 }
 
-impl<T: Default + Clone> std::ops::Index<Row> for Grid<T> {
+impl<T: Default + Clone + Eq + PartialEq> std::ops::Index<Row> for Grid<T> {
     type Output = GridRow<T>;
     fn index(&self, row: Row) -> &Self::Output {
         &self.rows[row.0]
     }
 }
 
-impl<T: Default + Clone> std::ops::IndexMut<Row> for Grid<T> {
+impl<T: Default + Clone + Eq + PartialEq> std::ops::IndexMut<Row>
+    for Grid<T>
+{
     fn index_mut(&mut self, row: Row) -> &mut Self::Output {
         &mut self.rows[row.0]
     }
 }
 
-impl<T: Default + Clone> FromIterator<Vec<T>> for Grid<T> {
+impl<T: Default + Clone + Eq + PartialEq> FromIterator<Vec<T>> for Grid<T> {
     fn from_iter<I>(iter: I) -> Self
     where
         I: IntoIterator<Item = Vec<T>>,
@@ -202,7 +210,9 @@ impl<T: Default + Clone> FromIterator<Vec<T>> for Grid<T> {
     }
 }
 
-impl<T: Default + Clone> FromIterator<((Row, Col), T)> for Grid<T> {
+impl<T: Default + Clone + Eq + PartialEq> FromIterator<((Row, Col), T)>
+    for Grid<T>
+{
     fn from_iter<I>(iter: I) -> Self
     where
         I: IntoIterator<Item = ((Row, Col), T)>,
@@ -218,12 +228,15 @@ impl<T: Default + Clone> FromIterator<((Row, Col), T)> for Grid<T> {
 
 pub struct DisplayPacked<
     'a,
-    T: Default + Clone + std::fmt::Display,
+    T: Default + Clone + Eq + PartialEq + std::fmt::Display,
     F: Fn(&'a T) -> char,
 >(&'a Grid<T>, F);
 
-impl<'a, T: Default + Clone + std::fmt::Display, F: Fn(&'a T) -> char>
-    std::fmt::Display for DisplayPacked<'a, T, F>
+impl<
+        'a,
+        T: Default + Clone + Eq + PartialEq + std::fmt::Display,
+        F: Fn(&'a T) -> char,
+    > std::fmt::Display for DisplayPacked<'a, T, F>
 {
     fn fmt(
         &self,
