@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use crate::prelude::*;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
