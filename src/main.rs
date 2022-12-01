@@ -21,6 +21,8 @@ pub mod prelude;
 mod year2020;
 #[path = "2021/mod.rs"]
 mod year2021;
+#[path = "2022/mod.rs"]
+mod year2022;
 
 #[derive(Debug, structopt::StructOpt)]
 #[structopt(about = "Advent of Code")]
@@ -29,6 +31,8 @@ enum Opt {
     Year2020 { day: u8, puzzle: u8 },
     #[structopt(name = "2021")]
     Year2021 { day: u8, puzzle: u8 },
+    #[structopt(name = "2022")]
+    Year2022 { day: u8, puzzle: u8 },
 }
 
 #[paw::main]
@@ -36,6 +40,7 @@ fn main(opt: Opt) {
     let res = match opt {
         Opt::Year2020 { day, puzzle } => crate::year2020::run(day, puzzle),
         Opt::Year2021 { day, puzzle } => crate::year2021::run(day, puzzle),
+        Opt::Year2022 { day, puzzle } => crate::year2022::run(day, puzzle),
     };
     match res {
         Ok(answer) => {
