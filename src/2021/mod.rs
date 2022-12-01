@@ -2,22 +2,6 @@ use crate::prelude::*;
 
 #[path = "1/mod.rs"]
 mod day1;
-#[path = "2/mod.rs"]
-mod day2;
-#[path = "3/mod.rs"]
-mod day3;
-#[path = "4/mod.rs"]
-mod day4;
-#[path = "5/mod.rs"]
-mod day5;
-#[path = "6/mod.rs"]
-mod day6;
-#[path = "7/mod.rs"]
-mod day7;
-#[path = "8/mod.rs"]
-mod day8;
-#[path = "9/mod.rs"]
-mod day9;
 #[path = "10/mod.rs"]
 mod day10;
 #[path = "11/mod.rs"]
@@ -38,6 +22,8 @@ mod day17;
 mod day18;
 #[path = "19/mod.rs"]
 mod day19;
+#[path = "2/mod.rs"]
+mod day2;
 #[path = "20/mod.rs"]
 mod day20;
 #[path = "21/mod.rs"]
@@ -50,6 +36,20 @@ mod day23;
 mod day24;
 #[path = "25/mod.rs"]
 mod day25;
+#[path = "3/mod.rs"]
+mod day3;
+#[path = "4/mod.rs"]
+mod day4;
+#[path = "5/mod.rs"]
+mod day5;
+#[path = "6/mod.rs"]
+mod day6;
+#[path = "7/mod.rs"]
+mod day7;
+#[path = "8/mod.rs"]
+mod day8;
+#[path = "9/mod.rs"]
+mod day9;
 // NEXT MOD
 
 pub fn run(day: u8, puzzle: u8) -> Result<i64> {
