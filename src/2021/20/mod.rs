@@ -43,7 +43,7 @@ impl Image {
                 });
                 let mut idx = 0;
                 for neighbor in neighbors {
-                    idx = idx * 2 + if neighbor { 1 } else { 0 };
+                    idx = idx * 2 + usize::from(neighbor);
                 }
                 new_map[Row(row)][Col(col)] = self.algorithm[idx]
             }

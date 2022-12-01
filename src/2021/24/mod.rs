@@ -145,11 +145,7 @@ impl Alu {
     }
 
     fn eql(&mut self, a: Register, b: Value) {
-        *a.lvalue(self) = if a.rvalue(self) == b.rvalue(self) {
-            1
-        } else {
-            0
-        };
+        *a.lvalue(self) = i64::from(a.rvalue(self) == b.rvalue(self));
     }
 }
 

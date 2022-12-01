@@ -74,7 +74,7 @@ impl Paper {
     }
 
     fn total(&self) -> i64 {
-        self.grid.cells().map(|b| if *b { 1 } else { 0 }).sum()
+        self.grid.cells().map(|b| i64::from(*b)).sum()
     }
 }
 

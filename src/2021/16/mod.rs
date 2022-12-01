@@ -39,7 +39,7 @@ impl FromIterator<bool> for LiteralU8 {
     {
         let mut ret = 0;
         for b in iter {
-            ret = (ret << 1) | if b { 1 } else { 0 };
+            ret = (ret << 1) | u8::from(b);
         }
         Self(ret)
     }
@@ -54,7 +54,7 @@ impl FromIterator<bool> for LiteralU16 {
     {
         let mut ret = 0;
         for b in iter {
-            ret = (ret << 1) | if b { 1 } else { 0 };
+            ret = (ret << 1) | u16::from(b);
         }
         Self(ret)
     }
@@ -133,27 +133,9 @@ impl Packet {
                     packets.iter().map(|packet| packet.eval()).max().unwrap()
                 }
                 4 => unreachable!(),
-                5 => {
-                    if packets[0].eval() > packets[1].eval() {
-                        1
-                    } else {
-                        0
-                    }
-                }
-                6 => {
-                    if packets[0].eval() < packets[1].eval() {
-                        1
-                    } else {
-                        0
-                    }
-                }
-                7 => {
-                    if packets[0].eval() == packets[1].eval() {
-                        1
-                    } else {
-                        0
-                    }
-                }
+                5 => i64::from(packets[0].eval() > packets[1].eval()),
+                6 => i64::from(packets[0].eval() < packets[1].eval()),
+                7 => i64::from(packets[0].eval() == packets[1].eval()),
                 _ => unreachable!(),
             },
         }
