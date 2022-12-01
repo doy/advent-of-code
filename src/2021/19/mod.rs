@@ -93,23 +93,16 @@ struct Scanner {
 }
 
 impl Scanner {
-    fn parse(lines: &mut impl Iterator<Item = String>) -> Option<Self> {
-        if lines.next().is_some() {
-            let mut beacons = vec![];
-            for line in lines {
-                if line.is_empty() {
-                    break;
-                }
-                let mut parts = line.split(',').map(|i| i.parse().unwrap());
-                let x = parts.next().unwrap();
-                let y = parts.next().unwrap();
-                let z = parts.next().unwrap();
-                beacons.push(Point::new(x, y, z))
-            }
-            Some(Self { beacons })
-        } else {
-            None
+    fn parse(lines: impl Iterator<Item = String>) -> Self {
+        let mut beacons = vec![];
+        for line in lines {
+            let mut parts = line.split(',').map(|i| i.parse().unwrap());
+            let x = parts.next().unwrap();
+            let y = parts.next().unwrap();
+            let z = parts.next().unwrap();
+            beacons.push(Point::new(x, y, z))
         }
+        Self { beacons }
     }
 
     fn matches(&self, other: &HashSet<Point>) -> Option<(usize, Point)> {
@@ -166,8 +159,8 @@ pub struct Scan {
 impl Scan {
     fn parse(mut lines: impl Iterator<Item = String>) -> Self {
         let mut scanners = vec![];
-        while let Some(scanner) = Scanner::parse(lines.by_ref()) {
-            scanners.push(scanner);
+        while lines.next().is_some() {
+            scanners.push(Scanner::parse(parse::chunk(&mut lines)));
         }
         Self { scanners }
     }

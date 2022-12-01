@@ -5,17 +5,14 @@ use crate::prelude::*;
 
 pub fn parse(fh: File) -> Result<Vec<i64>> {
     let mut elves = vec![];
-    let mut cur = 0;
-    for line in parse::lines(fh) {
-        let line = line.trim();
-        if line.is_empty() {
-            elves.push(cur);
-            cur = 0;
-        } else {
-            cur += line.parse::<i64>()?;
+    let mut lines = parse::lines(fh).peekable();
+    while lines.peek().is_some() {
+        let mut calories = 0;
+        for line in parse::chunk(&mut lines) {
+            calories += line.parse::<i64>()?;
         }
+        elves.push(calories);
     }
-    elves.push(cur);
     Ok(elves)
 }
 

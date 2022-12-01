@@ -58,24 +58,20 @@ pub struct Game {
 
 impl Game {
     fn parse<T: std::io::Read>(input: T) -> Result<Self> {
-        let mut input = std::io::BufReader::new(input);
-        let mut line = String::new();
-        input.read_line(&mut line)?;
+        let mut lines = parse::lines(input).peekable();
+
+        let line = lines.next().ok_or_else(|| anyhow!("missing line"))?;
         let inputs = line
             .trim()
             .split(',')
             .map(|s| s.parse())
             .collect::<Result<Vec<u8>, _>>()?;
+        lines.next();
 
         let mut boards = vec![];
-        loop {
-            if let Ok(0) = input.read_line(&mut line) {
-                break;
-            }
+        while lines.peek().is_some() {
             let mut numbers = vec![];
-            for _ in 0..5 {
-                line.clear();
-                input.read_line(&mut line)?;
+            for line in parse::chunk(&mut lines) {
                 numbers.extend(
                     line.split_whitespace()
                         .map(|s| s.parse())

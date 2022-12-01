@@ -6,23 +6,22 @@ const REQUIRED_KEYS: &[&str] =
 pub fn parse(fh: File) -> Result<Vec<HashMap<String, String>>> {
     let mut res = vec![];
     let mut cur = HashMap::new();
-    for line in parse::lines(fh) {
-        if line.is_empty() {
-            res.push(cur);
-            cur = HashMap::new();
-            continue;
+    let mut lines = parse::lines(fh).peekable();
+    while lines.peek().is_some() {
+        for line in parse::chunk(&mut lines) {
+            for field in line.split(' ') {
+                let mut parts = field.split(':');
+                let key = parts.next().with_context(|| {
+                    format!("failed to parse field '{}'", field)
+                })?;
+                let value = parts.next().with_context(|| {
+                    format!("failed to parse field '{}'", field)
+                })?;
+                cur.insert(key.to_string(), value.to_string());
+            }
         }
-
-        for field in line.split(' ') {
-            let mut parts = field.split(':');
-            let key = parts.next().with_context(|| {
-                format!("failed to parse field '{}'", field)
-            })?;
-            let value = parts.next().with_context(|| {
-                format!("failed to parse field '{}'", field)
-            })?;
-            cur.insert(key.to_string(), value.to_string());
-        }
+        res.push(cur);
+        cur = HashMap::new();
     }
     if !cur.is_empty() {
         res.push(cur);
