@@ -77,8 +77,7 @@ impl Game {
                 line.clear();
                 input.read_line(&mut line)?;
                 numbers.extend(
-                    line.trim()
-                        .split_whitespace()
+                    line.split_whitespace()
                         .map(|s| s.parse())
                         .collect::<Result<Vec<u8>, _>>()?,
                 );

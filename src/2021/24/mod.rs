@@ -153,7 +153,7 @@ impl Alu {
     }
 }
 
-impl<'a> std::fmt::Display for Alu {
+impl std::fmt::Display for Alu {
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,

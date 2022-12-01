@@ -21,6 +21,7 @@ mod day9;
 // NEXT MOD
 
 pub fn run(day: u8, puzzle: u8) -> Result<i64> {
+    #[allow(clippy::match_single_binding)]
     match (day, puzzle) {
         (1, 1) => day1::part1(day1::parse(parse::data(2020, 1)?)?),
         (1, 2) => day1::part2(day1::parse(parse::data(2020, 1)?)?),

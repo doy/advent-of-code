@@ -96,10 +96,16 @@ pub fn part1(coords: impl Iterator<Item = Vec<usize>>) -> Result<i64> {
 pub fn part2(coords: impl Iterator<Item = Vec<usize>>) -> Result<i64> {
     let mut map = Map::default();
     for nums in coords {
-        let _ = map.mark_horizontal(nums[0], nums[1], nums[2], nums[3])
-            || map.mark_vertical(nums[0], nums[1], nums[2], nums[3])
-            || map.mark_diagonal(nums[0], nums[1], nums[2], nums[3])
-            || unreachable!();
+        if map.mark_horizontal(nums[0], nums[1], nums[2], nums[3]) {
+            continue;
+        }
+        if map.mark_vertical(nums[0], nums[1], nums[2], nums[3]) {
+            continue;
+        }
+        if map.mark_diagonal(nums[0], nums[1], nums[2], nums[3]) {
+            continue;
+        }
+        unreachable!();
     }
     Ok(map.count_overlapping().try_into()?)
 }
