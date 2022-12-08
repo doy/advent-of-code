@@ -110,8 +110,22 @@ impl<T: Default + Clone + Eq + PartialEq> Grid<T> {
         Row(self.rows.len())
     }
 
+    pub fn each_row(
+        &self,
+    ) -> impl Iterator<Item = Row> + DoubleEndedIterator + ExactSizeIterator
+    {
+        (0..self.rows().0).map(Row)
+    }
+
     pub fn cols(&self) -> Col {
         Col(self.rows[0].cells.len())
+    }
+
+    pub fn each_col(
+        &self,
+    ) -> impl Iterator<Item = Col> + DoubleEndedIterator + ExactSizeIterator
+    {
+        (0..self.cols().0).map(Col)
     }
 
     pub fn get(&self, row: Row) -> Option<&GridRow<T>> {

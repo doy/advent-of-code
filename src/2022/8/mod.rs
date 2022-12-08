@@ -9,27 +9,37 @@ pub fn parse(fh: File) -> Result<Grid<u8>> {
 
 pub fn part1(trees: Grid<u8>) -> Result<i64> {
     let mut total = 0;
-    for row in (0..trees.rows().0).map(Row) {
-        'tree: for col in (0..trees.cols().0).map(Col) {
+    for row in trees.each_row() {
+        'tree: for col in trees.each_col() {
             let tree = trees[row][col];
 
-            if (0..col.0).map(Col).all(|col| trees[row][col] < tree) {
-                total += 1;
-                continue 'tree;
-            }
-            if ((col.0 + 1)..trees.cols().0)
-                .map(Col)
+            if trees
+                .each_col()
+                .take(col.0)
                 .all(|col| trees[row][col] < tree)
             {
                 total += 1;
                 continue 'tree;
             }
-            if (0..row.0).map(Row).all(|row| trees[row][col] < tree) {
+            if trees
+                .each_col()
+                .skip(col.0 + 1)
+                .all(|col| trees[row][col] < tree)
+            {
                 total += 1;
                 continue 'tree;
             }
-            if ((row.0 + 1)..trees.rows().0)
-                .map(Row)
+            if trees
+                .each_row()
+                .take(row.0)
+                .all(|row| trees[row][col] < tree)
+            {
+                total += 1;
+                continue 'tree;
+            }
+            if trees
+                .each_row()
+                .skip(row.0 + 1)
                 .all(|row| trees[row][col] < tree)
             {
                 total += 1;
@@ -42,13 +52,14 @@ pub fn part1(trees: Grid<u8>) -> Result<i64> {
 
 pub fn part2(trees: Grid<u8>) -> Result<i64> {
     let mut max = 0;
-    for row in (0..trees.rows().0).map(Row) {
-        for col in (0..trees.cols().0).map(Col) {
+    for row in trees.each_row() {
+        for col in trees.each_col() {
             let tree = trees[row][col];
 
             let mut seen = false;
-            let left = (0..col.0)
-                .map(Col)
+            let left = trees
+                .each_col()
+                .take(col.0)
                 .rev()
                 .take_while(|col| {
                     if seen {
@@ -66,8 +77,9 @@ pub fn part2(trees: Grid<u8>) -> Result<i64> {
                 .count();
 
             let mut seen = false;
-            let right = ((col.0 + 1)..trees.cols().0)
-                .map(Col)
+            let right = trees
+                .each_col()
+                .skip(col.0 + 1)
                 .take_while(|col| {
                     if seen {
                         return false;
@@ -84,8 +96,9 @@ pub fn part2(trees: Grid<u8>) -> Result<i64> {
                 .count();
 
             let mut seen = false;
-            let up = (0..row.0)
-                .map(Row)
+            let up = trees
+                .each_row()
+                .take(row.0)
                 .rev()
                 .take_while(|row| {
                     if seen {
@@ -103,8 +116,9 @@ pub fn part2(trees: Grid<u8>) -> Result<i64> {
                 .count();
 
             let mut seen = false;
-            let down = ((row.0 + 1)..trees.rows().0)
-                .map(Row)
+            let down = trees
+                .each_row()
+                .skip(row.0 + 1)
                 .take_while(|row| {
                     if seen {
                         return false;
