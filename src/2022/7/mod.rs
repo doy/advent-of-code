@@ -3,74 +3,35 @@
 
 use crate::prelude::*;
 
-enum Node {
-    Dir(HashMap<String, Node>),
+pub enum Node {
+    Dir,
     File(i64),
 }
 
 impl Node {
     fn new_dir() -> Self {
-        Self::Dir(HashMap::new())
+        Self::Dir
     }
-    
+
     fn new_file(size: i64) -> Self {
         Self::File(size)
     }
-    
+
     fn size(&self) -> i64 {
         match self {
+            Self::Dir => 0,
             Self::File(size) => *size,
-            Self::Dir(children) => children
-                .values()
-                .map(|child| child.size())
-                .sum(),
         }
     }
-    
-    fn iter(&self) -> NodeIter<'_> {
-        let mut next = std::collections::VecDeque::new();
-        next.push_back(("", self));
-        NodeIter { next }
-    }
-
-    fn resolve_path(&mut self, path: &[String]) -> &mut Self {
-        let mut pwd = self;
-        for name in path {
-            let Node::Dir(children) = pwd 
-            else { panic!("invalid path") };
-
-            pwd = children.get_mut(name).unwrap();
-        }
-        pwd
-    }
 }
 
-struct NodeIter<'a> {
-    next: std::collections::VecDeque<(&'a str, &'a Node)>,
+fn tree_size(tree: &Tree<String, Node>) -> i64 {
+    tree.bfs().map(|(_, tree)| tree.data().size()).sum()
 }
 
-impl<'a> Iterator for NodeIter<'a> {
-    type Item = (&'a str, &'a Node);
-    
-    fn next(&mut self) -> Option<Self::Item> {
-        let Some(next) = self.next.pop_back()
-        else { return None };
-        if let Node::Dir(children) = next.1 {
-            for (name, child) in children.iter() {
-                self.next.push_front((name, child));
-            }
-        }
-        Some(next)
-    }
-}
-
-pub struct DirTree {
-    root: Node,
-}
-
-pub fn parse(fh: File) -> Result<DirTree> {
+pub fn parse(fh: File) -> Result<Tree<String, Node>> {
     let mut lines = parse::lines(fh).peekable();
-    let mut root = Node::new_dir();
+    let mut root = Tree::new(Node::Dir);
     let mut path = vec![];
 
     while let Some(cmdline) = lines.by_ref().next() {
@@ -82,7 +43,7 @@ pub fn parse(fh: File) -> Result<DirTree> {
         let Some(cmd) = captures.get(1)
         else { bail!("no cmd found in cmdline: '{}'", cmdline) };
 
-        let pwd = root.resolve_path(&path);
+        let pwd = root.at_mut(&path).unwrap();
 
         match cmd.as_str() {
             "cd" => {
@@ -94,11 +55,8 @@ pub fn parse(fh: File) -> Result<DirTree> {
                     }
                     "/" => path = vec![],
                     dirname => {
-                        let Node::Dir(children) = pwd 
-                        else { panic!("invalid path") };
-
-                        if !children.contains_key(dirname) {
-                            children.insert(
+                        if pwd.at(&[dirname.to_string()]).is_none() {
+                            pwd.add_child(
                                 dirname.to_string(),
                                 Node::new_dir(),
                             );
@@ -107,45 +65,40 @@ pub fn parse(fh: File) -> Result<DirTree> {
                     }
                 }
             }
-            "ls" => {
-                loop {
-                    let Node::Dir(children) = pwd 
-                    else { panic!("invalid path") };
-
-                    let Some(lsline) = lines.peek()
+            "ls" => loop {
+                let Some(lsline) = lines.peek()
                     else { break };
-                    let Some(captures) = &regex_captures!(
+                let Some(captures) = &regex_captures!(
                         r"^(dir|[0-9]+) (.*)$",
                         lsline
                     )
                     else { break };
-                    let Some(data) = captures.get(1)
+                let Some(data) = captures.get(1)
                     else { break };
-                    let Some(name) = captures.get(2)
+                let Some(name) = captures.get(2)
                     else { break };
 
-                    let node = match data.as_str() {
-                        "dir" => Node::new_dir(),
-                        size => Node::new_file(size.parse().unwrap()),
-                    };
-                    children.insert(name.as_str().to_string(), node);
-                    lines.next();
-                }
-            }
+                let node = match data.as_str() {
+                    "dir" => Node::new_dir(),
+                    size => Node::new_file(size.parse().unwrap()),
+                };
+                pwd.add_child(name.as_str().to_string(), node);
+                lines.next();
+            },
             _ => unreachable!(),
         }
     }
 
-    Ok(DirTree { root })
+    Ok(root)
 }
 
-pub fn part1(tree: DirTree) -> Result<i64> {
+pub fn part1(tree: Tree<String, Node>) -> Result<i64> {
     let mut total = 0;
-    for (name, node) in tree.root.iter() {
-        if matches!(node, Node::File(_)) {
+    for (_, tree) in tree.bfs() {
+        if matches!(tree.data(), Node::File(_)) {
             continue;
         }
-        let size = node.size();
+        let size = tree_size(tree);
         if size <= 100_000 {
             total += size;
         }
@@ -153,16 +106,16 @@ pub fn part1(tree: DirTree) -> Result<i64> {
     Ok(total)
 }
 
-pub fn part2(tree: DirTree) -> Result<i64> {
-    let total = tree.root.size();
+pub fn part2(tree: Tree<String, Node>) -> Result<i64> {
+    let total = tree_size(&tree);
     let free = 70_000_000 - total;
     let needed = 30_000_000 - free;
     let mut possible = vec![];
-    for (name, node) in tree.root.iter() {
-        if matches!(node, Node::File(_)) {
+    for (_, tree) in tree.bfs() {
+        if matches!(tree.data(), Node::File(_)) {
             continue;
         }
-        let size = node.size();
+        let size = tree_size(tree);
         if size > needed {
             possible.push(size);
         }

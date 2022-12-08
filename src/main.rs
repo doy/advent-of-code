@@ -16,6 +16,7 @@ pub mod graph;
 pub mod grid;
 pub mod parse;
 pub mod prelude;
+pub mod tree;
 
 #[path = "2020/mod.rs"]
 mod year2020;

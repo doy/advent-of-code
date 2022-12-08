@@ -1,6 +1,7 @@
 pub use crate::graph::Graph as _;
 pub use crate::grid::{Col, Grid, Row};
 pub use crate::parse;
+pub use crate::tree::Tree;
 
 pub use std::cmp::Ordering;
 pub use std::collections::VecDeque;
