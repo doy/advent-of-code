@@ -1,6 +1,6 @@
-#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug)]
+#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug, Default)]
 pub struct Row(pub usize);
-#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug)]
+#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug, Default)]
 pub struct Col(pub usize);
 
 impl std::ops::Add<usize> for Row {
