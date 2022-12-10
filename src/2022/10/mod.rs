@@ -84,7 +84,7 @@ pub fn part2(ops: impl Iterator<Item = Op>) -> Result<i64> {
 fn test() {
     assert_eq!(
         part1(parse(parse::data(2022, 10).unwrap()).unwrap()).unwrap(),
-        0
+        15680
     );
     assert_eq!(
         part2(parse(parse::data(2022, 10).unwrap()).unwrap()).unwrap(),

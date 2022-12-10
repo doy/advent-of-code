@@ -231,10 +231,10 @@ pub fn part2(moves: impl Iterator<Item = Move>) -> Result<i64> {
 fn test() {
     assert_eq!(
         part1(parse(parse::data(2022, 9).unwrap()).unwrap()).unwrap(),
-        0
+        6037
     );
     assert_eq!(
         part2(parse(parse::data(2022, 9).unwrap()).unwrap()).unwrap(),
-        0
+        2485
     );
 }
