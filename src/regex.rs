@@ -1,3 +1,4 @@
+#[macro_export]
 macro_rules! regex_captures {
     ($rx:expr, $s:expr $(,)?) => {{
         static RX: once_cell::sync::Lazy<regex::Regex> =

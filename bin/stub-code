@@ -4,12 +4,11 @@ set -eu
 day=${1:-$(date +%-d)}
 year=${2:-$(date +%Y)}
 
-mkdir -p src/"$year"/"$day"
-cat >src/"$year"/"$day"/mod.rs <<EOF
+cat >src/bin/"$year"/day"$day".rs <<EOF
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-use crate::prelude::*;
+use advent_of_code::prelude::*;
 
 pub struct Todo;
 
@@ -38,5 +37,5 @@ fn test() {
 }
 EOF
 
-perl -pi -E"\$seen_mod = 1 if /mod day$day/; if (!\$seen_mod && /NEXT MOD/) { say '#[path = \"$day/mod.rs\"]'; say 'mod day$day;'; }" src/"$year"/mod.rs
-perl -pi -E"\$seen_part = 1 if /day$day::part/; if (!\$seen_part && /NEXT PART/) { say '        ($day, 1) => day$day::part1(day$day::parse(parse::data($year, $day)?)?),'; say '        ($day, 2) => day$day::part2(day$day::parse(parse::data($year, $day)?)?),'; }" src/"$year"/mod.rs
+perl -pi -E"\$seen_mod = 1 if /mod day$day;/; if (!\$seen_mod && /NEXT MOD/) { say 'mod day$day;'; }" src/bin/"$year"/main.rs
+perl -pi -E"\$seen_part = 1 if /day!.*day$day\)/; if (!\$seen_part && /NEXT PART/) { say '        $day => advent_of_code::day!($year, opt.day, opt.puzzle, day$day),'; }" src/bin/"$year"/main.rs

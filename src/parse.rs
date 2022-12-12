@@ -1,12 +1,24 @@
 use crate::prelude::*;
 
-pub fn data(year: u16, day: u16) -> Result<File> {
+pub fn data(year: u16, day: u8) -> Result<File> {
     File::open(format!("data/{}/{}.txt", year, day)).map_err(|e| anyhow!(e))
 }
 
-pub fn lines<R: std::io::Read>(fh: R) -> impl Iterator<Item = String> {
+pub fn raw_lines<R>(fh: R) -> impl Iterator<Item = String>
+where
+    R: std::io::Read,
+{
     let fh = std::io::BufReader::new(fh);
     fh.lines().map(|res| res.unwrap())
+}
+
+pub fn lines<R, T>(fh: R) -> impl Iterator<Item = T>
+where
+    R: std::io::Read,
+    T: std::str::FromStr,
+    <T as std::str::FromStr>::Err: std::fmt::Debug,
+{
+    raw_lines(fh).map(|s| s.trim().parse().unwrap())
 }
 
 pub struct Chunk<'a, I: Iterator<Item = String>> {
@@ -35,17 +47,16 @@ where
     Chunk { it }
 }
 
-pub fn split<R: std::io::Read>(
-    fh: R,
-    sep: u8,
-) -> impl Iterator<Item = String> {
+pub fn split<R, T>(fh: R, sep: u8) -> impl Iterator<Item = T>
+where
+    R: std::io::Read,
+    T: std::str::FromStr,
+    <T as std::str::FromStr>::Err: std::fmt::Debug,
+{
     let fh = std::io::BufReader::new(fh);
     fh.split(sep)
         .map(|res| String::from_utf8(res.unwrap()).unwrap())
-}
-
-pub fn ints(iter: impl Iterator<Item = String>) -> impl Iterator<Item = i64> {
-    iter.map(|s| s.trim().parse().unwrap())
+        .map(|s| s.trim().parse().unwrap())
 }
 
 pub fn bytes<R: std::io::Read>(fh: R) -> impl Iterator<Item = u8> {

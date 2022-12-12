@@ -7,9 +7,9 @@ where
     type Edges: IntoIterator<Item = Edge>;
 
     fn edges(&self, v: Vertex) -> Self::Edges;
-    fn edge(&self, v: Vertex, e: Edge) -> (Vertex, i64);
+    fn edge(&self, v: Vertex, e: Edge) -> (Vertex, u64);
 
-    fn dijkstra(&self, start: Vertex, end: Vertex) -> (i64, Vec<Vertex>) {
+    fn dijkstra(&self, start: Vertex, end: Vertex) -> (u64, Vec<Vertex>) {
         let mut to_visit = priority_queue::PriorityQueue::new();
         let mut prev = HashMap::new();
         prev.insert(start, start);
