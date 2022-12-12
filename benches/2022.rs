@@ -41,7 +41,29 @@ day!(2022, 11, day11);
 day!(2022, 12, day12);
 // NEXT DAY
 
+fn bench_2022(c: &mut criterion::Criterion) {
+    c.bench_function("2022", |b| {
+        b.iter(|| {
+            day_combined!(2022, 1, day1);
+            day_combined!(2022, 2, day2);
+            day_combined!(2022, 3, day3);
+            day_combined!(2022, 4, day4);
+            day_combined!(2022, 5, day5);
+            day_combined!(2022, 6, day6);
+            day_combined!(2022, 7, day7);
+            day_combined!(2022, 8, day8);
+            day_combined!(2022, 9, day9);
+            day_combined!(2022, 10, day10);
+            day_combined!(2022, 11, day11);
+            day_combined!(2022, 12, day12);
+            // NEXT DAY COMBINED
+        })
+    });
+}
+criterion::criterion_group!(benches_2022, bench_2022);
+
 criterion::criterion_main!(
+    benches_2022,
     bench_2022day1,
     bench_2022day2,
     bench_2022day3,

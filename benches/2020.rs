@@ -32,7 +32,26 @@ day!(2020, 8, day8);
 day!(2020, 9, day9);
 // NEXT DAY
 
+fn bench_2020(c: &mut criterion::Criterion) {
+    c.bench_function("2020", |b| {
+        b.iter(|| {
+            day_combined!(2020, 1, day1);
+            day_combined!(2020, 2, day2);
+            day_combined!(2020, 3, day3);
+            day_combined!(2020, 4, day4);
+            day_combined!(2020, 5, day5);
+            day_combined!(2020, 6, day6);
+            day_combined!(2020, 7, day7);
+            day_combined!(2020, 8, day8);
+            day_combined!(2020, 9, day9);
+            // NEXT DAY COMBINED
+        })
+    });
+}
+criterion::criterion_group!(benches_2020, bench_2020);
+
 criterion::criterion_main!(
+    benches_2020,
     bench_2020day1,
     bench_2020day2,
     bench_2020day3,

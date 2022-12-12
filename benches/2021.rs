@@ -80,7 +80,42 @@ day!(2021, 24, day24);
 day!(2021, 25, day25);
 // NEXT DAY
 
+fn bench_2021(c: &mut criterion::Criterion) {
+    c.bench_function("2021", |b| {
+        b.iter(|| {
+            day_combined!(2021, 1, day1);
+            day_combined!(2021, 2, day2);
+            day_combined!(2021, 3, day3);
+            day_combined!(2021, 4, day4);
+            day_combined!(2021, 5, day5);
+            day_combined!(2021, 6, day6);
+            day_combined!(2021, 7, day7);
+            day_combined!(2021, 8, day8);
+            day_combined!(2021, 9, day9);
+            day_combined!(2021, 10, day10);
+            day_combined!(2021, 11, day11);
+            day_combined!(2021, 12, day12);
+            day_combined!(2021, 13, day13);
+            day_combined!(2021, 14, day14);
+            day_combined!(2021, 15, day15);
+            day_combined!(2021, 16, day16);
+            day_combined!(2021, 17, day17);
+            day_combined!(2021, 18, day18);
+            day_combined!(2021, 19, day19);
+            day_combined!(2021, 20, day20);
+            day_combined!(2021, 21, day21);
+            day_combined!(2021, 22, day22);
+            day_combined!(2021, 23, day23);
+            day_combined!(2021, 24, day24);
+            day_combined!(2021, 25, day25);
+            // NEXT DAY COMBINED
+        })
+    });
+}
+criterion::criterion_group!(benches_2021, bench_2021);
+
 criterion::criterion_main!(
+    benches_2021,
     bench_2021day1,
     bench_2021day2,
     bench_2021day3,

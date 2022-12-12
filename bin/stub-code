@@ -42,4 +42,5 @@ perl -pi -E"\$seen_part = 1 if /day!.*day$day\)/; if (!\$seen_part && /NEXT PART
 
 perl -pi -E"\$seen_mod = 1 if /mod day$day;/; if (!\$seen_mod && /NEXT MOD/) { say '#[path = \"../src/bin/$year/day${day}.rs\"]'; say 'mod day$day;'; }" benches/"$year".rs
 perl -pi -E"\$seen_day = 1 if /day!.*day$day\)/; if (!\$seen_day && /NEXT DAY/) { say 'day!($year, $day, day$day);'; }" benches/"$year".rs
+perl -pi -E"\$seen_day_combined = 1 if /day_combined!.*day$day\)/; if (!\$seen_day_combined && /NEXT DAY COMBINED/) { say '            day_combined!($year, $day, day$day);'; }" benches/"$year".rs
 perl -pi -E"\$seen_group = 1 if /bench_${year}day${day},/; if (!\$seen_group && /NEXT GROUP/) { say '    bench_${year}day$day,'; }" benches/"$year".rs

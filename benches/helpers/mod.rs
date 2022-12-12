@@ -70,3 +70,18 @@ macro_rules! day {
         }
     };
 }
+
+macro_rules! day_combined {
+    ($year:expr, $day:expr, $mod:ident) => {{
+        $mod::part1(
+            $mod::parse(advent_of_code::parse::data($year, $day).unwrap())
+                .unwrap(),
+        )
+        .unwrap();
+        $mod::part2(
+            $mod::parse(advent_of_code::parse::data($year, $day).unwrap())
+                .unwrap(),
+        )
+        .unwrap();
+    }};
+}
