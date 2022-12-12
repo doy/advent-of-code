@@ -19,10 +19,12 @@ impl advent_of_code::graph::Graph<(Row, Col), (Row, Col)> for Map {
     fn edge(&self, v: (Row, Col), e: (Row, Col)) -> ((Row, Col), u64) {
         (
             e,
-            if self.grid[e.0][e.1] <= self.grid[v.0][v.1] + 1 {
+            if self.grid[e.0][e.1] >= self.grid[v.0][v.1].saturating_sub(1) {
                 1
             } else {
-                999_999_999
+                (self.grid.rows().0 * self.grid.cols().0)
+                    .try_into()
+                    .unwrap()
             },
         )
     }
@@ -51,22 +53,11 @@ pub fn parse(fh: File) -> Result<Map> {
 }
 
 pub fn part1(map: Map) -> Result<u64> {
-    Ok(map.dijkstra(map.start, map.end).0)
+    Ok(map.dijkstra(map.end, |v| v == map.start).0)
 }
 
 pub fn part2(map: Map) -> Result<u64> {
-    Ok(map
-        .grid
-        .indexed_cells()
-        .filter_map(|(pos, height)| {
-            if *height == 0 {
-                Some(map.dijkstra(pos, map.end).0)
-            } else {
-                None
-            }
-        })
-        .min()
-        .unwrap())
+    Ok(map.dijkstra(map.end, |v| map.grid[v.0][v.1] == 0).0)
 }
 
 #[test]

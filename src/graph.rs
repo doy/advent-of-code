@@ -9,13 +9,17 @@ where
     fn edges(&self, v: Vertex) -> Self::Edges;
     fn edge(&self, v: Vertex, e: Edge) -> (Vertex, u64);
 
-    fn dijkstra(&self, start: Vertex, end: Vertex) -> (u64, Vec<Vertex>) {
+    fn dijkstra<F: Fn(Vertex) -> bool>(
+        &self,
+        start: Vertex,
+        end: F,
+    ) -> (u64, Vec<Vertex>) {
         let mut to_visit = priority_queue::PriorityQueue::new();
         let mut prev = HashMap::new();
         prev.insert(start, start);
         to_visit.push(start, std::cmp::Reverse(0));
         while let Some((v, std::cmp::Reverse(distance))) = to_visit.pop() {
-            if v == end {
+            if end(v) {
                 let mut path = vec![v];
                 let mut cur = v;
                 while let Some(next) = prev.get(&cur) {

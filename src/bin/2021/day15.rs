@@ -24,10 +24,9 @@ pub fn parse(fh: File) -> Result<Map> {
 
 pub fn part1(map: Map) -> Result<u64> {
     Ok(map
-        .dijkstra(
-            (Row(0), Col(0)),
-            (map.grid.rows() - 1, map.grid.cols() - 1),
-        )
+        .dijkstra((Row(0), Col(0)), |v| {
+            v == (map.grid.rows() - 1, map.grid.cols() - 1)
+        })
         .0)
 }
 
@@ -48,10 +47,9 @@ pub fn part2(map: Map) -> Result<u64> {
     }
     let large_map = Map { grid: large_grid };
     Ok(large_map
-        .dijkstra(
-            (Row(0), Col(0)),
-            (large_map.grid.rows() - 1, large_map.grid.cols() - 1),
-        )
+        .dijkstra((Row(0), Col(0)), |v| {
+            v == (large_map.grid.rows() - 1, large_map.grid.cols() - 1)
+        })
         .0)
 }
 
