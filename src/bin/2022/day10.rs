@@ -62,22 +62,26 @@ pub fn part1(ops: impl Iterator<Item = Op>) -> Result<i64> {
     Ok(total)
 }
 
-pub fn part2(ops: impl Iterator<Item = Op>) -> Result<i64> {
+pub fn part2(ops: impl Iterator<Item = Op>) -> Result<String> {
     let mut cpu = Cpu::new();
     for op in ops {
         cpu.step(op);
     }
+    let mut s = String::new();
     for (y, row) in cpu.history.chunks(40).enumerate() {
+        if row.len() < 40 {
+            break;
+        }
         for (x, pos) in row.iter().enumerate() {
             if i64::try_from(x).unwrap().abs_diff(*pos) <= 1 {
-                print!("#");
+                s.push('#');
             } else {
-                print!(".");
+                s.push('.');
             }
         }
-        println!();
+        s.push('\n');
     }
-    Ok(0)
+    Ok(ocr(&s))
 }
 
 #[test]
@@ -88,6 +92,6 @@ fn test() {
     );
     assert_eq!(
         part2(parse(parse::data(2022, 10).unwrap()).unwrap()).unwrap(),
-        0
+        "ZFBFHGUP"
     );
 }

@@ -7,6 +7,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+advent-of-code-ocr = "0.1.1"
 ahash = "0.8.2"
 anyhow = "1.0.66"
 once_cell = "1.16.0"

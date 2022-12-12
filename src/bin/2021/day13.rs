@@ -122,13 +122,12 @@ pub fn part1(
 
 pub fn part2(
     (mut paper, folds): (Paper, Vec<(bool, usize)>),
-) -> Result<usize> {
+) -> Result<String> {
     for fold in folds {
         paper.fold(fold.0, fold.1);
     }
 
-    println!("{}", paper);
-    Ok(paper.total())
+    Ok(ocr(&paper.to_string()))
 }
 
 #[test]
@@ -139,6 +138,6 @@ fn test() {
     );
     assert_eq!(
         part2(parse(parse::data(2021, 13).unwrap()).unwrap()).unwrap(),
-        95
+        "ECFHLHZF"
     );
 }

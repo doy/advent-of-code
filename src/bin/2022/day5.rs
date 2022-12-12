@@ -86,7 +86,7 @@ pub fn parse(fh: File) -> Result<Crates> {
     })
 }
 
-fn part1_str(mut crates: Crates) -> Result<String> {
+pub fn part1(mut crates: Crates) -> Result<String> {
     for Instruction { count, from, to } in crates.instructions {
         for _ in 0..count {
             let c = crates.piles[from - 1].pop().unwrap();
@@ -100,12 +100,7 @@ fn part1_str(mut crates: Crates) -> Result<String> {
         .collect())
 }
 
-pub fn part1(crates: Crates) -> Result<i64> {
-    println!("{}", part1_str(crates)?);
-    Ok(0)
-}
-
-fn part2_str(mut crates: Crates) -> Result<String> {
+pub fn part2(mut crates: Crates) -> Result<String> {
     for Instruction { count, from, to } in crates.instructions {
         let mut tmp = vec![];
         for _ in 0..count {
@@ -123,19 +118,14 @@ fn part2_str(mut crates: Crates) -> Result<String> {
         .collect())
 }
 
-pub fn part2(crates: Crates) -> Result<i64> {
-    println!("{}", part2_str(crates)?);
-    Ok(0)
-}
-
 #[test]
 fn test() {
     assert_eq!(
-        part1_str(parse(parse::data(2022, 5).unwrap()).unwrap()).unwrap(),
+        part1(parse(parse::data(2022, 5).unwrap()).unwrap()).unwrap(),
         "PSNRGBTFT"
     );
     assert_eq!(
-        part2_str(parse(parse::data(2022, 5).unwrap()).unwrap()).unwrap(),
+        part2(parse(parse::data(2022, 5).unwrap()).unwrap()).unwrap(),
         "BNTZFPMMW"
     );
 }
