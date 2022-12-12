@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+part=$1
+day=${2:-$(date +%-d)}
+year=${3:-$(date +%Y)}
+
+read -r line
+out=$(curl -i -H 'User-Agent: https://github.com/doy/advent-of-code by adventofcode@tozt.net' -b "$(cat .cookie)" -d "level=$part&answer=$line" -s https://adventofcode.com/"$year"/day/"$day"/answer)
+if echo "$out" | grep -q "You have .* left to wait."; then
+  echo "$out" | grep "You have .* left to wait" | sed 's/.*\(You have .* left to wait.\).*/\1/' 
+  exit 2
+elif echo "$out" | grep -q "That's not the right answer"; then
+  echo INCORRECT
+  exit 1
+else
+  echo CORRECT
+fi
