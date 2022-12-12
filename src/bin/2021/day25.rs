@@ -60,7 +60,7 @@ impl Map {
 
 pub fn parse(fh: File) -> Result<Map> {
     Ok(Map {
-        grid: parse::grid(parse::raw_lines(fh), |b| match b {
+        grid: parse::grid(parse::raw_lines(fh), |b, _, _| match b {
             b'v' => Cell::Down,
             b'>' => Cell::Right,
             b'.' => Cell::None,
