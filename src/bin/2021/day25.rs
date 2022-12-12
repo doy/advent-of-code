@@ -84,7 +84,7 @@ pub fn part1(map: Map) -> Result<u64> {
 }
 
 pub fn part2(_: Map) -> Result<i64> {
-    todo!()
+    Ok(0)
 }
 
 #[test]

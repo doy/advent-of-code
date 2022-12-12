@@ -4,8 +4,6 @@ version = "0.1.0"
 authors = ["Jesse Luehrs <doy@tozt.net>"]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 advent-of-code-ocr = "0.1.1"
 ahash = "0.8.2"
@@ -15,3 +13,19 @@ paw = "1.0.0"
 priority-queue = "1.3.0"
 regex = "1.7.0"
 structopt = { version = "0.3.26", features = ["paw", "wrap_help"] }
+
+[dev-dependencies]
+criterion = { version = "0.4.0", features = ["html_reports"] }
+paste = "1.0.9"
+
+[[bench]]
+name = "2020"
+harness = false
+
+[[bench]]
+name = "2021"
+harness = false
+
+[[bench]]
+name = "2022"
+harness = false
