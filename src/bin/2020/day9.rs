@@ -35,7 +35,7 @@ pub fn part2(list: Vec<u64>) -> Result<u64> {
     for i in 0..list.len() {
         for j in i..list.len() {
             let seq = &list[i..=j];
-            if invalid == seq.iter().sum() {
+            if invalid == seq.iter().sum::<u64>() {
                 return Ok(seq.iter().copied().min().unwrap()
                     + seq.iter().copied().max().unwrap());
             }
