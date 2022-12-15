@@ -2,10 +2,23 @@
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
 )]
 pub struct Row(pub usize);
+
 #[derive(
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
 )]
 pub struct Col(pub usize);
+
+impl Row {
+    pub fn abs_diff(self, other: Self) -> Self {
+        Self(self.0.abs_diff(other.0))
+    }
+}
+
+impl Col {
+    pub fn abs_diff(self, other: Self) -> Self {
+        Self(self.0.abs_diff(other.0))
+    }
+}
 
 impl std::ops::Add<usize> for Row {
     type Output = Self;
