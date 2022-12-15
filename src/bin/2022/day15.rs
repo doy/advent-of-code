@@ -23,6 +23,10 @@ impl Sensor {
         }
     }
 
+    fn row_radius(&self, row: IRow) -> usize {
+        self.radius - self.pos.0.abs_diff(row).0
+    }
+
     fn in_radius(&self, pos: (IRow, ICol)) -> bool {
         dist(self.pos, pos) <= self.radius
     }
@@ -33,44 +37,9 @@ pub struct Map {
 }
 
 impl Map {
-    fn largest_radius(&self) -> usize {
-        self.sensors
-            .iter()
-            .map(|sensor| sensor.radius)
-            .max()
-            .unwrap()
-    }
-
-    fn width(&self) -> usize {
-        let min_col: ICol = self
-            .sensors
-            .iter()
-            .map(|sensor| sensor.pos.1)
-            .min()
-            .unwrap();
-        let max_col: ICol = self
-            .sensors
-            .iter()
-            .map(|sensor| sensor.pos.1)
-            .max()
-            .unwrap();
-        max_col.abs_diff(min_col).0
-    }
-
-    fn height(&self) -> usize {
-        let min_row: IRow = self
-            .sensors
-            .iter()
-            .map(|sensor| sensor.pos.0)
-            .min()
-            .unwrap();
-        let max_row: IRow = self
-            .sensors
-            .iter()
-            .map(|sensor| sensor.pos.0)
-            .max()
-            .unwrap();
-        max_row.abs_diff(min_row).0
+    fn new(mut sensors: Vec<Sensor>) -> Self {
+        sensors.sort_unstable_by(|a, b| b.radius.cmp(&a.radius));
+        Self { sensors }
     }
 
     fn nearby_sensor(&self, pos: (IRow, ICol)) -> Option<Sensor> {
@@ -78,6 +47,14 @@ impl Map {
             .iter()
             .copied()
             .find(|sensor| sensor.in_radius(pos))
+    }
+
+    fn beacons(&self) -> HashSet<(IRow, ICol)> {
+        self.sensors
+            .iter()
+            .copied()
+            .map(|sensor| sensor.beacon)
+            .collect()
     }
 }
 
@@ -95,40 +72,63 @@ pub fn parse(fh: File) -> Result<Map> {
             (IRow(beacon_y), ICol(beacon_x)),
         ));
     }
-    Ok(Map { sensors })
+    Ok(Map::new(sensors))
 }
 
-pub fn part1(map: Map) -> Result<usize> {
+pub fn part1(mut map: Map) -> Result<usize> {
     let row = IRow(2_000_000);
-    let margin = map.largest_radius() as isize + 1;
+    map.sensors = map
+        .sensors
+        .iter()
+        .copied()
+        .filter(|sensor| {
+            ((sensor.pos.0 - sensor.radius as isize)
+                ..=(sensor.pos.0 + sensor.radius as isize))
+                .contains(&row)
+        })
+        .collect();
+    let min_sensor = map
+        .sensors
+        .iter()
+        .min_by_key(|sensor| sensor.pos.1)
+        .unwrap();
+    let max_sensor = map
+        .sensors
+        .iter()
+        .max_by_key(|sensor| sensor.pos.1)
+        .unwrap();
     let mut total = 0;
-    for col in (-margin..(map.width() as isize + margin)).map(ICol) {
-        if map.sensors.iter().any(|sensor| sensor.beacon == (row, col)) {
-            continue;
-        }
-        if map.nearby_sensor((row, col)).is_some() {
-            total += 1;
+    let mut col = min_sensor.pos.1 - min_sensor.row_radius(row) as isize;
+    while col < max_sensor.pos.1 + max_sensor.row_radius(row) as isize {
+        if let Some(sensor) = map.nearby_sensor((row, col)) {
+            let row_radius = sensor.radius - sensor.pos.0.abs_diff(row).0;
+            let skip = (sensor.pos.1 - col.0).0 as usize + row_radius + 1;
+            total += skip;
+            col = col + skip as isize;
+        } else {
+            col = col + 1;
         }
     }
-    Ok(total)
+    Ok(total
+        - map
+            .beacons()
+            .iter()
+            .filter(|beacon| beacon.0 == row)
+            .count())
 }
 
 pub fn part2(map: Map) -> Result<isize> {
     for row in (0..=4_000_000).map(IRow) {
         let mut col = ICol(0);
-        loop {
+        while col <= ICol(4_000_000) {
             if let Some(sensor) = map.nearby_sensor((row, col)) {
-                let row_radius = sensor.radius - sensor.pos.0.abs_diff(row).0;
-                col = sensor.pos.1 + row_radius as isize + 1;
-                if col > ICol(4_000_000) {
-                    break;
-                }
+                col = sensor.pos.1 + sensor.row_radius(row) as isize + 1;
             } else {
                 return Ok((col.0) * 4_000_000 + (row.0));
             }
         }
     }
-    Ok(0)
+    panic!("couldn't find beacon");
 }
 
 #[test]
