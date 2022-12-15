@@ -76,6 +76,84 @@ impl std::ops::Sub<Col> for usize {
     }
 }
 
+#[derive(
+    Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
+)]
+pub struct IRow(pub isize);
+
+#[derive(
+    Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
+)]
+pub struct ICol(pub isize);
+
+impl IRow {
+    pub fn abs_diff(self, other: Self) -> Row {
+        Row(self.0.abs_diff(other.0))
+    }
+}
+
+impl ICol {
+    pub fn abs_diff(self, other: Self) -> Col {
+        Col(self.0.abs_diff(other.0))
+    }
+}
+
+impl std::ops::Add<isize> for IRow {
+    type Output = Self;
+    fn add(self, other: isize) -> Self::Output {
+        Self(self.0 + other)
+    }
+}
+
+impl std::ops::Add<IRow> for isize {
+    type Output = IRow;
+    fn add(self, other: IRow) -> Self::Output {
+        IRow(self + other.0)
+    }
+}
+
+impl std::ops::Add<isize> for ICol {
+    type Output = Self;
+    fn add(self, other: isize) -> Self::Output {
+        Self(self.0 + other)
+    }
+}
+
+impl std::ops::Add<ICol> for isize {
+    type Output = ICol;
+    fn add(self, other: ICol) -> Self::Output {
+        ICol(self + other.0)
+    }
+}
+
+impl std::ops::Sub<isize> for IRow {
+    type Output = Self;
+    fn sub(self, other: isize) -> Self::Output {
+        Self(self.0 - other)
+    }
+}
+
+impl std::ops::Sub<IRow> for isize {
+    type Output = IRow;
+    fn sub(self, other: IRow) -> Self::Output {
+        IRow(self - other.0)
+    }
+}
+
+impl std::ops::Sub<isize> for ICol {
+    type Output = Self;
+    fn sub(self, other: isize) -> Self::Output {
+        Self(self.0 - other)
+    }
+}
+
+impl std::ops::Sub<ICol> for isize {
+    type Output = ICol;
+    fn sub(self, other: ICol) -> Self::Output {
+        ICol(self - other.0)
+    }
+}
+
 #[derive(Default, Clone, Debug, Eq, PartialEq)]
 pub struct GridRow<T: Default + Clone + Eq + PartialEq> {
     cells: Vec<T>,

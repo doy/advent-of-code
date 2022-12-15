@@ -3,19 +3,19 @@
 
 use advent_of_code::prelude::*;
 
-fn dist(a: (Row, Col), b: (Row, Col)) -> usize {
+fn dist(a: (IRow, ICol), b: (IRow, ICol)) -> usize {
     a.0.abs_diff(b.0).0 + a.1.abs_diff(b.1).0
 }
 
 #[derive(Debug, Copy, Clone)]
 struct Sensor {
-    pos: (Row, Col),
-    beacon: (Row, Col),
+    pos: (IRow, ICol),
+    beacon: (IRow, ICol),
     radius: usize,
 }
 
 impl Sensor {
-    fn new(pos: (Row, Col), beacon: (Row, Col)) -> Self {
+    fn new(pos: (IRow, ICol), beacon: (IRow, ICol)) -> Self {
         Self {
             pos,
             beacon,
@@ -23,21 +23,57 @@ impl Sensor {
         }
     }
 
-    fn in_radius(&self, pos: (Row, Col)) -> bool {
+    fn in_radius(&self, pos: (IRow, ICol)) -> bool {
         dist(self.pos, pos) <= self.radius
     }
 }
 
 pub struct Map {
     sensors: Vec<Sensor>,
-    range_x: usize,
-    range_y: usize,
-    offset_x: usize,
-    offset_y: usize,
 }
 
 impl Map {
-    fn nearby_sensor(&self, pos: (Row, Col)) -> Option<Sensor> {
+    fn largest_radius(&self) -> usize {
+        self.sensors
+            .iter()
+            .map(|sensor| sensor.radius)
+            .max()
+            .unwrap()
+    }
+
+    fn width(&self) -> usize {
+        let min_col: ICol = self
+            .sensors
+            .iter()
+            .map(|sensor| sensor.pos.1)
+            .min()
+            .unwrap();
+        let max_col: ICol = self
+            .sensors
+            .iter()
+            .map(|sensor| sensor.pos.1)
+            .max()
+            .unwrap();
+        max_col.abs_diff(min_col).0
+    }
+
+    fn height(&self) -> usize {
+        let min_row: IRow = self
+            .sensors
+            .iter()
+            .map(|sensor| sensor.pos.0)
+            .min()
+            .unwrap();
+        let max_row: IRow = self
+            .sensors
+            .iter()
+            .map(|sensor| sensor.pos.0)
+            .max()
+            .unwrap();
+        max_row.abs_diff(min_row).0
+    }
+
+    fn nearby_sensor(&self, pos: (IRow, ICol)) -> Option<Sensor> {
         self.sensors
             .iter()
             .copied()
@@ -46,71 +82,27 @@ impl Map {
 }
 
 pub fn parse(fh: File) -> Result<Map> {
-    let mut sensor_positions = vec![];
+    let mut sensors = vec![];
     for line in parse::raw_lines(fh) {
         let cap = regex_captures!(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)", &line)
             .ok_or_else(|| anyhow::anyhow!("no match"))?;
-        let sensor_x: i64 = cap[1].parse()?;
-        let sensor_y: i64 = cap[2].parse()?;
-        let beacon_x: i64 = cap[3].parse()?;
-        let beacon_y: i64 = cap[4].parse()?;
-        sensor_positions.push((sensor_x, sensor_y, beacon_x, beacon_y));
+        let sensor_x: isize = cap[1].parse()?;
+        let sensor_y: isize = cap[2].parse()?;
+        let beacon_x: isize = cap[3].parse()?;
+        let beacon_y: isize = cap[4].parse()?;
+        sensors.push(Sensor::new(
+            (IRow(sensor_y), ICol(sensor_x)),
+            (IRow(beacon_y), ICol(beacon_x)),
+        ));
     }
-    let min_x = sensor_positions
-        .iter()
-        .map(|x| x.0)
-        .chain(sensor_positions.iter().map(|x| x.2))
-        .min()
-        .ok_or_else(|| anyhow::anyhow!("empty list"))?;
-    let min_y = sensor_positions
-        .iter()
-        .map(|x| x.1)
-        .chain(sensor_positions.iter().map(|x| x.3))
-        .min()
-        .ok_or_else(|| anyhow::anyhow!("empty list"))?;
-    let max_x = sensor_positions
-        .iter()
-        .map(|x| x.0)
-        .chain(sensor_positions.iter().map(|x| x.2))
-        .max()
-        .ok_or_else(|| anyhow::anyhow!("empty list"))?;
-    let max_y = sensor_positions
-        .iter()
-        .map(|x| x.1)
-        .chain(sensor_positions.iter().map(|x| x.3))
-        .max()
-        .ok_or_else(|| anyhow::anyhow!("empty list"))?;
-
-    let range_x = (max_x - min_x) as usize;
-    let range_y = (max_y - min_y) as usize;
-    let offset_x = -min_x as usize + range_x;
-    let offset_y = -min_y as usize + range_y;
-
-    let mut sensors = vec![];
-    for sensor in sensor_positions {
-        let pos = (
-            Row((sensor.1 + offset_y as i64) as usize),
-            Col((sensor.0 + offset_x as i64) as usize),
-        );
-        let beacon = (
-            Row((sensor.3 + offset_y as i64) as usize),
-            Col((sensor.2 + offset_x as i64) as usize),
-        );
-        sensors.push(Sensor::new(pos, beacon));
-    }
-    Ok(Map {
-        sensors,
-        range_x,
-        range_y,
-        offset_x,
-        offset_y,
-    })
+    Ok(Map { sensors })
 }
 
-pub fn part1(map: Map) -> Result<i64> {
-    let row = Row(2_000_000 + map.offset_y);
+pub fn part1(map: Map) -> Result<usize> {
+    let row = IRow(2_000_000);
+    let margin = map.largest_radius() as isize + 1;
     let mut total = 0;
-    for col in (0..(3 * map.range_x)).map(Col) {
+    for col in (-margin..(map.width() as isize + margin)).map(ICol) {
         if map.sensors.iter().any(|sensor| sensor.beacon == (row, col)) {
             continue;
         }
@@ -121,19 +113,18 @@ pub fn part1(map: Map) -> Result<i64> {
     Ok(total)
 }
 
-pub fn part2(map: Map) -> Result<usize> {
-    for row in (0..=4_000_000).map(|r| Row(r + map.offset_y)) {
-        let mut col = Col(map.offset_x);
+pub fn part2(map: Map) -> Result<isize> {
+    for row in (0..=4_000_000).map(IRow) {
+        let mut col = ICol(0);
         loop {
             if let Some(sensor) = map.nearby_sensor((row, col)) {
                 let row_radius = sensor.radius - sensor.pos.0.abs_diff(row).0;
-                col = sensor.pos.1 + row_radius + 1;
-                if col > Col(4_000_000 + map.offset_x) {
+                col = sensor.pos.1 + row_radius as isize + 1;
+                if col > ICol(4_000_000) {
                     break;
                 }
             } else {
-                return Ok((col.0 - map.offset_x) * 4_000_000
-                    + (row.0 - map.offset_y));
+                return Ok((col.0) * 4_000_000 + (row.0));
             }
         }
     }
