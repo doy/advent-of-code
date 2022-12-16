@@ -31,6 +31,8 @@ mod day13;
 mod day14;
 #[path = "../src/bin/2022/day15.rs"]
 mod day15;
+#[path = "../src/bin/2022/day16.rs"]
+mod day16;
 // NEXT MOD
 
 day!(2022, 1, day1);
@@ -48,6 +50,7 @@ day!(2022, 12, day12);
 day!(2022, 13, day13);
 day!(2022, 14, day14);
 day!(2022, 15, day15);
+day!(2022, 16, day16);
 // NEXT DAY
 
 fn bench_2022(c: &mut criterion::Criterion) {
@@ -68,6 +71,7 @@ fn bench_2022(c: &mut criterion::Criterion) {
             day_combined!(2022, 13, day13);
             day_combined!(2022, 14, day14);
             day_combined!(2022, 15, day15);
+            day_combined!(2022, 16, day16);
             // NEXT DAY COMBINED
         })
     });
@@ -91,5 +95,6 @@ criterion::criterion_main!(
     bench_2022day13,
     bench_2022day14,
     bench_2022day15,
+    bench_2022day16,
     // NEXT GROUP
 );
