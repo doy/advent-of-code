@@ -1,6 +1,6 @@
 use advent_of_code::prelude::*;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum Cell {
     Down,
     Right,
