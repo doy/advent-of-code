@@ -168,10 +168,10 @@ pub fn part2(mut elves: HashSet<(IRow, ICol)>) -> Result<usize> {
 fn test() {
     assert_eq!(
         part1(parse(parse::data(2022, 23).unwrap()).unwrap()).unwrap(),
-        0
+        4254
     );
     assert_eq!(
         part2(parse(parse::data(2022, 23).unwrap()).unwrap()).unwrap(),
-        0
+        992
     );
 }
