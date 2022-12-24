@@ -76,6 +76,34 @@ impl std::ops::Sub<Col> for usize {
     }
 }
 
+impl std::ops::Rem<usize> for Row {
+    type Output = Self;
+    fn rem(self, other: usize) -> Self::Output {
+        Self(self.0 % other)
+    }
+}
+
+impl std::ops::Rem<Row> for usize {
+    type Output = Row;
+    fn rem(self, other: Row) -> Self::Output {
+        Row(self % other.0)
+    }
+}
+
+impl std::ops::Rem<usize> for Col {
+    type Output = Self;
+    fn rem(self, other: usize) -> Self::Output {
+        Self(self.0 % other)
+    }
+}
+
+impl std::ops::Rem<Col> for usize {
+    type Output = Col;
+    fn rem(self, other: Col) -> Self::Output {
+        Col(self % other.0)
+    }
+}
+
 #[derive(
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
 )]
