@@ -109,7 +109,7 @@ pub fn digit_grid(lines: impl Iterator<Item = String>) -> Grid<u8> {
 pub fn grid<F, T>(lines: impl Iterator<Item = String>, mut f: F) -> Grid<T>
 where
     F: FnMut(u8, Row, Col) -> T,
-    T: Clone + Default + Eq + PartialEq + std::hash::Hash,
+    T: Default + Clone + Eq + PartialEq + std::hash::Hash,
 {
     lines
         .enumerate()

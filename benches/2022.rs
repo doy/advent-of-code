@@ -9,22 +9,6 @@ mod day10;
 mod day11;
 #[path = "../src/bin/2022/day12.rs"]
 mod day12;
-#[path = "../src/bin/2022/day2.rs"]
-mod day2;
-#[path = "../src/bin/2022/day3.rs"]
-mod day3;
-#[path = "../src/bin/2022/day4.rs"]
-mod day4;
-#[path = "../src/bin/2022/day5.rs"]
-mod day5;
-#[path = "../src/bin/2022/day6.rs"]
-mod day6;
-#[path = "../src/bin/2022/day7.rs"]
-mod day7;
-#[path = "../src/bin/2022/day8.rs"]
-mod day8;
-#[path = "../src/bin/2022/day9.rs"]
-mod day9;
 #[path = "../src/bin/2022/day13.rs"]
 mod day13;
 #[path = "../src/bin/2022/day14.rs"]
@@ -39,16 +23,34 @@ mod day17;
 mod day18;
 #[path = "../src/bin/2022/day19.rs"]
 mod day19;
+#[path = "../src/bin/2022/day2.rs"]
+mod day2;
 #[path = "../src/bin/2022/day20.rs"]
 mod day20;
 #[path = "../src/bin/2022/day21.rs"]
 mod day21;
+#[path = "../src/bin/2022/day22.rs"]
+mod day22;
 #[path = "../src/bin/2022/day23.rs"]
 mod day23;
 #[path = "../src/bin/2022/day24.rs"]
 mod day24;
 #[path = "../src/bin/2022/day25.rs"]
 mod day25;
+#[path = "../src/bin/2022/day3.rs"]
+mod day3;
+#[path = "../src/bin/2022/day4.rs"]
+mod day4;
+#[path = "../src/bin/2022/day5.rs"]
+mod day5;
+#[path = "../src/bin/2022/day6.rs"]
+mod day6;
+#[path = "../src/bin/2022/day7.rs"]
+mod day7;
+#[path = "../src/bin/2022/day8.rs"]
+mod day8;
+#[path = "../src/bin/2022/day9.rs"]
+mod day9;
 // NEXT MOD
 
 day!(2022, 1, day1);
@@ -72,6 +74,7 @@ day!(2022, 18, day18);
 day!(2022, 19, day19);
 day!(2022, 20, day20);
 day!(2022, 21, day21);
+day!(2022, 22, day22);
 day!(2022, 23, day23);
 day!(2022, 24, day24);
 day!(2022, 25, day25);
@@ -101,6 +104,7 @@ fn bench_2022(c: &mut criterion::Criterion) {
             day_combined!(2022, 19, day19);
             day_combined!(2022, 20, day20);
             day_combined!(2022, 21, day21);
+            day_combined!(2022, 22, day22);
             day_combined!(2022, 23, day23);
             day_combined!(2022, 24, day24);
             day_combined!(2022, 25, day25);
@@ -133,6 +137,7 @@ criterion::criterion_main!(
     bench_2022day19,
     bench_2022day20,
     bench_2022day21,
+    bench_2022day22,
     bench_2022day23,
     bench_2022day24,
     bench_2022day25,

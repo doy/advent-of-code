@@ -76,6 +76,34 @@ impl std::ops::Sub<Col> for usize {
     }
 }
 
+impl std::ops::Mul<usize> for Row {
+    type Output = Self;
+    fn mul(self, other: usize) -> Self::Output {
+        Self(self.0 * other)
+    }
+}
+
+impl std::ops::Mul<Row> for usize {
+    type Output = Row;
+    fn mul(self, other: Row) -> Self::Output {
+        Row(self * other.0)
+    }
+}
+
+impl std::ops::Mul<usize> for Col {
+    type Output = Self;
+    fn mul(self, other: usize) -> Self::Output {
+        Self(self.0 * other)
+    }
+}
+
+impl std::ops::Mul<Col> for usize {
+    type Output = Col;
+    fn mul(self, other: Col) -> Self::Output {
+        Col(self * other.0)
+    }
+}
+
 impl std::ops::Rem<usize> for Row {
     type Output = Self;
     fn rem(self, other: usize) -> Self::Output {
@@ -183,11 +211,11 @@ impl std::ops::Sub<ICol> for isize {
 }
 
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
-pub struct GridRow<T: Default + Clone + Eq + PartialEq + std::hash::Hash> {
+pub struct GridRow<T: Clone + Eq + PartialEq + std::hash::Hash> {
     cells: Vec<T>,
 }
 
-impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> GridRow<T> {
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> GridRow<T> {
     pub fn iter(&self) -> impl Iterator<Item = &T> + Clone {
         self.cells.iter()
     }
@@ -197,8 +225,8 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> GridRow<T> {
     }
 }
 
-impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
-    std::ops::Index<Col> for GridRow<T>
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::Index<Col>
+    for GridRow<T>
 {
     type Output = T;
     fn index(&self, col: Col) -> &Self::Output {
@@ -206,29 +234,26 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
     }
 }
 
-impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
-    std::ops::IndexMut<Col> for GridRow<T>
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::IndexMut<Col>
+    for GridRow<T>
 {
     fn index_mut(&mut self, col: Col) -> &mut Self::Output {
         &mut self.cells[col.0]
     }
 }
 
-#[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
-pub struct Grid<T: Default + Clone + Eq + PartialEq + std::hash::Hash> {
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub struct Grid<T: Clone + Eq + PartialEq + std::hash::Hash> {
     rows: Vec<GridRow<T>>,
 }
 
-impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
-    pub fn grow(&mut self, rows: Row, cols: Col) {
-        self.rows
-            .resize_with(rows.0.max(self.rows.len()), GridRow::default);
-        for row in &mut self.rows {
-            row.cells
-                .resize_with(cols.0.max(row.cells.len()), T::default);
-        }
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> Default for Grid<T> {
+    fn default() -> Self {
+        Self { rows: vec![] }
     }
+}
 
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
     pub fn unshift_rows(&mut self, count: usize) {
         self.rows = self.rows.split_off(count);
     }
@@ -299,14 +324,19 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
     }
 }
 
-impl<
-        T: Default
-            + Clone
-            + Eq
-            + PartialEq
-            + std::hash::Hash
-            + std::fmt::Display,
-    > Grid<T>
+impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
+    pub fn grow(&mut self, rows: Row, cols: Col) {
+        self.rows
+            .resize_with(rows.0.max(self.rows.len()), GridRow::default);
+        for row in &mut self.rows {
+            row.cells
+                .resize_with(cols.0.max(row.cells.len()), T::default);
+        }
+    }
+}
+
+impl<T: Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display>
+    Grid<T>
 {
     pub fn display_packed<F: Fn(&T) -> char>(
         &self,
@@ -316,14 +346,8 @@ impl<
     }
 }
 
-impl<
-        T: Default
-            + Clone
-            + Eq
-            + PartialEq
-            + std::hash::Hash
-            + std::fmt::Display,
-    > std::fmt::Display for Grid<T>
+impl<T: Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display>
+    std::fmt::Display for Grid<T>
 {
     fn fmt(
         &self,
@@ -339,8 +363,8 @@ impl<
     }
 }
 
-impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
-    std::ops::Index<Row> for Grid<T>
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::Index<Row>
+    for Grid<T>
 {
     type Output = GridRow<T>;
     fn index(&self, row: Row) -> &Self::Output {
@@ -348,8 +372,8 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
     }
 }
 
-impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
-    std::ops::IndexMut<Row> for Grid<T>
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::IndexMut<Row>
+    for Grid<T>
 {
     fn index_mut(&mut self, row: Row) -> &mut Self::Output {
         &mut self.rows[row.0]
@@ -363,9 +387,19 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
     where
         I: IntoIterator<Item = Vec<T>>,
     {
-        Self {
+        let mut self_ = Self {
             rows: iter.into_iter().map(|v| GridRow { cells: v }).collect(),
-        }
+        };
+        let nrows = self_.rows.len();
+        let ncols = self_
+            .rows
+            .iter()
+            .map(|row| row.cells.len())
+            .max()
+            .unwrap_or(0);
+        self_.grow(Row(nrows), Col(ncols));
+
+        self_
     }
 }
 
@@ -387,7 +421,7 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
 
 pub struct DisplayPacked<
     'a,
-    T: Default + Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display,
+    T: Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display,
     F: Fn(&'a T) -> char,
 >(&'a Grid<T>, F);
 

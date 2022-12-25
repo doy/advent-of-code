@@ -14,14 +14,6 @@ use advent_of_code::prelude::*;
 mod day1;
 mod day10;
 mod day11;
-mod day2;
-mod day3;
-mod day4;
-mod day5;
-mod day6;
-mod day7;
-mod day8;
-mod day9;
 mod day12;
 mod day13;
 mod day14;
@@ -30,11 +22,20 @@ mod day16;
 mod day17;
 mod day18;
 mod day19;
+mod day2;
 mod day20;
 mod day21;
+mod day22;
 mod day23;
 mod day24;
 mod day25;
+mod day3;
+mod day4;
+mod day5;
+mod day6;
+mod day7;
+mod day8;
+mod day9;
 // NEXT MOD
 
 #[paw::main]
@@ -62,6 +63,7 @@ fn main(opt: Opt) -> Result<()> {
         19 => advent_of_code::day!(2022, opt.day, opt.puzzle, day19),
         20 => advent_of_code::day!(2022, opt.day, opt.puzzle, day20),
         21 => advent_of_code::day!(2022, opt.day, opt.puzzle, day21),
+        22 => advent_of_code::day!(2022, opt.day, opt.puzzle, day22),
         23 => advent_of_code::day!(2022, opt.day, opt.puzzle, day23),
         24 => advent_of_code::day!(2022, opt.day, opt.puzzle, day24),
         25 => advent_of_code::day!(2022, opt.day, opt.puzzle, day25),
