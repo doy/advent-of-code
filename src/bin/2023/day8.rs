@@ -14,6 +14,17 @@ pub struct Network {
     graph: HashMap<String, (String, String)>,
 }
 
+fn gcd(mut a: usize, mut b: usize) -> usize {
+    loop {
+        let r = a % b;
+        if r == 0 {
+            return b;
+        }
+        a = b;
+        b = r;
+    }
+}
+
 pub fn parse(fh: File) -> Result<Network> {
     let mut lines = parse::raw_lines(fh);
     let directions = lines.next().unwrap();
@@ -57,7 +68,61 @@ pub fn part1(network: Network) -> Result<i64> {
 }
 
 pub fn part2(network: Network) -> Result<i64> {
-    todo!()
+    let vertices: Vec<String> = network
+        .graph
+        .keys()
+        .filter(|v| v.ends_with('A'))
+        .cloned()
+        .collect();
+
+    let mut cycles: HashMap<_, HashMap<(String, usize), Vec<usize>>> =
+        HashMap::new();
+    for start_vertex in vertices {
+        let mut seen = HashMap::new();
+        let mut vertex = start_vertex.clone();
+        let mut distance = 0;
+
+        loop {
+            if vertex.ends_with('Z') {
+                let entry: &mut Vec<_> = seen
+                    .entry((
+                        vertex.clone(),
+                        distance % network.directions.len(),
+                    ))
+                    .or_default();
+                if entry.len() >= 2 {
+                    break;
+                }
+                entry.push(distance);
+            }
+            let next = network.graph[&vertex].clone();
+            vertex = match network.directions
+                [distance % network.directions.len()]
+            {
+                Direction::Left => next.0,
+                Direction::Right => next.1,
+            };
+            distance += 1;
+        }
+        cycles.insert(
+            start_vertex,
+            seen.into_iter()
+                .filter(|(_, distances)| distances.len() == 2)
+                .collect(),
+        );
+    }
+
+    // this is pretty dumb but it looks like we're supposed to notice that
+    // the input data is very specifically shaped to make this easy
+    let cycles: Vec<_> = cycles
+        .values()
+        .map(|cycle| cycle.values().next().unwrap()[0])
+        .collect();
+    let gcd = cycles.iter().copied().reduce(gcd).unwrap();
+    Ok(i64::try_from(
+        gcd * cycles.iter().copied().map(|n| n / gcd).product::<usize>(),
+    )
+    .unwrap())
 }
 
 #[test]
