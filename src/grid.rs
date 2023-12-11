@@ -333,6 +333,19 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
                 .resize_with(cols.0.max(row.cells.len()), T::default);
         }
     }
+
+    pub fn insert_row(&mut self, row: Row) {
+        let mut cells = vec![];
+        cells.resize_with(self.cols().0, Default::default);
+        self.rows.insert(row.0, GridRow { cells });
+    }
+
+    pub fn insert_col(&mut self, col: Col) {
+        for row in self.each_row() {
+            let row = &mut self[row];
+            row.cells.insert(col.0, Default::default());
+        }
+    }
 }
 
 impl<T: Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display>
