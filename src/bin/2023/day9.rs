@@ -40,10 +40,10 @@ pub fn part2(report: Vec<Vec<i64>>) -> Result<i64> {
 fn test() {
     assert_eq!(
         part1(parse(parse::data(2023, 9).unwrap()).unwrap()).unwrap(),
-        0
+        1861775706
     );
     assert_eq!(
         part2(parse(parse::data(2023, 9).unwrap()).unwrap()).unwrap(),
-        0
+        1082
     );
 }

@@ -185,6 +185,6 @@ fn test() {
     );
     assert_eq!(
         part2(parse(parse::data(2023, 10).unwrap()).unwrap()).unwrap(),
-        0
+        317
     );
 }
