@@ -269,6 +269,10 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         (0..self.rows().0).map(Row)
     }
 
+    pub fn row_vec(&self, row: Row) -> Vec<T> {
+        self.rows[row.0].cells.clone()
+    }
+
     pub fn cols(&self) -> Col {
         Col(self.rows[0].cells.len())
     }
@@ -278,6 +282,10 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
     ) -> impl Iterator<Item = Col> + DoubleEndedIterator + ExactSizeIterator
     {
         (0..self.cols().0).map(Col)
+    }
+
+    pub fn col_vec(&self, col: Col) -> Vec<T> {
+        self.rows.iter().map(|row| row[col].clone()).collect()
     }
 
     pub fn get(&self, row: Row) -> Option<&GridRow<T>> {
