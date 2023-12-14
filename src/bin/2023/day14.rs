@@ -38,64 +38,91 @@ impl TryFrom<u8> for Cell {
     }
 }
 
-fn tilt(
-    mut map: Grid<Cell>,
-    roll: impl Fn(Row, Col, Row, Col) -> Option<(Row, Col)>,
-) -> Grid<Cell> {
-    loop {
-        let mut changed = false;
-        for row in map.each_row() {
-            for col in map.each_col() {
-                let Some((next_row, next_col)) =
-                    roll(row, col, map.rows(), map.cols())
-                else {
-                    continue;
-                };
-                if map[row][col] == Cell::Round
-                    && map[next_row][next_col] == Cell::Floor
-                {
-                    map[next_row][next_col] = Cell::Round;
-                    map[row][col] = Cell::Floor;
-                    changed = true;
+fn tilt_north(map: &mut Grid<Cell>) {
+    for row in map.each_row().skip(1) {
+        for col in map.each_col() {
+            if map[row][col] != Cell::Round {
+                continue;
+            }
+            let mut dest_row = row;
+            while dest_row > Row(0) {
+                let next_row = dest_row - 1;
+                if map[next_row][col] != Cell::Floor {
+                    break;
                 }
+                dest_row = next_row;
+            }
+            if row != dest_row {
+                map[dest_row][col] = Cell::Round;
+                map[row][col] = Cell::Floor;
             }
         }
-        if !changed {
-            break;
+    }
+}
+
+fn tilt_west(map: &mut Grid<Cell>) {
+    for row in map.each_row() {
+        for col in map.each_col().skip(1) {
+            if map[row][col] != Cell::Round {
+                continue;
+            }
+            let mut dest_col = col;
+            while dest_col > Col(0) {
+                let next_col = dest_col - 1;
+                if map[row][next_col] != Cell::Floor {
+                    break;
+                }
+                dest_col = next_col;
+            }
+            if col != dest_col {
+                map[row][dest_col] = Cell::Round;
+                map[row][col] = Cell::Floor;
+            }
         }
     }
-    map
 }
 
-fn north(row: Row, col: Col, _rows: Row, _cols: Col) -> Option<(Row, Col)> {
-    if row > Row(0) {
-        Some((row - 1, col))
-    } else {
-        None
+fn tilt_south(map: &mut Grid<Cell>) {
+    for row in map.each_row().rev().skip(1) {
+        for col in map.each_col() {
+            if map[row][col] != Cell::Round {
+                continue;
+            }
+            let mut dest_row = row;
+            while dest_row < map.rows() - 1 {
+                let next_row = dest_row + 1;
+                if map[next_row][col] != Cell::Floor {
+                    break;
+                }
+                dest_row = next_row;
+            }
+            if row != dest_row {
+                map[dest_row][col] = Cell::Round;
+                map[row][col] = Cell::Floor;
+            }
+        }
     }
 }
 
-fn west(row: Row, col: Col, _rows: Row, _cols: Col) -> Option<(Row, Col)> {
-    if col > Col(0) {
-        Some((row, col - 1))
-    } else {
-        None
-    }
-}
-
-fn south(row: Row, col: Col, rows: Row, _cols: Col) -> Option<(Row, Col)> {
-    if row < rows - 1 {
-        Some((row + 1, col))
-    } else {
-        None
-    }
-}
-
-fn east(row: Row, col: Col, _rows: Row, cols: Col) -> Option<(Row, Col)> {
-    if col < cols - 1 {
-        Some((row, col + 1))
-    } else {
-        None
+fn tilt_east(map: &mut Grid<Cell>) {
+    for row in map.each_row() {
+        for col in map.each_col().rev().skip(1) {
+            if map[row][col] != Cell::Round {
+                continue;
+            }
+            let mut dest_col = col;
+            while dest_col < map.cols() - 1 {
+                let next_col = dest_col + 1;
+                if map[row][next_col] != Cell::Floor {
+                    break;
+                }
+                dest_col = next_col;
+            }
+            if col != dest_col {
+                map[row][dest_col] = Cell::Round;
+                map[row][col] = Cell::Floor;
+            }
+        }
     }
 }
 
@@ -117,34 +144,43 @@ pub fn parse(fh: File) -> Result<Grid<Cell>> {
     }))
 }
 
-pub fn part1(map: Grid<Cell>) -> Result<i64> {
-    Ok(weight(tilt(map, north)).try_into().unwrap())
+pub fn part1(mut map: Grid<Cell>) -> Result<i64> {
+    tilt_north(&mut map);
+    Ok(weight(map).try_into().unwrap())
 }
 
 pub fn part2(mut map: Grid<Cell>) -> Result<i64> {
-    let orig_map = map.clone();
     let mut seen = HashMap::new();
     let mut i = 0;
     loop {
-        map = tilt(tilt(tilt(tilt(map, north), west), south), east);
+        i += 1;
+        tilt_north(&mut map);
+        tilt_west(&mut map);
+        tilt_south(&mut map);
+        tilt_east(&mut map);
         let seen_times: &mut Vec<_> = seen.entry(map.clone()).or_default();
         seen_times.push(i);
         if seen_times.len() > 1 {
             break;
         }
-        i += 1;
     }
     let found = seen
-        .into_iter()
+        .iter()
         .find_map(|(_, v)| if v.len() == 2 { Some(v) } else { None })
         .unwrap();
     let iterations =
         found[0] + ((1_000_000_000 - found[0]) % (found[1] - found[0]));
-    map = orig_map;
-    for _ in 0..iterations {
-        map = tilt(tilt(tilt(tilt(map, north), west), south), east);
-    }
-    Ok(weight(map).try_into().unwrap())
+    let found_map = seen
+        .into_iter()
+        .find_map(|(map, v)| {
+            if v.contains(&iterations) {
+                Some(map)
+            } else {
+                None
+            }
+        })
+        .unwrap();
+    Ok(weight(found_map).try_into().unwrap())
 }
 
 #[test]
