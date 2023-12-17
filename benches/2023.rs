@@ -33,6 +33,8 @@ mod day14;
 mod day15;
 #[path = "../src/bin/2023/day16.rs"]
 mod day16;
+#[path = "../src/bin/2023/day17.rs"]
+mod day17;
 // NEXT MOD
 
 day!(2023, 1, day1);
@@ -51,6 +53,7 @@ day!(2023, 13, day13);
 day!(2023, 14, day14);
 day!(2023, 15, day15);
 day!(2023, 16, day16);
+day!(2023, 17, day17);
 // NEXT DAY
 
 fn bench_2023(c: &mut criterion::Criterion) {
@@ -72,6 +75,7 @@ fn bench_2023(c: &mut criterion::Criterion) {
             day_combined!(2023, 14, day14);
             day_combined!(2023, 15, day15);
             day_combined!(2023, 16, day16);
+            day_combined!(2023, 17, day17);
             // NEXT DAY COMBINED
         })
     });
@@ -96,5 +100,6 @@ criterion::criterion_main!(
     bench_2023day14,
     bench_2023day15,
     bench_2023day16,
+    bench_2023day17,
     // NEXT GROUP
 );
