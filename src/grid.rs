@@ -34,6 +34,13 @@ impl std::ops::Add<Row> for usize {
     }
 }
 
+impl std::ops::Add<Row> for Row {
+    type Output = Row;
+    fn add(self, other: Row) -> Self::Output {
+        Row(self.0 + other.0)
+    }
+}
+
 impl std::ops::Add<usize> for Col {
     type Output = Self;
     fn add(self, other: usize) -> Self::Output {
@@ -45,6 +52,13 @@ impl std::ops::Add<Col> for usize {
     type Output = Col;
     fn add(self, other: Col) -> Self::Output {
         Col(self + other.0)
+    }
+}
+
+impl std::ops::Add<Col> for Col {
+    type Output = Col;
+    fn add(self, other: Col) -> Self::Output {
+        Col(self.0 + other.0)
     }
 }
 
@@ -168,6 +182,13 @@ impl std::ops::Add<IRow> for isize {
     }
 }
 
+impl std::ops::Add<IRow> for IRow {
+    type Output = IRow;
+    fn add(self, other: IRow) -> Self::Output {
+        IRow(self.0 + other.0)
+    }
+}
+
 impl std::ops::Add<isize> for ICol {
     type Output = Self;
     fn add(self, other: isize) -> Self::Output {
@@ -179,6 +200,13 @@ impl std::ops::Add<ICol> for isize {
     type Output = ICol;
     fn add(self, other: ICol) -> Self::Output {
         ICol(self + other.0)
+    }
+}
+
+impl std::ops::Add<ICol> for ICol {
+    type Output = ICol;
+    fn add(self, other: ICol) -> Self::Output {
+        ICol(self.0 + other.0)
     }
 }
 
@@ -207,6 +235,34 @@ impl std::ops::Sub<ICol> for isize {
     type Output = ICol;
     fn sub(self, other: ICol) -> Self::Output {
         ICol(self - other.0)
+    }
+}
+
+impl std::ops::Mul<isize> for IRow {
+    type Output = Self;
+    fn mul(self, other: isize) -> Self::Output {
+        Self(self.0 * other)
+    }
+}
+
+impl std::ops::Mul<IRow> for isize {
+    type Output = IRow;
+    fn mul(self, other: IRow) -> Self::Output {
+        IRow(self * other.0)
+    }
+}
+
+impl std::ops::Mul<isize> for ICol {
+    type Output = Self;
+    fn mul(self, other: isize) -> Self::Output {
+        Self(self.0 * other)
+    }
+}
+
+impl std::ops::Mul<ICol> for isize {
+    type Output = ICol;
+    fn mul(self, other: ICol) -> Self::Output {
+        ICol(self * other.0)
     }
 }
 
@@ -328,6 +384,24 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
             cols: self.cols().0,
             diagonal,
             pos: 0,
+        }
+    }
+
+    pub fn flood_fill(
+        &mut self,
+        row: Row,
+        col: Col,
+        fill: &T,
+        diagonal: bool,
+    ) {
+        let mut todo = vec![(row, col)];
+        while let Some((row, col)) = todo.pop() {
+            self[row][col] = fill.clone();
+            for (row, col) in self.adjacent(row, col, diagonal) {
+                if self[row][col] != *fill {
+                    todo.push((row, col));
+                }
+            }
         }
     }
 }
