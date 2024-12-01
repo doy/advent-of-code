@@ -3,46 +3,6 @@
 
 use advent_of_code::prelude::*;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl std::fmt::Display for Direction {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Up => write!(f, "^"),
-            Self::Down => write!(f, "v"),
-            Self::Left => write!(f, "<"),
-            Self::Right => write!(f, ">"),
-        }
-    }
-}
-
-impl Direction {
-    fn apply(self, pos: (Row, Col), size: (Row, Col)) -> (Row, Col) {
-        match self {
-            Self::Up => ((size.0 .0 + pos.0 - 1) % size.0 .0, pos.1),
-            Self::Down => ((pos.0 + 1) % size.0 .0, pos.1),
-            Self::Left => (pos.0, (size.1 .0 + pos.1 - 1) % size.1 .0),
-            Self::Right => (pos.0, (pos.1 + 1) % size.1 .0),
-        }
-    }
-
-    fn parse(c: u8) -> Option<Self> {
-        match c {
-            b'^' => Some(Self::Up),
-            b'v' => Some(Self::Down),
-            b'<' => Some(Self::Left),
-            b'>' => Some(Self::Right),
-            _ => None,
-        }
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct Map {
     blizzards: HashSet<((Row, Col), Direction)>,
@@ -85,7 +45,7 @@ impl Map {
                 .blizzards
                 .iter()
                 .map(|(pos, direction)| {
-                    (direction.apply(*pos, self.size), *direction)
+                    (direction.move_wrapped(*pos, self.size), *direction)
                 })
                 .collect(),
             size: self.size,
@@ -135,7 +95,7 @@ pub fn parse(fh: File) -> Result<Map> {
         }
         for (col, c) in line.as_bytes().iter().enumerate() {
             let col = Col(col);
-            if let Some(direction) = Direction::parse(*c) {
+            if let Ok(direction) = Direction::try_from(*c) {
                 blizzards.insert(((row, col - 1), direction));
             }
         }

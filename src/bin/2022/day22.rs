@@ -18,42 +18,12 @@ enum Step {
     Right,
 }
 
-#[derive(Clone, Copy, Eq, PartialEq, Hash, Debug)]
-enum Direction {
-    Right,
-    Down,
-    Left,
-    Up,
-}
-
-impl std::convert::From<Direction> for usize {
-    fn from(direction: Direction) -> Self {
-        match direction {
-            Direction::Right => 0,
-            Direction::Down => 1,
-            Direction::Left => 2,
-            Direction::Up => 3,
-        }
-    }
-}
-
-impl Direction {
-    fn left(&self) -> Self {
-        match self {
-            Direction::Right => Direction::Up,
-            Direction::Down => Direction::Right,
-            Direction::Left => Direction::Down,
-            Direction::Up => Direction::Left,
-        }
-    }
-
-    fn right(&self) -> Self {
-        match self {
-            Direction::Right => Direction::Down,
-            Direction::Down => Direction::Left,
-            Direction::Left => Direction::Up,
-            Direction::Up => Direction::Right,
-        }
+fn direction_value(direction: Direction) -> usize {
+    match direction {
+        Direction::Right => 0,
+        Direction::Down => 1,
+        Direction::Left => 2,
+        Direction::Up => 3,
     }
 }
 
@@ -150,8 +120,8 @@ pub fn part1(map: Map) -> Result<usize> {
     let mut facing = Direction::Right;
     for step in &map.path {
         match step {
-            Step::Left => facing = facing.left(),
-            Step::Right => facing = facing.right(),
+            Step::Left => facing = facing.turn_left(),
+            Step::Right => facing = facing.turn_right(),
             Step::Forward(n) => {
                 for _ in 0..*n {
                     pos = map.step(pos, facing);
@@ -159,7 +129,7 @@ pub fn part1(map: Map) -> Result<usize> {
             }
         }
     }
-    Ok((pos.0 .0 + 1) * 1000 + (pos.1 .0 + 1) * 4 + usize::from(facing))
+    Ok((pos.0 .0 + 1) * 1000 + (pos.1 .0 + 1) * 4 + direction_value(facing))
 }
 
 pub fn part2(map: Map) -> Result<usize> {

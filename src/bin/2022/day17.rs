@@ -3,24 +3,6 @@
 
 use advent_of_code::prelude::*;
 
-#[derive(Clone, Copy, Debug)]
-pub enum Direction {
-    Left,
-    Right,
-}
-
-impl TryFrom<u8> for Direction {
-    type Error = Error;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            b'<' => Ok(Self::Left),
-            b'>' => Ok(Self::Right),
-            _ => Err(anyhow!("unknown char {}", value)),
-        }
-    }
-}
-
 struct Piece(Vec<(Row, Col)>);
 static PIECES: once_cell::sync::Lazy<[Piece; 5]> =
     once_cell::sync::Lazy::new(|| {
@@ -112,6 +94,7 @@ impl Chamber {
         let new_col = Col(match direction {
             Direction::Left => col.0.saturating_sub(1),
             Direction::Right => col.0.saturating_add(1),
+            Direction::Up | Direction::Down => unreachable!(),
         });
         let piece = self.piece();
         if !self.collides(piece, (row, new_col)) {

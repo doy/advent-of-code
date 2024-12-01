@@ -320,8 +320,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 
     pub fn each_row(
         &self,
-    ) -> impl DoubleEndedIterator<Item = Row> + ExactSizeIterator
-    {
+    ) -> impl DoubleEndedIterator<Item = Row> + ExactSizeIterator {
         (0..self.rows().0).map(Row)
     }
 
@@ -335,8 +334,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 
     pub fn each_col(
         &self,
-    ) -> impl DoubleEndedIterator<Item = Col> + ExactSizeIterator
-    {
+    ) -> impl DoubleEndedIterator<Item = Col> + ExactSizeIterator {
         (0..self.cols().0).map(Col)
     }
 
@@ -581,6 +579,157 @@ impl Iterator for Adjacent {
                 Row(self.row + usize::from(pos_row) - 1),
                 Col(self.col + usize::from(pos_col) - 1),
             ));
+        }
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+pub enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+impl std::fmt::Display for Direction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Up => write!(f, "^"),
+            Self::Down => write!(f, "v"),
+            Self::Left => write!(f, "<"),
+            Self::Right => write!(f, ">"),
+        }
+    }
+}
+
+impl std::str::FromStr for Direction {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "^" => Ok(Self::Up),
+            "v" => Ok(Self::Down),
+            "<" => Ok(Self::Left),
+            ">" => Ok(Self::Right),
+            "U" => Ok(Self::Up),
+            "D" => Ok(Self::Down),
+            "L" => Ok(Self::Left),
+            "R" => Ok(Self::Right),
+            _ => Err(()),
+        }
+    }
+}
+
+impl std::convert::TryFrom<char> for Direction {
+    type Error = ();
+
+    fn try_from(c: char) -> Result<Self, Self::Error> {
+        match c {
+            '^' => Ok(Self::Up),
+            'v' => Ok(Self::Down),
+            '<' => Ok(Self::Left),
+            '>' => Ok(Self::Right),
+            'U' => Ok(Self::Up),
+            'D' => Ok(Self::Down),
+            'L' => Ok(Self::Left),
+            'R' => Ok(Self::Right),
+            _ => Err(()),
+        }
+    }
+}
+
+impl std::convert::TryFrom<u8> for Direction {
+    type Error = ();
+
+    fn try_from(c: u8) -> Result<Self, Self::Error> {
+        match c {
+            b'^' => Ok(Self::Up),
+            b'v' => Ok(Self::Down),
+            b'<' => Ok(Self::Left),
+            b'>' => Ok(Self::Right),
+            b'U' => Ok(Self::Up),
+            b'D' => Ok(Self::Down),
+            b'L' => Ok(Self::Left),
+            b'R' => Ok(Self::Right),
+            _ => Err(()),
+        }
+    }
+}
+
+impl Direction {
+    pub fn from_pos(row: Row, col: Col, new_row: Row, new_col: Col) -> Self {
+        if row.abs_diff(new_row) == Row(1) && col.abs_diff(new_col) == Col(0)
+        {
+            if row > new_row {
+                Self::Up
+            } else {
+                Self::Down
+            }
+        } else if col.abs_diff(new_col) == Col(1)
+            && row.abs_diff(new_row) == Row(0)
+        {
+            if col > new_col {
+                Self::Left
+            } else {
+                Self::Right
+            }
+        } else {
+            panic!("invalid direction ({row:?}, {col:?}) -> ({new_row:?}, {new_col:?})")
+        }
+    }
+
+    pub fn move_wrapped(
+        self,
+        pos: (Row, Col),
+        size: (Row, Col),
+    ) -> (Row, Col) {
+        match self {
+            Self::Up => ((size.0 .0 + pos.0 - 1) % size.0 .0, pos.1),
+            Self::Down => ((pos.0 + 1) % size.0 .0, pos.1),
+            Self::Left => (pos.0, (size.1 .0 + pos.1 - 1) % size.1 .0),
+            Self::Right => (pos.0, (pos.1 + 1) % size.1 .0),
+        }
+    }
+
+    pub fn horizontal(&self) -> bool {
+        matches!(self, Self::Left | Self::Right)
+    }
+
+    pub fn increasing(&self) -> bool {
+        matches!(self, Self::Down | Self::Right)
+    }
+
+    pub fn turns(&self) -> [Self; 2] {
+        match self {
+            Self::Up | Self::Down => [Self::Left, Self::Right],
+            Self::Left | Self::Right => [Self::Up, Self::Down],
+        }
+    }
+
+    pub fn turn_left(&self) -> Self {
+        match self {
+            Direction::Up => Direction::Left,
+            Direction::Down => Direction::Right,
+            Direction::Left => Direction::Down,
+            Direction::Right => Direction::Up,
+        }
+    }
+
+    pub fn turn_right(&self) -> Self {
+        match self {
+            Direction::Up => Direction::Right,
+            Direction::Down => Direction::Left,
+            Direction::Left => Direction::Up,
+            Direction::Right => Direction::Down,
+        }
+    }
+
+    pub fn offset(&self) -> (IRow, ICol) {
+        match self {
+            Self::Up => (IRow(-1), ICol(0)),
+            Self::Down => (IRow(1), ICol(0)),
+            Self::Left => (IRow(0), ICol(-1)),
+            Self::Right => (IRow(0), ICol(1)),
         }
     }
 }

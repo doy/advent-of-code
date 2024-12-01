@@ -24,33 +24,6 @@ fn add_offset(
     None
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl Direction {
-    fn horizontal(&self) -> bool {
-        matches!(self, Self::Left | Self::Right)
-    }
-
-    fn increasing(&self) -> bool {
-        matches!(self, Self::Down | Self::Right)
-    }
-
-    fn offset(&self) -> (IRow, ICol) {
-        match self {
-            Self::Up => (IRow(-1), ICol(0)),
-            Self::Down => (IRow(1), ICol(0)),
-            Self::Left => (IRow(0), ICol(-1)),
-            Self::Right => (IRow(0), ICol(1)),
-        }
-    }
-}
-
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash, Default)]
 pub enum Tile {
     #[default]

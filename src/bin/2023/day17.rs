@@ -24,61 +24,6 @@ fn add_offset(
     None
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl Direction {
-    fn from_pos(row: Row, col: Col, new_row: Row, new_col: Col) -> Self {
-        if row.abs_diff(new_row) == Row(1) && col.abs_diff(new_col) == Col(0)
-        {
-            if row > new_row {
-                Self::Up
-            } else {
-                Self::Down
-            }
-        } else if col.abs_diff(new_col) == Col(1)
-            && row.abs_diff(new_row) == Row(0)
-        {
-            if col > new_col {
-                Self::Left
-            } else {
-                Self::Right
-            }
-        } else {
-            panic!("invalid direction ({row:?}, {col:?}) -> ({new_row:?}, {new_col:?})")
-        }
-    }
-
-    fn horizontal(&self) -> bool {
-        matches!(self, Self::Left | Self::Right)
-    }
-
-    fn increasing(&self) -> bool {
-        matches!(self, Self::Down | Self::Right)
-    }
-
-    fn turns(&self) -> [Self; 2] {
-        match self {
-            Self::Up | Self::Down => [Self::Left, Self::Right],
-            Self::Left | Self::Right => [Self::Up, Self::Down],
-        }
-    }
-
-    fn offset(&self) -> (IRow, ICol) {
-        match self {
-            Self::Up => (IRow(-1), ICol(0)),
-            Self::Down => (IRow(1), ICol(0)),
-            Self::Left => (IRow(0), ICol(-1)),
-            Self::Right => (IRow(0), ICol(1)),
-        }
-    }
-}
-
 #[derive(Debug)]
 pub struct Crucible {
     map: Grid<u8>,

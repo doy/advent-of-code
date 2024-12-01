@@ -4,28 +4,6 @@
 use advent_of_code::prelude::*;
 
 #[derive(Debug)]
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl std::str::FromStr for Direction {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "U" => Self::Up,
-            "D" => Self::Down,
-            "L" => Self::Left,
-            "R" => Self::Right,
-            _ => return Err(()),
-        })
-    }
-}
-
-#[derive(Debug)]
 pub struct Move {
     dir: Direction,
     count: usize,

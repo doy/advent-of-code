@@ -3,12 +3,6 @@
 
 use advent_of_code::prelude::*;
 
-#[derive(Clone, Copy)]
-enum Direction {
-    Left,
-    Right,
-}
-
 pub struct Network {
     directions: Vec<Direction>,
     graph: HashMap<String, (String, String)>,
@@ -60,6 +54,7 @@ pub fn part1(network: Network) -> Result<i64> {
         {
             Direction::Left => next.0,
             Direction::Right => next.1,
+            Direction::Up | Direction::Down => unreachable!(),
         };
         distance += 1;
     }
@@ -101,6 +96,7 @@ pub fn part2(network: Network) -> Result<i64> {
             {
                 Direction::Left => next.0,
                 Direction::Right => next.1,
+                Direction::Up | Direction::Down => unreachable!(),
             };
             distance += 1;
         }
