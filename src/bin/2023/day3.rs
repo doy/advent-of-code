@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 pub fn parse(fh: File) -> Result<Grid<u8>> {
@@ -31,7 +28,6 @@ pub fn part1(schematic: Grid<u8>) -> Result<i64> {
 
     let mut total = 0;
     'number: for (n, row, col) in numbers {
-        let len = n.ilog10() + 1;
         for offset in 0..=n.ilog10() {
             let col = Col(col.0 - usize::try_from(offset).unwrap() - 1);
             for (row, col) in schematic.adjacent(row, col, true) {
@@ -71,7 +67,6 @@ pub fn part2(schematic: Grid<u8>) -> Result<i64> {
 
     let mut gears: HashMap<_, HashSet<_>> = HashMap::new();
     for (n, nrow, ncol) in numbers {
-        let len = n.ilog10() + 1;
         for offset in 0..=n.ilog10() {
             for (grow, gcol) in schematic.adjacent(
                 nrow,

@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash, Default)]
@@ -128,7 +125,7 @@ fn tilt_east(map: &mut Grid<Cell>) {
 
 fn weight(map: Grid<Cell>) -> usize {
     map.indexed_cells()
-        .map(|((row, col), cell)| {
+        .map(|((row, _), cell)| {
             if *cell == Cell::Round {
                 (map.rows() - row.0).0
             } else {

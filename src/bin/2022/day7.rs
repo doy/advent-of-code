@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 pub enum Node {
@@ -35,20 +32,22 @@ pub fn parse(fh: File) -> Result<Tree<String, Node>> {
     let mut path = vec![];
 
     while let Some(cmdline) = lines.by_ref().next() {
-        let Some(captures) = &regex_captures!(
-            r"^\$ (cd|ls)(?: (.*))?$",
-            &cmdline
-        )
-        else { bail!("didn't match cmdline: '{}'", cmdline) };
-        let Some(cmd) = captures.get(1)
-        else { bail!("no cmd found in cmdline: '{}'", cmdline) };
+        let Some(captures) =
+            &regex_captures!(r"^\$ (cd|ls)(?: (.*))?$", &cmdline)
+        else {
+            bail!("didn't match cmdline: '{}'", cmdline)
+        };
+        let Some(cmd) = captures.get(1) else {
+            bail!("no cmd found in cmdline: '{}'", cmdline)
+        };
 
         let pwd = root.at_mut(&path).unwrap();
 
         match cmd.as_str() {
             "cd" => {
-                let Some(arg) = captures.get(2)
-                else { bail!("no arg found for cd: '{}'", cmdline) };
+                let Some(arg) = captures.get(2) else {
+                    bail!("no arg found for cd: '{}'", cmdline)
+                };
                 match arg.as_str() {
                     ".." => {
                         path.pop();
@@ -66,17 +65,14 @@ pub fn parse(fh: File) -> Result<Tree<String, Node>> {
                 }
             }
             "ls" => loop {
-                let Some(lsline) = lines.peek()
-                    else { break };
-                let Some(captures) = &regex_captures!(
-                        r"^(dir|[0-9]+) (.*)$",
-                        lsline
-                    )
-                    else { break };
-                let Some(data) = captures.get(1)
-                    else { break };
-                let Some(name) = captures.get(2)
-                    else { break };
+                let Some(lsline) = lines.peek() else { break };
+                let Some(captures) =
+                    &regex_captures!(r"^(dir|[0-9]+) (.*)$", lsline)
+                else {
+                    break;
+                };
+                let Some(data) = captures.get(1) else { break };
+                let Some(name) = captures.get(2) else { break };
 
                 let node = match data.as_str() {
                     "dir" => Node::new_dir(),

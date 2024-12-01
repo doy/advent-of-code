@@ -1,8 +1,6 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
+#[allow(dead_code)]
 fn print_elves(elves: &HashSet<(IRow, ICol)>) {
     let min_row = elves.iter().map(|elf| elf.0).min().unwrap();
     let max_row = elves.iter().map(|elf| elf.0).max().unwrap();
@@ -84,7 +82,7 @@ pub fn part1(mut elves: HashSet<(IRow, ICol)>) -> Result<isize> {
             }
         }
         let mut targets: HashMap<(IRow, ICol), usize> = HashMap::new();
-        for (from, to) in &moves {
+        for (_, to) in &moves {
             *targets.entry(*to).or_default() += 1;
         }
         for (from, to) in &moves {
@@ -142,7 +140,7 @@ pub fn part2(mut elves: HashSet<(IRow, ICol)>) -> Result<usize> {
             }
         }
         let mut targets: HashMap<(IRow, ICol), usize> = HashMap::new();
-        for (from, to) in &moves {
+        for (_, to) in &moves {
             *targets.entry(*to).or_default() += 1;
         }
         let mut moved = false;

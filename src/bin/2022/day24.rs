@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 #[derive(Debug, Clone)]
@@ -16,7 +13,7 @@ impl std::fmt::Display for Map {
                 let blizzards: Vec<_> = self
                     .blizzards
                     .iter()
-                    .filter(|(pos, dir)| *pos == (row, col))
+                    .filter(|(pos, _)| *pos == (row, col))
                     .collect();
                 match blizzards.len() {
                     0 => write!(f, ".")?,

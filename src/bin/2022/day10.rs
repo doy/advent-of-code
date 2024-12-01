@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 pub struct Cpu {
@@ -68,7 +65,7 @@ pub fn part2(ops: impl Iterator<Item = Op>) -> Result<String> {
         cpu.step(op);
     }
     let mut s = String::new();
-    for (y, row) in cpu.history.chunks(40).enumerate() {
+    for row in cpu.history.chunks(40) {
         if row.len() < 40 {
             break;
         }

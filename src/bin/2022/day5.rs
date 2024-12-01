@@ -1,18 +1,9 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 #[derive(Default)]
 pub struct Pile(Vec<char>);
 
 impl Pile {
-    fn move_from(&mut self, other: &mut Self, n: usize) {
-        for _ in 0..n {
-            self.0.push(other.0.pop().unwrap());
-        }
-    }
-
     fn unshift(&mut self, c: char) {
         self.0.insert(0, c);
     }

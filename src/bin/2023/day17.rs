@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 fn add_offset(
@@ -219,7 +216,7 @@ pub fn parse(fh: File) -> Result<Grid<u8>> {
 
 pub fn part1(map: Grid<u8>) -> Result<i64> {
     let crucible = Crucible { map };
-    let (weight, shortest_path) =
+    let (weight, _) =
         crucible.dijkstra((Row(0), Col(0), None, 0), |(row, col, _, _)| {
             row == crucible.map.rows() - 1 && col == crucible.map.cols() - 1
         });
@@ -228,7 +225,7 @@ pub fn part1(map: Grid<u8>) -> Result<i64> {
 
 pub fn part2(map: Grid<u8>) -> Result<i64> {
     let crucible = UltraCrucible { map };
-    let (weight, shortest_path) = crucible.dijkstra(
+    let (weight, _) = crucible.dijkstra(
         (Row(0), Col(0), None, 0),
         |(row, col, _, length)| {
             row == crucible.map.rows() - 1

@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -143,7 +140,7 @@ pub fn part2(map: Grid<Tile>) -> Result<i64> {
     let (pipe_loop, start_tile) = find_loop(&map);
     let pipe_loop: HashSet<_> = pipe_loop.into_iter().collect();
     let mut total = 0;
-    for ((row, col), tile) in map.indexed_cells() {
+    for ((row, col), _) in map.indexed_cells() {
         if pipe_loop.contains(&(row, col)) {
             continue;
         }

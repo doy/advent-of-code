@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 fn dist(a: (IRow, ICol), b: (IRow, ICol)) -> usize {

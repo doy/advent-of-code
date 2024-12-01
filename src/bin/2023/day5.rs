@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 #[derive(Debug, Clone)]
@@ -21,10 +18,6 @@ impl MapRange {
 
     fn src_range(&self) -> std::ops::RangeInclusive<i64> {
         self.src_start..=(self.src_start + self.len - 1)
-    }
-
-    fn dst_range(&self) -> std::ops::RangeInclusive<i64> {
-        self.dst_start..=(self.src_start + self.len - 1)
     }
 }
 

@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 pub struct Monkey {
@@ -153,7 +150,7 @@ pub fn parse(fh: File) -> Result<Monkeys> {
 
 pub fn part1(mut monkeys: Monkeys) -> Result<u64> {
     monkeys.set_reduce(3);
-    for i in 0..20 {
+    for _ in 0..20 {
         monkeys.round();
     }
     Ok(monkeys.monkey_business())
@@ -161,7 +158,7 @@ pub fn part1(mut monkeys: Monkeys) -> Result<u64> {
 
 pub fn part2(mut monkeys: Monkeys) -> Result<u64> {
     monkeys.set_reduce(1);
-    for i in 0..10_000 {
+    for _ in 0..10_000 {
         monkeys.round();
     }
     Ok(monkeys.monkey_business())

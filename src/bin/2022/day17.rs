@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 struct Piece(Vec<(Row, Col)>);
@@ -201,7 +198,7 @@ pub fn parse(fh: File) -> Result<Vec<Direction>> {
 pub fn part1(directions: Vec<Direction>) -> Result<usize> {
     let mut chamber = Chamber::default();
     for (i, direction) in directions.iter().copied().enumerate().cycle() {
-        if let Some((dropped, prev)) = chamber.step(i, direction) {
+        if let Some((dropped, _)) = chamber.step(i, direction) {
             if dropped + 1 >= 2022 {
                 break;
             }

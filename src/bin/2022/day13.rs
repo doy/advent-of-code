@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
@@ -20,14 +17,10 @@ impl Ord for Packet {
         match self {
             Self::Int(left) => match other {
                 Self::Int(right) => left.cmp(right),
-                Self::List(right) => {
-                    Self::List(vec![self.clone()]).cmp(other)
-                }
+                Self::List(_) => Self::List(vec![self.clone()]).cmp(other),
             },
             Self::List(left) => match other {
-                Self::Int(right) => {
-                    self.cmp(&Self::List(vec![other.clone()]))
-                }
+                Self::Int(_) => self.cmp(&Self::List(vec![other.clone()])),
                 Self::List(right) => left.cmp(right),
             },
         }

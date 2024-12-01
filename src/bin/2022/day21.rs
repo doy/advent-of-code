@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 #[derive(Clone)]
@@ -80,15 +77,11 @@ impl Monkey {
         }
     }
 
-    fn is_num(&self) -> bool {
-        matches!(self, Monkey::Num(_))
-    }
-
     fn invert(&self, monkeys: &HashMap<String, Monkey>, mut val: i64) -> i64 {
         let mut monkey = self;
         loop {
             match monkey {
-                Monkey::Num(n) => panic!("found num?"),
+                Monkey::Num(_) => panic!("found num?"),
                 Monkey::Add(n, m) => {
                     let monkey1 = monkeys.get(n).unwrap();
                     let monkey2 = monkeys.get(m).unwrap();

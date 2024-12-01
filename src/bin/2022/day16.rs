@@ -1,9 +1,7 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use advent_of_code::prelude::*;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Map {
     names: Vec<String>,
     connectivity: Vec<Vec<usize>>,
@@ -20,7 +18,7 @@ impl advent_of_code::graph::Graph<usize, usize> for Map {
         self.connectivity[v].clone()
     }
 
-    fn edge(&self, v: usize, e: usize) -> (usize, u64) {
+    fn edge(&self, _: usize, e: usize) -> (usize, u64) {
         (e, 1)
     }
 }
@@ -28,10 +26,6 @@ impl advent_of_code::graph::Graph<usize, usize> for Map {
 impl Map {
     fn len(&self) -> usize {
         self.flow.len()
-    }
-
-    fn room(&self, elephant: bool) -> &str {
-        &self.names[self.pos(elephant)]
     }
 
     fn can_stay(&self, elephant: bool) -> bool {
@@ -65,10 +59,6 @@ impl Map {
     fn set_flow(&mut self, elephant: bool, flow: u16) {
         let pos = self.pos(elephant);
         self.flow[pos] = flow;
-    }
-
-    fn neighbors(&self, elephant: bool) -> &[usize] {
-        &self.connectivity[self.pos(elephant)]
     }
 }
 
@@ -131,7 +121,6 @@ pub fn parse(fh: File) -> Result<Map> {
     };
     for i in 0..map.connectivity.len() {
         let mut paths = vec![0; map.connectivity.len()];
-        let prevs = map.dijkstra_full(i);
         for (from, (_, distance)) in map.dijkstra_full(i) {
             paths[from] = distance;
         }
