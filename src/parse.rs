@@ -21,6 +21,37 @@ where
     raw_lines(fh).map(|s| s.trim().parse().unwrap())
 }
 
+pub fn fields2<T1, T2>(line: impl AsRef<str>) -> (T1, T2)
+where
+    T1: std::str::FromStr,
+    T2: std::str::FromStr,
+    <T1 as std::str::FromStr>::Err: std::fmt::Debug,
+    <T2 as std::str::FromStr>::Err: std::fmt::Debug,
+{
+    let mut parts = line.as_ref().split_whitespace();
+    (
+        parts.next().unwrap().parse().unwrap(),
+        parts.next().unwrap().parse().unwrap(),
+    )
+}
+
+pub fn fields3<T1, T2, T3>(line: impl AsRef<str>) -> (T1, T2, T3)
+where
+    T1: std::str::FromStr,
+    T2: std::str::FromStr,
+    T3: std::str::FromStr,
+    <T1 as std::str::FromStr>::Err: std::fmt::Debug,
+    <T2 as std::str::FromStr>::Err: std::fmt::Debug,
+    <T3 as std::str::FromStr>::Err: std::fmt::Debug,
+{
+    let mut parts = line.as_ref().split_whitespace();
+    (
+        parts.next().unwrap().parse().unwrap(),
+        parts.next().unwrap().parse().unwrap(),
+        parts.next().unwrap().parse().unwrap(),
+    )
+}
+
 pub struct Chunk<'a, I: Iterator<Item = String>> {
     it: &'a mut I,
 }

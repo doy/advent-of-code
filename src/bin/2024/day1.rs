@@ -1,14 +1,9 @@
 use advent_of_code::prelude::*;
 
 pub fn parse(fh: File) -> Result<(Vec<i64>, Vec<i64>)> {
-    let mut list1 = vec![];
-    let mut list2 = vec![];
-    for line in parse::lines::<_, String>(fh) {
-        let mut parts = line.split_whitespace();
-        list1.push(parts.next().unwrap().parse()?);
-        list2.push(parts.next().unwrap().parse()?);
-    }
-    Ok((list1, list2))
+    Ok(parse::raw_lines(fh)
+        .map(parse::fields2)
+        .unzip::<i64, i64, _, _>())
 }
 
 pub fn part1((mut list1, mut list2): (Vec<i64>, Vec<i64>)) -> Result<i64> {
