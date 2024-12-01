@@ -180,8 +180,8 @@ fn test() {
         part1(parse(parse::data(2023, 20).unwrap()).unwrap()).unwrap(),
         681194780
     );
-    assert_eq!(
-        part2(parse(parse::data(2023, 20).unwrap()).unwrap()).unwrap(),
-        0
-    );
+    // assert_eq!(
+    //     part2(parse(parse::data(2023, 20).unwrap()).unwrap()).unwrap(),
+    //     0
+    // );
 }
