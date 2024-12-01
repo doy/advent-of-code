@@ -1,6 +1,7 @@
 use advent_of_code::prelude::*;
 
 #[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 pub enum Op {
     Inp(Register),
     Add(Register, Value),

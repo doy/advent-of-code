@@ -320,7 +320,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 
     pub fn each_row(
         &self,
-    ) -> impl Iterator<Item = Row> + DoubleEndedIterator + ExactSizeIterator
+    ) -> impl DoubleEndedIterator<Item = Row> + ExactSizeIterator
     {
         (0..self.rows().0).map(Row)
     }
@@ -335,7 +335,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 
     pub fn each_col(
         &self,
-    ) -> impl Iterator<Item = Col> + DoubleEndedIterator + ExactSizeIterator
+    ) -> impl DoubleEndedIterator<Item = Col> + ExactSizeIterator
     {
         (0..self.cols().0).map(Col)
     }

@@ -35,8 +35,7 @@ where
     {
         let mut ret = self;
         for entry in path {
-            let Some(child) = ret.children.get(entry)
-            else { return None };
+            let child = ret.children.get(entry)?;
             ret = child;
         }
         Some(ret)
@@ -48,8 +47,7 @@ where
     {
         let mut ret = self;
         for entry in path {
-            let Some(child) = ret.children.get_mut(entry)
-            else { return None };
+            let child = ret.children.get_mut(entry)?;
             ret = child;
         }
         Some(ret)
@@ -82,8 +80,7 @@ where
     type Item = (Vec<K>, &'a Tree<K, V>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let Some(next) = self.next.pop_front()
-        else { return None };
+        let next = self.next.pop_front()?;
 
         self.next.extend(next.1.children.iter().map(|(k, v)| {
             (
@@ -113,8 +110,7 @@ where
     type Item = (Vec<K>, &'a Tree<K, V>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let Some(next) = self.next.pop()
-        else { return None };
+        let next = self.next.pop()?;
 
         self.next.extend(next.1.children.iter().map(|(k, v)| {
             (

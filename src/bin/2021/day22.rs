@@ -91,19 +91,17 @@ impl Range3D {
             }
         } else if split_by.start() > to_split.end() {
             panic!("bug 4");
+        } else if split_by.end() >= to_split.end() {
+            vec![
+                *to_split.start()..=(*split_by.start() - 1),
+                *split_by.start()..=*to_split.end(),
+            ]
         } else {
-            if split_by.end() >= to_split.end() {
-                vec![
-                    *to_split.start()..=(*split_by.start() - 1),
-                    *split_by.start()..=*to_split.end(),
-                ]
-            } else {
-                vec![
-                    *to_split.start()..=(*split_by.start() - 1),
-                    split_by.clone(),
-                    (*split_by.end() + 1)..=*to_split.end(),
-                ]
-            }
+            vec![
+                *to_split.start()..=(*split_by.start() - 1),
+                split_by.clone(),
+                (*split_by.end() + 1)..=*to_split.end(),
+            ]
         }
     }
 

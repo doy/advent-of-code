@@ -25,7 +25,7 @@ pub struct Chunk<'a, I: Iterator<Item = String>> {
     it: &'a mut I,
 }
 
-impl<'a, I: Iterator<Item = String>> Iterator for Chunk<'a, I> {
+impl<I: Iterator<Item = String>> Iterator for Chunk<'_, I> {
     type Item = String;
 
     fn next(&mut self) -> Option<Self::Item> {

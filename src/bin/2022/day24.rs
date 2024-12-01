@@ -155,7 +155,7 @@ impl Pathfinder {
     }
 
     fn size(&self) -> (Row, Col) {
-        self.maps_at_time.borrow().get(0).unwrap().size
+        self.maps_at_time.borrow().first().unwrap().size
     }
 
     fn map_at_time(&self, time: usize) -> std::cell::Ref<'_, Map> {

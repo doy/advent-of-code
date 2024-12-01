@@ -83,8 +83,7 @@ impl Monkey {
     }
 
     fn inspect(&mut self) -> Option<(u64, usize)> {
-        let Some(item) = self.items.pop_front()
-        else { return None };
+        let item = self.items.pop_front()?;
         self.count += 1;
         let item = (self.op)(item);
         let item = item / self.divisor;

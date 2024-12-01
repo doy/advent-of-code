@@ -131,10 +131,8 @@ pub fn parse(fh: File) -> Result<Map> {
                 path_str = &path_str[1..];
             }
             '0'..='9' => {
-                let prefix_len = path_str
-                    .chars()
-                    .take_while(|c| ('0'..='9').contains(c))
-                    .count();
+                let prefix_len =
+                    path_str.chars().take_while(char::is_ascii_digit).count();
                 path.push(Step::Forward(
                     path_str[0..prefix_len].parse().unwrap(),
                 ));

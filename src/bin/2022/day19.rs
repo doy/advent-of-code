@@ -25,14 +25,10 @@ impl Resources {
     }
 
     fn can_build(&self, blueprint: &Resources) -> Option<Self> {
-        let Some(ore) = self.ore.checked_sub(blueprint.ore)
-        else { return None };
-        let Some(clay) = self.clay.checked_sub(blueprint.clay)
-        else { return None };
-        let Some(obsidian) = self.obsidian.checked_sub(blueprint.obsidian)
-        else { return None };
-        let Some(geode) = self.geode.checked_sub(blueprint.geode)
-        else { return None };
+        let ore = self.ore.checked_sub(blueprint.ore)?;
+        let clay = self.clay.checked_sub(blueprint.clay)?;
+        let obsidian = self.obsidian.checked_sub(blueprint.obsidian)?;
+        let geode = self.geode.checked_sub(blueprint.geode)?;
         Some(Self {
             ore,
             clay,

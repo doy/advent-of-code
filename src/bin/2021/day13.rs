@@ -26,18 +26,16 @@ impl Paper {
                         } else if col > coord {
                             clone.set(Row(row), Col(coord * 2 - col));
                         }
-                    } else {
-                        if col < coord {
-                            clone.set(
-                                Row(row),
-                                Col(self.grid.cols().0 - coord * 2 - 1 + col),
-                            );
-                        } else if col > coord {
-                            clone.set(
-                                Row(row),
-                                Col(self.grid.cols().0 - col - 1),
-                            );
-                        }
+                    } else if col < coord {
+                        clone.set(
+                            Row(row),
+                            Col(self.grid.cols().0 - coord * 2 - 1 + col),
+                        );
+                    } else if col > coord {
+                        clone.set(
+                            Row(row),
+                            Col(self.grid.cols().0 - col - 1),
+                        );
                     }
                 }
             }
@@ -54,18 +52,16 @@ impl Paper {
                         } else if row > coord {
                             clone.set(Row(coord * 2 - row), Col(col));
                         }
-                    } else {
-                        if row < coord {
-                            clone.set(
-                                Row(self.grid.rows().0 - coord * 2 - 1 + row),
-                                Col(col),
-                            );
-                        } else if row > coord {
-                            clone.set(
-                                Row(self.grid.rows().0 - row - 1),
-                                Col(col),
-                            );
-                        }
+                    } else if row < coord {
+                        clone.set(
+                            Row(self.grid.rows().0 - coord * 2 - 1 + row),
+                            Col(col),
+                        );
+                    } else if row > coord {
+                        clone.set(
+                            Row(self.grid.rows().0 - row - 1),
+                            Col(col),
+                        );
                     }
                 }
             }

@@ -1,24 +1,20 @@
+#![allow(clippy::cognitive_complexity)]
+#![allow(clippy::missing_const_for_fn)]
+#![allow(clippy::similar_names)]
+#![allow(clippy::struct_excessive_bools)]
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::too_many_lines)]
+#![allow(clippy::type_complexity)]
+#![allow(clippy::collapsible_else_if)]
+#![allow(clippy::collapsible_if)]
+#![allow(clippy::comparison_chain)]
+#![allow(clippy::enum_variant_names)]
+
 #[macro_use]
 mod helpers;
 
 #[path = "../src/bin/2023/day1.rs"]
 mod day1;
-#[path = "../src/bin/2023/day2.rs"]
-mod day2;
-#[path = "../src/bin/2023/day3.rs"]
-mod day3;
-#[path = "../src/bin/2023/day4.rs"]
-mod day4;
-#[path = "../src/bin/2023/day5.rs"]
-mod day5;
-#[path = "../src/bin/2023/day6.rs"]
-mod day6;
-#[path = "../src/bin/2023/day7.rs"]
-mod day7;
-#[path = "../src/bin/2023/day8.rs"]
-mod day8;
-#[path = "../src/bin/2023/day9.rs"]
-mod day9;
 #[path = "../src/bin/2023/day10.rs"]
 mod day10;
 #[path = "../src/bin/2023/day11.rs"]
@@ -39,8 +35,24 @@ mod day17;
 mod day18;
 #[path = "../src/bin/2023/day19.rs"]
 mod day19;
+#[path = "../src/bin/2023/day2.rs"]
+mod day2;
 #[path = "../src/bin/2023/day20.rs"]
 mod day20;
+#[path = "../src/bin/2023/day3.rs"]
+mod day3;
+#[path = "../src/bin/2023/day4.rs"]
+mod day4;
+#[path = "../src/bin/2023/day5.rs"]
+mod day5;
+#[path = "../src/bin/2023/day6.rs"]
+mod day6;
+#[path = "../src/bin/2023/day7.rs"]
+mod day7;
+#[path = "../src/bin/2023/day8.rs"]
+mod day8;
+#[path = "../src/bin/2023/day9.rs"]
+mod day9;
 // NEXT MOD
 
 day!(2023, 1, day1);
