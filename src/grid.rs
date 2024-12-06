@@ -583,7 +583,7 @@ impl Iterator for Adjacent {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Hash)]
 pub enum Direction {
     Up,
     Down,

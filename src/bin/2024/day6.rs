@@ -5,16 +5,22 @@ pub struct Map {
     guard: (Row, Col),
 }
 
-fn run(grid: &Grid<bool>, mut guard: (Row, Col)) -> Option<usize> {
-    let mut seen: std::collections::BTreeSet<(Row, Col)> =
-        std::collections::BTreeSet::new();
+fn run(
+    grid: &Grid<bool>,
+    mut guard: (Row, Col),
+) -> Option<HashSet<(Row, Col, Direction)>> {
+    let mut seen: HashSet<(Row, Col, Direction)> = HashSet::new();
     let mut direction = Direction::Up;
     for _ in 0..(4 * grid.rows().0 * grid.cols().0) {
-        seen.insert(guard);
+        let cur = (guard.0, guard.1, direction);
+        if seen.contains(&cur) {
+            break;
+        }
+        seen.insert(cur);
         match direction {
             Direction::Up => {
                 if guard.0 == Row(0) {
-                    return Some(seen.len());
+                    return Some(seen);
                 }
                 let mut next = guard;
                 next.0 .0 -= 1;
@@ -26,7 +32,7 @@ fn run(grid: &Grid<bool>, mut guard: (Row, Col)) -> Option<usize> {
             }
             Direction::Down => {
                 if guard.0 == Row(grid.rows().0 - 1) {
-                    return Some(seen.len());
+                    return Some(seen);
                 }
                 let mut next = guard;
                 next.0 .0 += 1;
@@ -38,7 +44,7 @@ fn run(grid: &Grid<bool>, mut guard: (Row, Col)) -> Option<usize> {
             }
             Direction::Left => {
                 if guard.1 == Col(0) {
-                    return Some(seen.len());
+                    return Some(seen);
                 }
                 let mut next = guard;
                 next.1 .0 -= 1;
@@ -50,7 +56,7 @@ fn run(grid: &Grid<bool>, mut guard: (Row, Col)) -> Option<usize> {
             }
             Direction::Right => {
                 if guard.1 == Col(grid.cols().0 - 1) {
-                    return Some(seen.len());
+                    return Some(seen);
                 }
                 let mut next = guard;
                 next.1 .0 += 1;
@@ -80,21 +86,28 @@ pub fn parse(fh: File) -> Result<Map> {
 }
 
 pub fn part1(map: Map) -> Result<i64> {
-    Ok(run(&map.grid, map.guard).unwrap().try_into().unwrap())
+    Ok(run(&map.grid, map.guard)
+        .unwrap()
+        .into_iter()
+        .map(|(row, col, _)| (row, col))
+        .collect::<HashSet<(Row, Col)>>()
+        .len()
+        .try_into()
+        .unwrap())
 }
 
 pub fn part2(map: Map) -> Result<i64> {
     let mut total = 0;
-    for row in map.grid.each_row() {
-        for col in map.grid.each_col() {
-            if !map.grid[row][col] {
-                continue;
-            }
-            let mut grid = map.grid.clone();
-            grid[row][col] = false;
-            if run(&grid, map.guard).is_none() {
-                total += 1;
-            }
+    let possible: HashSet<(Row, Col)> = run(&map.grid, map.guard)
+        .unwrap()
+        .into_iter()
+        .map(|(row, col, _)| (row, col))
+        .collect();
+    for (row, col) in possible {
+        let mut grid = map.grid.clone();
+        grid[row][col] = false;
+        if run(&grid, map.guard).is_none() {
+            total += 1;
         }
     }
     Ok(total)
