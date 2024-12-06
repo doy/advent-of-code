@@ -1,4 +1,5 @@
 use advent_of_code::prelude::*;
+use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator as _};
 
 pub struct Map {
     grid: Grid<bool>,
@@ -97,20 +98,22 @@ pub fn part1(map: Map) -> Result<i64> {
 }
 
 pub fn part2(map: Map) -> Result<i64> {
-    let mut total = 0;
-    let possible: HashSet<(Row, Col)> = run(&map.grid, map.guard)
+    Ok(run(&map.grid, map.guard)
         .unwrap()
         .into_iter()
         .map(|(row, col, _)| (row, col))
-        .collect();
-    for (row, col) in possible {
-        let mut grid = map.grid.clone();
-        grid[row][col] = false;
-        if run(&grid, map.guard).is_none() {
-            total += 1;
-        }
-    }
-    Ok(total)
+        .collect::<HashSet<(Row, Col)>>()
+        .par_iter()
+        .map(|(row, col)| {
+            let mut grid = map.grid.clone();
+            grid[*row][*col] = false;
+            if run(&grid, map.guard).is_none() {
+                1
+            } else {
+                0
+            }
+        })
+        .sum())
 }
 
 #[test]
