@@ -315,6 +315,10 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Default for Grid<T> {
 }
 
 impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
+    pub fn size(&self) -> (Row, Col) {
+        (self.rows(), self.cols())
+    }
+
     pub fn unshift_rows(&mut self, count: usize) {
         self.rows = self.rows.split_off(count);
     }
@@ -713,6 +717,33 @@ impl Direction {
             }
         } else {
             panic!("invalid direction ({row:?}, {col:?}) -> ({new_row:?}, {new_col:?})")
+        }
+    }
+
+    pub fn move_checked(
+        self,
+        pos: (Row, Col),
+        size: (Row, Col),
+    ) -> Option<(Row, Col)> {
+        match self {
+            Self::Up => pos.0 .0.checked_sub(1).map(|row| (Row(row), pos.1)),
+            Self::Down => {
+                if pos.0 .0 >= size.0 .0 - 1 {
+                    None
+                } else {
+                    Some((pos.0 + 1, pos.1))
+                }
+            }
+            Self::Left => {
+                pos.1 .0.checked_sub(1).map(|col| (pos.0, Col(col)))
+            }
+            Self::Right => {
+                if pos.1 .0 >= size.1 .0 - 1 {
+                    None
+                } else {
+                    Some((pos.0, pos.1 + 1))
+                }
+            }
         }
     }
 

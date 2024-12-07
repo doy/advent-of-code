@@ -12,64 +12,22 @@ fn run(
 ) -> Option<HashSet<(Row, Col, Direction)>> {
     let mut seen: HashSet<(Row, Col, Direction)> = HashSet::new();
     let mut direction = Direction::Up;
-    for _ in 0..(4 * grid.rows().0 * grid.cols().0) {
+    loop {
         let cur = (guard.0, guard.1, direction);
         if seen.contains(&cur) {
-            break;
+            return None;
         }
         seen.insert(cur);
-        match direction {
-            Direction::Up => {
-                if guard.0 == Row(0) {
-                    return Some(seen);
-                }
-                let mut next = guard;
-                next.0 .0 -= 1;
-                if grid[next.0][next.1] {
-                    guard = next;
-                } else {
-                    direction = direction.turn_right();
-                }
+        if let Some(next) = direction.move_checked(guard, grid.size()) {
+            if grid[next.0][next.1] {
+                guard = next;
+            } else {
+                direction = direction.turn_right();
             }
-            Direction::Down => {
-                if guard.0 == Row(grid.rows().0 - 1) {
-                    return Some(seen);
-                }
-                let mut next = guard;
-                next.0 .0 += 1;
-                if grid[next.0][next.1] {
-                    guard = next;
-                } else {
-                    direction = direction.turn_right();
-                }
-            }
-            Direction::Left => {
-                if guard.1 == Col(0) {
-                    return Some(seen);
-                }
-                let mut next = guard;
-                next.1 .0 -= 1;
-                if grid[next.0][next.1] {
-                    guard = next;
-                } else {
-                    direction = direction.turn_right();
-                }
-            }
-            Direction::Right => {
-                if guard.1 == Col(grid.cols().0 - 1) {
-                    return Some(seen);
-                }
-                let mut next = guard;
-                next.1 .0 += 1;
-                if grid[next.0][next.1] {
-                    guard = next;
-                } else {
-                    direction = direction.turn_right();
-                }
-            }
+        } else {
+            return Some(seen);
         }
     }
-    None
 }
 
 pub fn parse(fh: File) -> Result<Map> {
