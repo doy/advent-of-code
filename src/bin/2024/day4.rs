@@ -1,5 +1,4 @@
 use advent_of_code::prelude::*;
-use rayon::iter::ParallelIterator as _;
 
 fn word_horiz(grid: &Grid<u8>, row: Row, col: Col) -> String {
     let mut chars = vec![0u8; 4];

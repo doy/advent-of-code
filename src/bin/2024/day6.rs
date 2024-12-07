@@ -1,5 +1,4 @@
 use advent_of_code::prelude::*;
-use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator as _};
 
 pub struct Map {
     grid: Grid<bool>,

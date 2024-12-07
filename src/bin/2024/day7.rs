@@ -1,5 +1,4 @@
 use advent_of_code::prelude::*;
-use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator as _};
 
 #[derive(Debug, Copy, Clone)]
 enum Op {
