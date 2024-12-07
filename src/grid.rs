@@ -1,3 +1,8 @@
+use rayon::iter::{
+    IndexedParallelIterator as _, IntoParallelIterator as _,
+    IntoParallelRefIterator as _, ParallelIterator as _,
+};
+
 #[derive(
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
 )]
@@ -324,6 +329,12 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         (0..self.rows().0).map(Row)
     }
 
+    pub fn par_each_row(
+        &self,
+    ) -> impl rayon::iter::ParallelIterator<Item = Row> {
+        (0..self.rows().0).into_par_iter().map(Row)
+    }
+
     pub fn row_vec(&self, row: Row) -> Vec<T> {
         self.rows[row.0].cells.clone()
     }
@@ -338,6 +349,12 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         (0..self.cols().0).map(Col)
     }
 
+    pub fn par_each_col(
+        &self,
+    ) -> impl rayon::iter::ParallelIterator<Item = Col> {
+        (0..self.cols().0).into_par_iter().map(Col)
+    }
+
     pub fn col_vec(&self, col: Col) -> Vec<T> {
         self.rows.iter().map(|row| row[col].clone()).collect()
     }
@@ -350,6 +367,13 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         self.rows.iter().flat_map(|row| row.cells.iter())
     }
 
+    pub fn par_cells(&self) -> impl rayon::iter::ParallelIterator<Item = &T>
+    where
+        T: Sync,
+    {
+        self.rows.par_iter().flat_map(|row| row.cells.par_iter())
+    }
+
     pub fn cells_mut(&mut self) -> impl Iterator<Item = &mut T> {
         self.rows.iter_mut().flat_map(|row| row.cells.iter_mut())
     }
@@ -358,6 +382,20 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         self.rows.iter().enumerate().flat_map(|(i, row)| {
             row.cells
                 .iter()
+                .enumerate()
+                .map(move |(j, cell)| ((Row(i), Col(j)), cell))
+        })
+    }
+
+    pub fn par_indexed_cells(
+        &self,
+    ) -> impl rayon::iter::ParallelIterator<Item = ((Row, Col), &T)>
+    where
+        T: Sync,
+    {
+        self.rows.par_iter().enumerate().flat_map(|(i, row)| {
+            row.cells
+                .par_iter()
                 .enumerate()
                 .map(move |(j, cell)| ((Row(i), Col(j)), cell))
         })

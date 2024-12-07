@@ -1,4 +1,5 @@
 use advent_of_code::prelude::*;
+use rayon::iter::ParallelIterator as _;
 
 fn word_horiz(grid: &Grid<u8>, row: Row, col: Col) -> String {
     let mut chars = vec![0u8; 4];
@@ -63,9 +64,10 @@ pub fn parse(fh: File) -> Result<Grid<u8>> {
 }
 
 pub fn part1(grid: Grid<u8>) -> Result<i64> {
-    let mut total = 0;
-    for row in grid.each_row() {
-        for col in grid.each_col() {
+    Ok(grid
+        .par_indexed_cells()
+        .map(|((row, col), _)| {
+            let mut total = 0;
             for word in [
                 word_horiz(&grid, row, col),
                 word_vert(&grid, row, col),
@@ -79,15 +81,15 @@ pub fn part1(grid: Grid<u8>) -> Result<i64> {
                     total += 1;
                 }
             }
-        }
-    }
-    Ok(total)
+            total
+        })
+        .sum())
 }
 
 pub fn part2(grid: Grid<u8>) -> Result<i64> {
-    let mut total = 0;
-    for row in grid.each_row() {
-        for col in grid.each_col() {
+    Ok(grid
+        .par_indexed_cells()
+        .map(|((row, col), _)| {
             let word = word_x(&grid, row, col);
             if word[2] == b'A' {
                 if word[0] == b'M' && word[4] == b'S'
@@ -96,13 +98,13 @@ pub fn part2(grid: Grid<u8>) -> Result<i64> {
                     if word[1] == b'M' && word[3] == b'S'
                         || word[1] == b'S' && word[3] == b'M'
                     {
-                        total += 1;
+                        return 1;
                     }
                 }
             }
-        }
-    }
-    Ok(total)
+            0
+        })
+        .sum())
 }
 
 #[test]

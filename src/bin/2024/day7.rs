@@ -1,4 +1,5 @@
 use advent_of_code::prelude::*;
+use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator as _};
 
 #[derive(Debug, Copy, Clone)]
 enum Op {
@@ -110,23 +111,29 @@ pub fn parse(fh: File) -> Result<Vec<Problem>> {
 }
 
 pub fn part1(problems: Vec<Problem>) -> Result<i64> {
-    let mut total = 0;
-    for problem in problems {
-        if problem.solve1().is_some() {
-            total += problem.total;
-        }
-    }
-    Ok(total)
+    Ok(problems
+        .par_iter()
+        .map(|problem| {
+            if problem.solve1().is_some() {
+                problem.total
+            } else {
+                0
+            }
+        })
+        .sum())
 }
 
 pub fn part2(problems: Vec<Problem>) -> Result<i64> {
-    let mut total = 0;
-    for problem in problems {
-        if problem.solve2().is_some() {
-            total += problem.total;
-        }
-    }
-    Ok(total)
+    Ok(problems
+        .par_iter()
+        .map(|problem| {
+            if problem.solve2().is_some() {
+                problem.total
+            } else {
+                0
+            }
+        })
+        .sum())
 }
 
 #[test]
