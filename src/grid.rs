@@ -4,7 +4,7 @@ use rayon::iter::{
 };
 
 macro_rules! impl_op {
-    ($ty:ident, $inner:ty, $op_class:ident, $op_method:ident) => {
+    ($ty:ident, $inner:ident, $other:ident, $op_class:ident, $op_method:ident) => {
         impl std::ops::$op_class<$inner> for $ty {
             type Output = Self;
             fn $op_method(self, other: $inner) -> Self::Output {
@@ -21,6 +21,30 @@ macro_rules! impl_op {
             type Output = $ty;
             fn $op_method(self, other: $ty) -> Self::Output {
                 $ty(self.0.$op_method(other.0))
+            }
+        }
+        impl std::ops::$op_class<$other> for $ty {
+            type Output = Self;
+            fn $op_method(self, other: $other) -> Self::Output {
+                Self(self.0.$op_method($inner::try_from(other).unwrap()))
+            }
+        }
+        impl std::ops::$op_class<$ty> for $other {
+            type Output = $ty;
+            fn $op_method(self, other: $ty) -> Self::Output {
+                $ty($inner::try_from(self).unwrap().$op_method(other.0))
+            }
+        }
+        impl std::ops::$op_class<i32> for $ty {
+            type Output = Self;
+            fn $op_method(self, other: i32) -> Self::Output {
+                Self(self.0.$op_method($inner::try_from(other).unwrap()))
+            }
+        }
+        impl std::ops::$op_class<$ty> for i32 {
+            type Output = $ty;
+            fn $op_method(self, other: $ty) -> Self::Output {
+                $ty($inner::try_from(self).unwrap().$op_method(other.0))
             }
         }
     };
@@ -48,14 +72,14 @@ impl Col {
     }
 }
 
-impl_op!(Row, usize, Add, add);
-impl_op!(Row, usize, Sub, sub);
-impl_op!(Row, usize, Mul, mul);
-impl_op!(Row, usize, Rem, rem);
-impl_op!(Col, usize, Add, add);
-impl_op!(Col, usize, Sub, sub);
-impl_op!(Col, usize, Mul, mul);
-impl_op!(Col, usize, Rem, rem);
+impl_op!(Row, usize, isize, Add, add);
+impl_op!(Row, usize, isize, Sub, sub);
+impl_op!(Row, usize, isize, Mul, mul);
+impl_op!(Row, usize, isize, Rem, rem);
+impl_op!(Col, usize, isize, Add, add);
+impl_op!(Col, usize, isize, Sub, sub);
+impl_op!(Col, usize, isize, Mul, mul);
+impl_op!(Col, usize, isize, Rem, rem);
 
 #[derive(
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
@@ -79,14 +103,14 @@ impl ICol {
     }
 }
 
-impl_op!(IRow, isize, Add, add);
-impl_op!(IRow, isize, Sub, sub);
-impl_op!(IRow, isize, Mul, mul);
-impl_op!(IRow, isize, Rem, rem);
-impl_op!(ICol, isize, Add, add);
-impl_op!(ICol, isize, Sub, sub);
-impl_op!(ICol, isize, Mul, mul);
-impl_op!(ICol, isize, Rem, rem);
+impl_op!(IRow, isize, usize, Add, add);
+impl_op!(IRow, isize, usize, Sub, sub);
+impl_op!(IRow, isize, usize, Mul, mul);
+impl_op!(IRow, isize, usize, Rem, rem);
+impl_op!(ICol, isize, usize, Add, add);
+impl_op!(ICol, isize, usize, Sub, sub);
+impl_op!(ICol, isize, usize, Mul, mul);
+impl_op!(ICol, isize, usize, Rem, rem);
 
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct GridRow<T: Clone + Eq + PartialEq + std::hash::Hash> {
