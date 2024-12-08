@@ -61,12 +61,18 @@ pub struct Row(pub usize);
 pub struct Col(pub usize);
 
 impl Row {
+    pub fn i(self) -> IRow {
+        IRow(self.0.try_into().unwrap())
+    }
     pub fn abs_diff(self, other: Self) -> Self {
         Self(self.0.abs_diff(other.0))
     }
 }
 
 impl Col {
+    pub fn i(self) -> ICol {
+        ICol(self.0.try_into().unwrap())
+    }
     pub fn abs_diff(self, other: Self) -> Self {
         Self(self.0.abs_diff(other.0))
     }
@@ -92,12 +98,18 @@ pub struct IRow(pub isize);
 pub struct ICol(pub isize);
 
 impl IRow {
+    pub fn u(self) -> Row {
+        Row(self.0.try_into().unwrap())
+    }
     pub fn abs_diff(self, other: Self) -> Row {
         Row(self.0.abs_diff(other.0))
     }
 }
 
 impl ICol {
+    pub fn u(self) -> Col {
+        Col(self.0.try_into().unwrap())
+    }
     pub fn abs_diff(self, other: Self) -> Col {
         Col(self.0.abs_diff(other.0))
     }
@@ -255,6 +267,13 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
                 .enumerate()
                 .map(move |(j, cell)| ((Row(i), Col(j)), cell))
         })
+    }
+
+    pub fn in_bounds(&self, pos: (IRow, ICol)) -> bool {
+        pos.0 >= IRow(0)
+            && pos.0 < self.rows().i()
+            && pos.1 >= ICol(0)
+            && pos.1 < self.cols().i()
     }
 
     pub fn adjacent(&self, row: Row, col: Col, diagonal: bool) -> Adjacent {
