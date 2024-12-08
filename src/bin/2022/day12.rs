@@ -2,21 +2,21 @@ use advent_of_code::prelude::*;
 
 pub struct Map {
     grid: Grid<u8>,
-    start: (Row, Col),
-    end: (Row, Col),
+    start: Pos,
+    end: Pos,
 }
 
-impl advent_of_code::graph::Graph<(Row, Col), (Row, Col)> for Map {
+impl advent_of_code::graph::Graph<Pos, Pos> for Map {
     type Edges = advent_of_code::grid::Adjacent;
 
-    fn edges(&self, v: (Row, Col)) -> Self::Edges {
-        self.grid.adjacent(v.0, v.1, false)
+    fn edges(&self, v: Pos) -> Self::Edges {
+        self.grid.adjacent(v, false)
     }
 
-    fn edge(&self, v: (Row, Col), e: (Row, Col)) -> ((Row, Col), u64) {
+    fn edge(&self, v: Pos, e: Pos) -> (Pos, u64) {
         (
             e,
-            if self.grid[e.0][e.1] >= self.grid[v.0][v.1].saturating_sub(1) {
+            if self.grid[e] >= self.grid[v].saturating_sub(1) {
                 1
             } else {
                 (self.grid.rows().0 * self.grid.cols().0)
@@ -30,14 +30,14 @@ impl advent_of_code::graph::Graph<(Row, Col), (Row, Col)> for Map {
 pub fn parse(fh: File) -> Result<Map> {
     let mut start = None;
     let mut end = None;
-    let grid = parse::grid(parse::raw_lines(fh), |c, row, col| match c {
+    let grid = parse::grid(parse::raw_lines(fh), |c, pos| match c {
         b'a'..=b'z' => c - b'a',
         b'S' => {
-            start = Some((row, col));
+            start = Some(pos);
             0
         }
         b'E' => {
-            end = Some((row, col));
+            end = Some(pos);
             b'z' - b'a'
         }
         _ => panic!("unknown map char '{c}'"),

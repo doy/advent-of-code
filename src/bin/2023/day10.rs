@@ -65,7 +65,7 @@ impl Tile {
     }
 }
 
-fn find_loop(map: &Grid<Tile>) -> (Vec<(Row, Col)>, Tile) {
+fn find_loop(map: &Grid<Tile>) -> (Vec<Pos>, Tile) {
     let mut cur = map
         .indexed_cells()
         .find_map(|(pos, tile)| {
@@ -81,14 +81,13 @@ fn find_loop(map: &Grid<Tile>) -> (Vec<(Row, Col)>, Tile) {
         || pipe_loop[0] != pipe_loop[pipe_loop.len() - 1]
     {
         pipe_loop.push(cur);
-        for pos in map.adjacent(cur.0, cur.1, false) {
+        for pos in map.adjacent(cur, false) {
             if pipe_loop.len() > 1 && pos == pipe_loop[pipe_loop.len() - 2] {
                 continue;
             }
-            if map[cur.0][cur.1].connects(
-                &map[pos.0][pos.1],
-                (pos.0.cmp(&cur.0), pos.1.cmp(&cur.1)),
-            ) {
+            if map[cur]
+                .connects(&map[pos], (pos.0.cmp(&cur.0), pos.1.cmp(&cur.1)))
+            {
                 cur = pos;
                 break;
             }
@@ -119,7 +118,7 @@ fn find_loop(map: &Grid<Tile>) -> (Vec<(Row, Col)>, Tile) {
 }
 
 pub fn parse(fh: File) -> Result<Grid<Tile>> {
-    Ok(parse::grid(parse::raw_lines(fh), |c, _, _| match c {
+    Ok(parse::grid(parse::raw_lines(fh), |c, _| match c {
         b'.' => Tile::Floor,
         b'S' => Tile::Start,
         b'|' => Tile::UpDown,
@@ -140,15 +139,15 @@ pub fn part2(map: Grid<Tile>) -> Result<i64> {
     let (pipe_loop, start_tile) = find_loop(&map);
     let pipe_loop: HashSet<_> = pipe_loop.into_iter().collect();
     let mut total = 0;
-    for ((row, col), _) in map.indexed_cells() {
-        if pipe_loop.contains(&(row, col)) {
+    for (pos, _) in map.indexed_cells() {
+        if pipe_loop.contains(&pos) {
             continue;
         }
         let mut count = 0;
-        for offset in 0..=(row.0.min(col.0)) {
-            let check_row = row - offset;
-            let check_col = col - offset;
-            if !pipe_loop.contains(&(check_row, check_col)) {
+        for offset in 0..=(pos.0 .0.min(pos.1 .0)) {
+            let check_row = pos.0 - offset;
+            let check_col = pos.1 - offset;
+            if !pipe_loop.contains(&Pos(check_row, check_col)) {
                 continue;
             }
             let check_tile = map[check_row][check_col];

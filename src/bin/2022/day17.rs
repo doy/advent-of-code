@@ -80,7 +80,7 @@ impl Chamber {
     ) -> Option<(usize, Option<usize>)> {
         if self.piece_pos.is_none() {
             let pos = (Row(self.height() + 3), Col(2));
-            self.grid.grow(pos.0 + 4, Col(7));
+            self.grid.grow(Size(pos.0 + 4, Col(7)));
             self.piece_pos = Some(pos);
         }
         let (mut row, mut col) = self.piece_pos.unwrap();

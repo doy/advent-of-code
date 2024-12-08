@@ -1,7 +1,7 @@
 use advent_of_code::prelude::*;
 
 pub fn parse(fh: File) -> Result<Grid<u8>> {
-    Ok(parse::grid(parse::raw_lines(fh), |c, _, _| c))
+    Ok(parse::grid(parse::raw_lines(fh), |c, _| c))
 }
 
 pub fn part1(schematic: Grid<u8>) -> Result<i64> {
@@ -30,8 +30,8 @@ pub fn part1(schematic: Grid<u8>) -> Result<i64> {
     'number: for (n, row, col) in numbers {
         for offset in 0..=n.ilog10() {
             let col = Col(col.0 - usize::try_from(offset).unwrap() - 1);
-            for (row, col) in schematic.adjacent(row, col, true) {
-                let c = schematic[row][col];
+            for pos in schematic.adjacent(Pos(row, col), true) {
+                let c = schematic[pos];
                 if !c.is_ascii_digit() && c != b'.' {
                     total += n;
                     continue 'number;
@@ -68,17 +68,13 @@ pub fn part2(schematic: Grid<u8>) -> Result<i64> {
     let mut gears: HashMap<_, HashSet<_>> = HashMap::new();
     for (n, nrow, ncol) in numbers {
         for offset in 0..=n.ilog10() {
-            for (grow, gcol) in schematic.adjacent(
-                nrow,
-                Col(ncol.0 - usize::try_from(offset).unwrap() - 1),
+            for pos in schematic.adjacent(
+                Pos(nrow, Col(ncol.0 - usize::try_from(offset).unwrap() - 1)),
                 true,
             ) {
-                let c = schematic[grow][gcol];
+                let c = schematic[pos];
                 if c == b'*' {
-                    gears
-                        .entry((grow, gcol))
-                        .or_default()
-                        .insert((n, nrow, ncol));
+                    gears.entry(pos).or_default().insert((n, nrow, ncol));
                 }
             }
         }

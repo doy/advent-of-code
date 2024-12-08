@@ -60,25 +60,27 @@ pub fn parse(fh: File) -> Result<Map> {
                 let mut parts = pos.split(',');
                 let col = parts.next().unwrap();
                 let row = parts.next().unwrap();
-                (Row(row.parse().unwrap()), Col(col.parse().unwrap()))
+                Pos(Row(row.parse().unwrap()), Col(col.parse().unwrap()))
             })
             .collect();
         for pair in coords.windows(2) {
-            let (row, col) = pair[0];
-            let (next_row, next_col) = pair[1];
-            grid.grow(row + 1, col + 1);
-            grid.grow(next_row + 1, next_col + 1);
-            if row == next_row {
-                for col in
-                    (col.0.min(next_col.0)..=col.0.max(next_col.0)).map(Col)
+            let pos = pair[0];
+            let next_pos = pair[1];
+            grid.grow(Size(pos.0 + 1, pos.1 + 1));
+            grid.grow(Size(next_pos.0 + 1, next_pos.1 + 1));
+            if pos.0 == next_pos.0 {
+                for col in (pos.1 .0.min(next_pos.1 .0)
+                    ..=pos.1 .0.max(next_pos.1 .0))
+                    .map(Col)
                 {
-                    grid[row][col] = true;
+                    grid[pos.0][col] = true;
                 }
-            } else if col == next_col {
-                for row in
-                    (row.0.min(next_row.0)..=row.0.max(next_row.0)).map(Row)
+            } else if pos.1 == next_pos.1 {
+                for row in (pos.0 .0.min(next_pos.0 .0)
+                    ..=pos.0 .0.max(next_pos.0 .0))
+                    .map(Row)
                 {
-                    grid[row][col] = true;
+                    grid[row][pos.1] = true;
                 }
             } else {
                 panic!("diagonal line?");
@@ -86,7 +88,10 @@ pub fn parse(fh: File) -> Result<Map> {
         }
     }
     let abyss = grid.rows();
-    grid.grow(grid.rows() + grid.rows().0, grid.cols() + grid.cols().0);
+    grid.grow(Size(
+        grid.rows() + grid.rows().0,
+        grid.cols() + grid.cols().0,
+    ));
     Ok(Map {
         grid,
         generator: (Row(0), Col(500)),

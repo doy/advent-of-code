@@ -25,7 +25,7 @@ impl Map {
 
     fn step_east(&self) -> Self {
         let mut step = self.clone();
-        for ((Row(row), Col(col)), cell) in self.grid.indexed_cells() {
+        for (Pos(Row(row), Col(col)), cell) in self.grid.indexed_cells() {
             if *cell == Cell::Right {
                 let mut next = col + 1;
                 if next >= self.grid.cols().0 {
@@ -42,7 +42,7 @@ impl Map {
 
     fn step_south(&self) -> Self {
         let mut step = self.clone();
-        for ((Row(row), Col(col)), cell) in self.grid.indexed_cells() {
+        for (Pos(Row(row), Col(col)), cell) in self.grid.indexed_cells() {
             if *cell == Cell::Down {
                 let mut next = row + 1;
                 if next >= self.grid.rows().0 {
@@ -60,7 +60,7 @@ impl Map {
 
 pub fn parse(fh: File) -> Result<Map> {
     Ok(Map {
-        grid: parse::grid(parse::raw_lines(fh), |b, _, _| match b {
+        grid: parse::grid(parse::raw_lines(fh), |b, _| match b {
             b'v' => Cell::Down,
             b'>' => Cell::Right,
             b'.' => Cell::None,

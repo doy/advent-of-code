@@ -17,7 +17,7 @@ impl Image {
 
     fn enhance(&mut self) {
         let mut new_map: Grid<bool> = Grid::default();
-        new_map.grow(self.map.rows() + 2, self.map.cols() + 2);
+        new_map.grow(Size(self.map.rows() + 2, self.map.cols() + 2));
         for row in 0..new_map.rows().0 {
             for col in 0..new_map.cols().0 {
                 let neighbors: &[(Option<usize>, Option<usize>)] = &[

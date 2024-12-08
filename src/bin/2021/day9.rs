@@ -6,13 +6,9 @@ pub fn parse(fh: File) -> Result<Grid<u8>> {
 
 pub fn part1(map: Grid<u8>) -> Result<u64> {
     let mut risk = 0;
-    for ((row, col), pos) in map.indexed_cells() {
-        if map
-            .adjacent(row, col, false)
-            .map(|(row, col)| map[row][col])
-            .all(|n| *pos < n)
-        {
-            risk += 1 + u64::from(*pos);
+    for (pos, c) in map.indexed_cells() {
+        if map.adjacent(pos, false).map(|pos| map[pos]).all(|n| *c < n) {
+            risk += 1 + u64::from(*c);
         }
     }
     Ok(risk)
@@ -20,33 +16,29 @@ pub fn part1(map: Grid<u8>) -> Result<u64> {
 
 pub fn part2(map: Grid<u8>) -> Result<u64> {
     let mut low = vec![];
-    for ((row, col), pos) in map.indexed_cells() {
-        if map
-            .adjacent(row, col, false)
-            .map(|(row, col)| map[row][col])
-            .all(|n| *pos < n)
-        {
-            low.push((row, col));
+    for (pos, c) in map.indexed_cells() {
+        if map.adjacent(pos, false).map(|pos| map[pos]).all(|n| *c < n) {
+            low.push(pos);
         }
     }
 
     let mut sizes = vec![];
-    for (row, col) in low {
+    for pos in low {
         let mut basin: Grid<bool> = Grid::default();
-        basin.grow(map.rows(), map.cols());
-        let mut check = vec![(row, col)];
+        basin.grow(map.size());
+        let mut check = vec![pos];
         let mut count = 0;
-        while let Some((row, col)) = check.pop() {
-            if basin[row][col] || map[row][col] == 9 {
+        while let Some(pos) = check.pop() {
+            if basin[pos] || map[pos] == 9 {
                 continue;
             }
 
-            basin[row][col] = true;
+            basin[pos] = true;
             count += 1;
 
-            for (row, col) in basin.adjacent(row, col, false) {
-                if !basin[row][col] {
-                    check.push((row, col));
+            for pos in basin.adjacent(pos, false) {
+                if !basin[pos] {
+                    check.push(pos);
                 }
             }
         }

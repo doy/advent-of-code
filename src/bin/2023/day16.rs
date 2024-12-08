@@ -1,21 +1,14 @@
 use advent_of_code::prelude::*;
 
-fn add_offset(
-    row: Row,
-    col: Col,
-    row_offset: IRow,
-    col_offset: ICol,
-    max_row: Row,
-    max_col: Col,
-) -> Option<(Row, Col)> {
+fn add_offset(pos: Pos, offset: IPos, max: Size) -> Option<Pos> {
     if let (Some(row), Some(col)) = (
-        row.0.checked_add_signed(row_offset.0),
-        col.0.checked_add_signed(col_offset.0),
+        pos.0 .0.checked_add_signed(offset.0 .0),
+        pos.1 .0.checked_add_signed(offset.1 .0),
     ) {
         let row = Row(row);
         let col = Col(col);
-        if row < max_row && col < max_col {
-            return Some((row, col));
+        if row < max.0 && col < max.1 {
+            return Some(Pos(row, col));
         }
     }
     None
@@ -51,35 +44,24 @@ pub struct Map {
 }
 
 impl Map {
-    fn count_energized_from(
-        &self,
-        row: Row,
-        col: Col,
-        direction: Direction,
-    ) -> usize {
+    fn count_energized_from(&self, pos: Pos, direction: Direction) -> usize {
         let mut energized = HashMap::new();
-        let mut rays = vec![(row, col, direction)];
+        let mut rays = vec![(pos, direction)];
         while let Some(ray) = rays.pop() {
-            let (row, col, direction) = ray;
-            let directions: &mut Vec<_> =
-                energized.entry((row, col)).or_default();
+            let (pos, direction) = ray;
+            let directions: &mut Vec<_> = energized.entry(pos).or_default();
             if directions.contains(&direction) {
                 continue;
             }
             directions.push(direction);
-            let next = self.next(row, col, direction);
+            let next = self.next(pos, direction);
             rays.extend(next);
         }
         energized.into_keys().count()
     }
 
-    fn next(
-        &self,
-        row: Row,
-        col: Col,
-        direction: Direction,
-    ) -> Vec<(Row, Col, Direction)> {
-        let directions = match self.map[row][col] {
+    fn next(&self, pos: Pos, direction: Direction) -> Vec<(Pos, Direction)> {
+        let directions = match self.map[pos] {
             Tile::Floor => vec![direction],
             Tile::Vertical => {
                 if direction.horizontal() {
@@ -112,15 +94,8 @@ impl Map {
             .into_iter()
             .filter_map(|direction| {
                 let offsets = direction.offset();
-                add_offset(
-                    row,
-                    col,
-                    offsets.0,
-                    offsets.1,
-                    self.map.rows(),
-                    self.map.cols(),
-                )
-                .map(|(row, col)| (row, col, direction))
+                add_offset(pos, offsets, self.map.size())
+                    .map(|pos| (pos, direction))
             })
             .collect()
     }
@@ -128,15 +103,13 @@ impl Map {
 
 pub fn parse(fh: File) -> Result<Map> {
     Ok(Map {
-        map: parse::grid(parse::raw_lines(fh), |c, _, _| {
-            c.try_into().unwrap()
-        }),
+        map: parse::grid(parse::raw_lines(fh), |c, _| c.try_into().unwrap()),
     })
 }
 
 pub fn part1(map: Map) -> Result<i64> {
     Ok(map
-        .count_energized_from(Row(0), Col(0), Direction::Right)
+        .count_energized_from(Pos(Row(0), Col(0)), Direction::Right)
         .try_into()
         .unwrap())
 }
@@ -147,19 +120,17 @@ pub fn part2(map: Map) -> Result<i64> {
         .each_row()
         .flat_map(|row| {
             [
-                (row, Col(0), Direction::Right),
-                (row, map.map.cols() - 1, Direction::Left),
+                (Pos(row, Col(0)), Direction::Right),
+                (Pos(row, map.map.cols() - 1), Direction::Left),
             ]
         })
         .chain(map.map.each_col().flat_map(|col| {
             [
-                (Row(0), col, Direction::Down),
-                (map.map.rows() - 1, col, Direction::Up),
+                (Pos(Row(0), col), Direction::Down),
+                (Pos(map.map.rows() - 1, col), Direction::Up),
             ]
         }))
-        .map(|(row, col, direction)| {
-            map.count_energized_from(row, col, direction)
-        })
+        .map(|(pos, direction)| map.count_energized_from(pos, direction))
         .max()
         .unwrap()
         .try_into()

@@ -4,15 +4,15 @@ pub struct Map {
     grid: Grid<u8>,
 }
 
-impl advent_of_code::graph::Graph<(Row, Col), (Row, Col)> for Map {
+impl advent_of_code::graph::Graph<Pos, Pos> for Map {
     type Edges = advent_of_code::grid::Adjacent;
 
-    fn edges(&self, v: (Row, Col)) -> Self::Edges {
-        self.grid.adjacent(v.0, v.1, false)
+    fn edges(&self, v: Pos) -> Self::Edges {
+        self.grid.adjacent(v, false)
     }
 
-    fn edge(&self, _v: (Row, Col), e: (Row, Col)) -> ((Row, Col), u64) {
-        (e, u64::from(self.grid[e.0][e.1]))
+    fn edge(&self, _v: Pos, e: Pos) -> (Pos, u64) {
+        (e, u64::from(self.grid[e]))
     }
 }
 
@@ -24,18 +24,19 @@ pub fn parse(fh: File) -> Result<Map> {
 
 pub fn part1(map: Map) -> Result<u64> {
     Ok(map
-        .dijkstra((Row(0), Col(0)), |v| {
-            v == (map.grid.rows() - 1, map.grid.cols() - 1)
+        .dijkstra(Pos(Row(0), Col(0)), |v| {
+            v == Pos(map.grid.rows() - 1, map.grid.cols() - 1)
         })
         .0)
 }
 
 pub fn part2(map: Map) -> Result<u64> {
     let mut large_grid = Grid::default();
-    large_grid.grow(Row(map.grid.rows().0 * 5), Col(map.grid.cols().0 * 5));
+    large_grid
+        .grow(Size(Row(map.grid.rows().0 * 5), Col(map.grid.cols().0 * 5)));
     for lrow in 0..5 {
         for lcol in 0..5 {
-            for ((Row(row), Col(col)), val) in map.grid.indexed_cells() {
+            for (Pos(Row(row), Col(col)), val) in map.grid.indexed_cells() {
                 let mut val = val + lrow + lcol;
                 while val > 9 {
                     val -= 9;
@@ -47,8 +48,8 @@ pub fn part2(map: Map) -> Result<u64> {
     }
     let large_map = Map { grid: large_grid };
     Ok(large_map
-        .dijkstra((Row(0), Col(0)), |v| {
-            v == (large_map.grid.rows() - 1, large_map.grid.cols() - 1)
+        .dijkstra(Pos(Row(0), Col(0)), |v| {
+            v == Pos(large_map.grid.rows() - 1, large_map.grid.cols() - 1)
         })
         .0)
 }

@@ -60,6 +60,16 @@ pub struct Row(pub usize);
 )]
 pub struct Col(pub usize);
 
+#[derive(
+    Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
+)]
+pub struct Pos(pub Row, pub Col);
+
+#[derive(
+    Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
+)]
+pub struct Size(pub Row, pub Col);
+
 impl Row {
     pub fn i(self) -> IRow {
         IRow(self.0.try_into().unwrap())
@@ -78,6 +88,12 @@ impl Col {
     }
 }
 
+impl Pos {
+    pub fn i(self) -> IPos {
+        IPos(self.0.i(), self.1.i())
+    }
+}
+
 impl_op!(Row, usize, isize, Add, add);
 impl_op!(Row, usize, isize, Sub, sub);
 impl_op!(Row, usize, isize, Mul, mul);
@@ -86,6 +102,22 @@ impl_op!(Col, usize, isize, Add, add);
 impl_op!(Col, usize, isize, Sub, sub);
 impl_op!(Col, usize, isize, Mul, mul);
 impl_op!(Col, usize, isize, Rem, rem);
+
+impl std::ops::Add<Pos> for Pos {
+    type Output = Pos;
+
+    fn add(self, other: Pos) -> Self::Output {
+        Pos(self.0 + other.0, self.1 + other.1)
+    }
+}
+
+impl std::ops::Sub<Pos> for Pos {
+    type Output = Pos;
+
+    fn sub(self, other: Pos) -> Self::Output {
+        Pos(self.0 - other.0, self.1 - other.1)
+    }
+}
 
 #[derive(
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
@@ -96,6 +128,16 @@ pub struct IRow(pub isize);
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
 )]
 pub struct ICol(pub isize);
+
+#[derive(
+    Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
+)]
+pub struct IPos(pub IRow, pub ICol);
+
+#[derive(
+    Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
+)]
+pub struct ISize(pub IRow, pub ICol);
 
 impl IRow {
     pub fn u(self) -> Row {
@@ -115,6 +157,12 @@ impl ICol {
     }
 }
 
+impl IPos {
+    pub fn u(self) -> Pos {
+        Pos(self.0.u(), self.1.u())
+    }
+}
+
 impl_op!(IRow, isize, usize, Add, add);
 impl_op!(IRow, isize, usize, Sub, sub);
 impl_op!(IRow, isize, usize, Mul, mul);
@@ -123,6 +171,21 @@ impl_op!(ICol, isize, usize, Add, add);
 impl_op!(ICol, isize, usize, Sub, sub);
 impl_op!(ICol, isize, usize, Mul, mul);
 impl_op!(ICol, isize, usize, Rem, rem);
+
+impl std::ops::Add<IPos> for IPos {
+    type Output = IPos;
+
+    fn add(self, other: IPos) -> Self::Output {
+        Self(self.0 + other.0, self.1 + other.1)
+    }
+}
+impl std::ops::Sub<IPos> for IPos {
+    type Output = IPos;
+
+    fn sub(self, other: IPos) -> Self::Output {
+        Self(self.0 - other.0, self.1 - other.1)
+    }
+}
 
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct GridRow<T: Clone + Eq + PartialEq + std::hash::Hash> {
@@ -168,8 +231,8 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Default for Grid<T> {
 }
 
 impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
-    pub fn size(&self) -> (Row, Col) {
-        (self.rows(), self.cols())
+    pub fn size(&self) -> Size {
+        Size(self.rows(), self.cols())
     }
 
     pub fn unshift_rows(&mut self, count: usize) {
@@ -235,18 +298,18 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         self.rows.iter_mut().flat_map(|row| row.cells.iter_mut())
     }
 
-    pub fn indexed_cells(&self) -> impl Iterator<Item = ((Row, Col), &T)> {
+    pub fn indexed_cells(&self) -> impl Iterator<Item = (Pos, &T)> {
         self.rows.iter().enumerate().flat_map(|(i, row)| {
             row.cells
                 .iter()
                 .enumerate()
-                .map(move |(j, cell)| ((Row(i), Col(j)), cell))
+                .map(move |(j, cell)| (Pos(Row(i), Col(j)), cell))
         })
     }
 
     pub fn par_indexed_cells(
         &self,
-    ) -> impl rayon::iter::ParallelIterator<Item = ((Row, Col), &T)>
+    ) -> impl rayon::iter::ParallelIterator<Item = (Pos, &T)>
     where
         T: Sync,
     {
@@ -254,32 +317,32 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
             row.cells
                 .par_iter()
                 .enumerate()
-                .map(move |(j, cell)| ((Row(i), Col(j)), cell))
+                .map(move |(j, cell)| (Pos(Row(i), Col(j)), cell))
         })
     }
 
     pub fn indexed_cells_mut(
         &mut self,
-    ) -> impl Iterator<Item = ((Row, Col), &mut T)> {
+    ) -> impl Iterator<Item = (Pos, &mut T)> {
         self.rows.iter_mut().enumerate().flat_map(|(i, row)| {
             row.cells
                 .iter_mut()
                 .enumerate()
-                .map(move |(j, cell)| ((Row(i), Col(j)), cell))
+                .map(move |(j, cell)| (Pos(Row(i), Col(j)), cell))
         })
     }
 
-    pub fn in_bounds(&self, pos: (IRow, ICol)) -> bool {
+    pub fn in_bounds(&self, pos: IPos) -> bool {
         pos.0 >= IRow(0)
             && pos.0 < self.rows().i()
             && pos.1 >= ICol(0)
             && pos.1 < self.cols().i()
     }
 
-    pub fn adjacent(&self, row: Row, col: Col, diagonal: bool) -> Adjacent {
+    pub fn adjacent(&self, pos: Pos, diagonal: bool) -> Adjacent {
         Adjacent {
-            row: row.0,
-            col: col.0,
+            row: pos.0 .0,
+            col: pos.1 .0,
             rows: self.rows().0,
             cols: self.cols().0,
             diagonal,
@@ -287,19 +350,13 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         }
     }
 
-    pub fn flood_fill(
-        &mut self,
-        row: Row,
-        col: Col,
-        fill: &T,
-        diagonal: bool,
-    ) {
-        let mut todo = vec![(row, col)];
-        while let Some((row, col)) = todo.pop() {
-            self[row][col] = fill.clone();
-            for (row, col) in self.adjacent(row, col, diagonal) {
-                if self[row][col] != *fill {
-                    todo.push((row, col));
+    pub fn flood_fill(&mut self, pos: Pos, fill: &T, diagonal: bool) {
+        let mut todo = vec![pos];
+        while let Some(pos) = todo.pop() {
+            self[pos.0][pos.1] = fill.clone();
+            for pos in self.adjacent(pos, diagonal) {
+                if self[pos.0][pos.1] != *fill {
+                    todo.push(pos);
                 }
             }
         }
@@ -307,12 +364,12 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 }
 
 impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
-    pub fn grow(&mut self, rows: Row, cols: Col) {
+    pub fn grow(&mut self, size: Size) {
         self.rows
-            .resize_with(rows.0.max(self.rows.len()), GridRow::default);
+            .resize_with(size.0 .0.max(self.rows.len()), GridRow::default);
         for row in &mut self.rows {
             row.cells
-                .resize_with(cols.0.max(row.cells.len()), T::default);
+                .resize_with(size.1 .0.max(row.cells.len()), T::default);
         }
     }
 
@@ -375,6 +432,23 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::IndexMut<Row>
     }
 }
 
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::Index<Pos>
+    for Grid<T>
+{
+    type Output = T;
+    fn index(&self, pos: Pos) -> &Self::Output {
+        &self.rows[pos.0 .0][pos.1]
+    }
+}
+
+impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::IndexMut<Pos>
+    for Grid<T>
+{
+    fn index_mut(&mut self, pos: Pos) -> &mut Self::Output {
+        &mut self.rows[pos.0 .0][pos.1]
+    }
+}
+
 impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
     FromIterator<Vec<T>> for Grid<T>
 {
@@ -392,23 +466,23 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
             .map(|row| row.cells.len())
             .max()
             .unwrap_or(0);
-        self_.grow(Row(nrows), Col(ncols));
+        self_.grow(Size(Row(nrows), Col(ncols)));
 
         self_
     }
 }
 
 impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
-    FromIterator<((Row, Col), T)> for Grid<T>
+    FromIterator<(Pos, T)> for Grid<T>
 {
     fn from_iter<I>(iter: I) -> Self
     where
-        I: IntoIterator<Item = ((Row, Col), T)>,
+        I: IntoIterator<Item = (Pos, T)>,
     {
         let mut self_ = Self::default();
-        for ((row, col), cell) in iter {
-            self_.grow(Row(row.0 + 1), Col(col.0 + 1));
-            self_[row][col] = cell;
+        for (pos, cell) in iter {
+            self_.grow(Size(Row(pos.0 .0 + 1), Col(pos.1 .0 + 1)));
+            self_[pos] = cell;
         }
         self_
     }
@@ -455,7 +529,7 @@ pub struct Adjacent {
 }
 
 impl Iterator for Adjacent {
-    type Item = (Row, Col);
+    type Item = Pos;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -477,7 +551,7 @@ impl Iterator for Adjacent {
             {
                 continue;
             }
-            return Some((
+            return Some(Pos(
                 Row(self.row + usize::from(pos_row) - 1),
                 Col(self.col + usize::from(pos_col) - 1),
             ));
@@ -559,64 +633,58 @@ impl std::convert::TryFrom<u8> for Direction {
 }
 
 impl Direction {
-    pub fn from_pos(row: Row, col: Col, new_row: Row, new_col: Col) -> Self {
-        if row.abs_diff(new_row) == Row(1) && col.abs_diff(new_col) == Col(0)
+    pub fn from_pos(from: Pos, to: Pos) -> Self {
+        if from.0.abs_diff(to.0) == Row(1) && from.1.abs_diff(to.1) == Col(0)
         {
-            if row > new_row {
+            if from.0 > to.0 {
                 Self::Up
             } else {
                 Self::Down
             }
-        } else if col.abs_diff(new_col) == Col(1)
-            && row.abs_diff(new_row) == Row(0)
+        } else if from.1.abs_diff(to.1) == Col(1)
+            && from.0.abs_diff(to.0) == Row(0)
         {
-            if col > new_col {
+            if from.1 > to.1 {
                 Self::Left
             } else {
                 Self::Right
             }
         } else {
-            panic!("invalid direction ({row:?}, {col:?}) -> ({new_row:?}, {new_col:?})")
+            panic!("invalid direction {from:?} -> {to:?}")
         }
     }
 
-    pub fn move_checked(
-        self,
-        pos: (Row, Col),
-        size: (Row, Col),
-    ) -> Option<(Row, Col)> {
+    pub fn move_checked(self, pos: Pos, size: Size) -> Option<Pos> {
         match self {
-            Self::Up => pos.0 .0.checked_sub(1).map(|row| (Row(row), pos.1)),
+            Self::Up => {
+                pos.0 .0.checked_sub(1).map(|row| Pos(Row(row), pos.1))
+            }
             Self::Down => {
                 if pos.0 .0 >= size.0 .0 - 1 {
                     None
                 } else {
-                    Some((pos.0 + 1, pos.1))
+                    Some(Pos(pos.0 + 1, pos.1))
                 }
             }
             Self::Left => {
-                pos.1 .0.checked_sub(1).map(|col| (pos.0, Col(col)))
+                pos.1 .0.checked_sub(1).map(|col| Pos(pos.0, Col(col)))
             }
             Self::Right => {
                 if pos.1 .0 >= size.1 .0 - 1 {
                     None
                 } else {
-                    Some((pos.0, pos.1 + 1))
+                    Some(Pos(pos.0, pos.1 + 1))
                 }
             }
         }
     }
 
-    pub fn move_wrapped(
-        self,
-        pos: (Row, Col),
-        size: (Row, Col),
-    ) -> (Row, Col) {
+    pub fn move_wrapped(self, pos: Pos, size: Size) -> Pos {
         match self {
-            Self::Up => ((size.0 .0 + pos.0 - 1) % size.0 .0, pos.1),
-            Self::Down => ((pos.0 + 1) % size.0 .0, pos.1),
-            Self::Left => (pos.0, (size.1 .0 + pos.1 - 1) % size.1 .0),
-            Self::Right => (pos.0, (pos.1 + 1) % size.1 .0),
+            Self::Up => Pos((size.0 .0 + pos.0 - 1) % size.0 .0, pos.1),
+            Self::Down => Pos((pos.0 + 1) % size.0 .0, pos.1),
+            Self::Left => Pos(pos.0, (size.1 .0 + pos.1 - 1) % size.1 .0),
+            Self::Right => Pos(pos.0, (pos.1 + 1) % size.1 .0),
         }
     }
 
@@ -653,12 +721,12 @@ impl Direction {
         }
     }
 
-    pub fn offset(&self) -> (IRow, ICol) {
+    pub fn offset(&self) -> IPos {
         match self {
-            Self::Up => (IRow(-1), ICol(0)),
-            Self::Down => (IRow(1), ICol(0)),
-            Self::Left => (IRow(0), ICol(-1)),
-            Self::Right => (IRow(0), ICol(1)),
+            Self::Up => IPos(IRow(-1), ICol(0)),
+            Self::Down => IPos(IRow(1), ICol(0)),
+            Self::Left => IPos(IRow(0), ICol(-1)),
+            Self::Right => IPos(IRow(0), ICol(1)),
         }
     }
 }

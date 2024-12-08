@@ -50,59 +50,57 @@ pub fn parse(fh: File) -> Result<Vec<Instruction>> {
 
 pub fn part1(instructions: Vec<Instruction>) -> Result<i64> {
     let mut map: Grid<bool> = Grid::default();
-    let mut pos = (IRow(0), ICol(0));
+    let mut pos = IPos(IRow(0), ICol(0));
     let mut corners = vec![pos];
     for instruction in &instructions {
         let offset = instruction.direction.offset();
-        pos = (
+        pos = IPos(
             pos.0 + offset.0 * instruction.distance,
             pos.1 + offset.1 * instruction.distance,
         );
         corners.push(pos);
     }
-    let min_row = corners.iter().map(|(row, _)| row).min().unwrap();
-    let min_col = corners.iter().map(|(_, col)| col).min().unwrap();
+    let min_row = corners.iter().map(|IPos(row, _)| row).min().unwrap();
+    let min_col = corners.iter().map(|IPos(_, col)| col).min().unwrap();
 
     let starting_pos =
-        (Row(min_row.0.abs_diff(0)), Col(min_col.0.abs_diff(0)));
+        Pos(Row(min_row.0.abs_diff(0)), Col(min_col.0.abs_diff(0)));
     let mut pos = starting_pos;
     for instruction in &instructions {
         let offset = instruction.direction.offset();
         for _ in 0..instruction.distance {
-            pos = (
+            pos = Pos(
                 Row(pos.0 .0.checked_add_signed(offset.0 .0).unwrap()),
                 Col(pos.1 .0.checked_add_signed(offset.1 .0).unwrap()),
             );
-            map.grow(pos.0 + 1, pos.1 + 1);
+            map.grow(Size(pos.0 + 1, pos.1 + 1));
             map[pos.0][pos.1] = true;
         }
     }
 
     let trench: HashSet<_> = map
         .indexed_cells()
-        .filter_map(
-            |((row, col), dug)| if *dug { Some((row, col)) } else { None },
-        )
+        .filter_map(|(pos, dug)| if *dug { Some(pos) } else { None })
         .collect();
     let mut internal_cell = None;
-    for (row, col) in map.adjacent(starting_pos.0, starting_pos.1, true) {
-        if trench.contains(&(row, col)) {
+    for pos in map.adjacent(starting_pos, true) {
+        if trench.contains(&pos) {
             continue;
         }
         let mut count = 0;
-        for offset in 0..=(row.0.min(col.0)) {
-            let check_row = row - offset;
-            let check_col = col - offset;
-            if trench.contains(&(check_row, check_col)) {
+        for offset in 0..=(pos.0 .0.min(pos.1 .0)) {
+            let check_row = pos.0 - offset;
+            let check_col = pos.1 - offset;
+            if trench.contains(&Pos(check_row, check_col)) {
                 count += 1;
             }
         }
         if count % 2 == 1 {
-            internal_cell = Some((row, col));
+            internal_cell = Some(pos);
         }
     }
     let internal_cell = internal_cell.unwrap();
-    map.flood_fill(internal_cell.0, internal_cell.1, &true, true);
+    map.flood_fill(internal_cell, &true, true);
 
     Ok(map.cells().filter(|dug| **dug).count().try_into().unwrap())
 }

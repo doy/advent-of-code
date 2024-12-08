@@ -1,21 +1,14 @@
 use advent_of_code::prelude::*;
 
-fn add_offset(
-    row: Row,
-    col: Col,
-    row_offset: IRow,
-    col_offset: ICol,
-    max_row: Row,
-    max_col: Col,
-) -> Option<(Row, Col)> {
+fn add_offset(pos: Pos, offset: IPos, max: Size) -> Option<Pos> {
     if let (Some(row), Some(col)) = (
-        row.0.checked_add_signed(row_offset.0),
-        col.0.checked_add_signed(col_offset.0),
+        pos.0 .0.checked_add_signed(offset.0 .0),
+        pos.1 .0.checked_add_signed(offset.1 .0),
     ) {
         let row = Row(row);
         let col = Col(col);
-        if row < max_row && col < max_col {
-            return Some((row, col));
+        if row < max.0 && col < max.1 {
+            return Some(Pos(row, col));
         }
     }
     None
@@ -26,16 +19,13 @@ pub struct Crucible {
     map: Grid<u8>,
 }
 
-impl
-    advent_of_code::graph::Graph<
-        (Row, Col, Option<Direction>, u8),
-        (Row, Col),
-    > for Crucible
+impl advent_of_code::graph::Graph<(Pos, Option<Direction>, u8), Pos>
+    for Crucible
 {
-    type Edges = Vec<(Row, Col)>;
+    type Edges = Vec<Pos>;
 
-    fn edges(&self, v: (Row, Col, Option<Direction>, u8)) -> Self::Edges {
-        let (row, col, direction, length) = v;
+    fn edges(&self, v: (Pos, Option<Direction>, u8)) -> Self::Edges {
+        let (pos, direction, length) = v;
 
         if let Some(direction) = direction {
             let mut edges: Vec<_> = direction
@@ -43,27 +33,13 @@ impl
                 .into_iter()
                 .filter_map(|direction| {
                     let offset = direction.offset();
-                    add_offset(
-                        row,
-                        col,
-                        offset.0,
-                        offset.1,
-                        self.map.rows(),
-                        self.map.cols(),
-                    )
+                    add_offset(pos, offset, self.map.size())
                 })
                 .collect();
             if length + 1 < 3 {
                 let offset = direction.offset();
-                if let Some((row, col)) = add_offset(
-                    row,
-                    col,
-                    offset.0,
-                    offset.1,
-                    self.map.rows(),
-                    self.map.cols(),
-                ) {
-                    edges.push((row, col));
+                if let Some(pos) = add_offset(pos, offset, self.map.size()) {
+                    edges.push(pos);
                 }
             }
             edges
@@ -77,14 +53,7 @@ impl
             .into_iter()
             .filter_map(|direction| {
                 let offset = direction.offset();
-                add_offset(
-                    row,
-                    col,
-                    offset.0,
-                    offset.1,
-                    self.map.rows(),
-                    self.map.cols(),
-                )
+                add_offset(pos, offset, self.map.size())
             })
             .collect()
         }
@@ -92,17 +61,16 @@ impl
 
     fn edge(
         &self,
-        v: (Row, Col, Option<Direction>, u8),
-        e: (Row, Col),
-    ) -> ((Row, Col, Option<Direction>, u8), u64) {
-        let (row, col, direction, length) = v;
-        let (new_row, new_col) = e;
-        let new_direction = Direction::from_pos(row, col, new_row, new_col);
+        v: (Pos, Option<Direction>, u8),
+        e: Pos,
+    ) -> ((Pos, Option<Direction>, u8), u64) {
+        let (pos, direction, length) = v;
+        let new_pos = e;
+        let new_direction = Direction::from_pos(pos, new_pos);
 
         (
             (
-                new_row,
-                new_col,
+                new_pos,
                 Some(new_direction),
                 if direction == Some(new_direction) {
                     length + 1
@@ -110,7 +78,7 @@ impl
                     0
                 },
             ),
-            u64::from(self.map[new_row][new_col]),
+            u64::from(self.map[new_pos]),
         )
     }
 }
@@ -120,16 +88,13 @@ pub struct UltraCrucible {
     map: Grid<u8>,
 }
 
-impl
-    advent_of_code::graph::Graph<
-        (Row, Col, Option<Direction>, u8),
-        (Row, Col),
-    > for UltraCrucible
+impl advent_of_code::graph::Graph<(Pos, Option<Direction>, u8), Pos>
+    for UltraCrucible
 {
-    type Edges = Vec<(Row, Col)>;
+    type Edges = Vec<Pos>;
 
-    fn edges(&self, v: (Row, Col, Option<Direction>, u8)) -> Self::Edges {
-        let (row, col, direction, length) = v;
+    fn edges(&self, v: (Pos, Option<Direction>, u8)) -> Self::Edges {
+        let (pos, direction, length) = v;
 
         if let Some(direction) = direction {
             let mut edges = vec![];
@@ -137,28 +102,14 @@ impl
                 edges.extend(direction.turns().into_iter().filter_map(
                     |direction| {
                         let offset = direction.offset();
-                        add_offset(
-                            row,
-                            col,
-                            offset.0,
-                            offset.1,
-                            self.map.rows(),
-                            self.map.cols(),
-                        )
+                        add_offset(pos, offset, self.map.size())
                     },
                 ));
             }
             if length + 1 < 10 {
                 let offset = direction.offset();
-                if let Some((row, col)) = add_offset(
-                    row,
-                    col,
-                    offset.0,
-                    offset.1,
-                    self.map.rows(),
-                    self.map.cols(),
-                ) {
-                    edges.push((row, col));
+                if let Some(pos) = add_offset(pos, offset, self.map.size()) {
+                    edges.push(pos);
                 }
             }
             edges
@@ -172,14 +123,7 @@ impl
             .into_iter()
             .filter_map(|direction| {
                 let offset = direction.offset();
-                add_offset(
-                    row,
-                    col,
-                    offset.0,
-                    offset.1,
-                    self.map.rows(),
-                    self.map.cols(),
-                )
+                add_offset(pos, offset, self.map.size())
             })
             .collect()
         }
@@ -187,17 +131,16 @@ impl
 
     fn edge(
         &self,
-        v: (Row, Col, Option<Direction>, u8),
-        e: (Row, Col),
-    ) -> ((Row, Col, Option<Direction>, u8), u64) {
-        let (row, col, direction, length) = v;
-        let (new_row, new_col) = e;
-        let new_direction = Direction::from_pos(row, col, new_row, new_col);
+        v: (Pos, Option<Direction>, u8),
+        e: Pos,
+    ) -> ((Pos, Option<Direction>, u8), u64) {
+        let (pos, direction, length) = v;
+        let new_pos = e;
+        let new_direction = Direction::from_pos(pos, new_pos);
 
         (
             (
-                new_row,
-                new_col,
+                new_pos,
                 Some(new_direction),
                 if direction == Some(new_direction) {
                     length + 1
@@ -205,7 +148,7 @@ impl
                     0
                 },
             ),
-            u64::from(self.map[new_row][new_col]),
+            u64::from(self.map[new_pos]),
         )
     }
 }
@@ -217,8 +160,9 @@ pub fn parse(fh: File) -> Result<Grid<u8>> {
 pub fn part1(map: Grid<u8>) -> Result<i64> {
     let crucible = Crucible { map };
     let (weight, _) =
-        crucible.dijkstra((Row(0), Col(0), None, 0), |(row, col, _, _)| {
-            row == crucible.map.rows() - 1 && col == crucible.map.cols() - 1
+        crucible.dijkstra((Pos(Row(0), Col(0)), None, 0), |(pos, _, _)| {
+            pos.0 == crucible.map.rows() - 1
+                && pos.1 == crucible.map.cols() - 1
         });
     Ok(weight.try_into().unwrap())
 }
@@ -226,10 +170,10 @@ pub fn part1(map: Grid<u8>) -> Result<i64> {
 pub fn part2(map: Grid<u8>) -> Result<i64> {
     let crucible = UltraCrucible { map };
     let (weight, _) = crucible.dijkstra(
-        (Row(0), Col(0), None, 0),
-        |(row, col, _, length)| {
-            row == crucible.map.rows() - 1
-                && col == crucible.map.cols() - 1
+        (Pos(Row(0), Col(0)), None, 0),
+        |(pos, _, length)| {
+            pos.0 == crucible.map.rows() - 1
+                && pos.1 == crucible.map.cols() - 1
                 && length + 1 >= 4
         },
     );

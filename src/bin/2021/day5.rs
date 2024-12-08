@@ -14,7 +14,7 @@ impl Map {
         y2: usize,
     ) -> bool {
         self.grid
-            .grow(Row((y1 + 1).max(y2 + 1)), Col((x1 + 1).max(x2 + 1)));
+            .grow(Size(Row((y1 + 1).max(y2 + 1)), Col((x1 + 1).max(x2 + 1))));
         if x1 == x2 {
             for y in y1.min(y2)..=y1.max(y2) {
                 self.grid[Row(y)][Col(x1)] += 1;
@@ -33,7 +33,7 @@ impl Map {
         y2: usize,
     ) -> bool {
         self.grid
-            .grow(Row((y1 + 1).max(y2 + 1)), Col((x1 + 1).max(x2 + 1)));
+            .grow(Size(Row((y1 + 1).max(y2 + 1)), Col((x1 + 1).max(x2 + 1))));
         if y1 == y2 {
             for x in x1.min(x2)..=x1.max(x2) {
                 self.grid[Row(y1)][Col(x)] += 1;

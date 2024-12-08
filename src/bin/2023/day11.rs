@@ -1,7 +1,7 @@
 use advent_of_code::prelude::*;
 
 pub fn parse(fh: File) -> Result<Grid<bool>> {
-    Ok(parse::grid(parse::raw_lines(fh), |c, _, _| c == b'#'))
+    Ok(parse::grid(parse::raw_lines(fh), |c, _| c == b'#'))
 }
 
 pub fn part1(mut map: Grid<bool>) -> Result<i64> {
@@ -24,7 +24,7 @@ pub fn part1(mut map: Grid<bool>) -> Result<i64> {
         map.insert_col(col);
     }
 
-    let galaxies: HashSet<(Row, Col)> = map
+    let galaxies: HashSet<Pos> = map
         .indexed_cells()
         .filter_map(|(pos, galaxy)| if *galaxy { Some(pos) } else { None })
         .collect();
@@ -53,7 +53,7 @@ pub fn part2(map: Grid<bool>) -> Result<i64> {
         }
     }
 
-    let galaxies: HashSet<(Row, Col)> = map
+    let galaxies: HashSet<Pos> = map
         .indexed_cells()
         .filter_map(|(pos, galaxy)| if *galaxy { Some(pos) } else { None })
         .collect();

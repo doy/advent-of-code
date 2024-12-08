@@ -80,7 +80,7 @@ impl Map {
 
 pub fn parse(fh: File) -> Result<Map> {
     let mut lines = parse::raw_lines(fh);
-    let grid = parse::grid(parse::chunk(&mut lines), |c, _, _| match c {
+    let grid = parse::grid(parse::chunk(&mut lines), |c, _| match c {
         b' ' => Tile::Noop,
         b'.' => Tile::Open,
         b'#' => Tile::Wall,

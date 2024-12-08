@@ -2,8 +2,8 @@ use advent_of_code::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct Map {
-    blizzards: HashSet<((Row, Col), Direction)>,
-    size: (Row, Col),
+    blizzards: HashSet<(Pos, Direction)>,
+    size: Size,
 }
 
 impl std::fmt::Display for Map {
@@ -13,7 +13,7 @@ impl std::fmt::Display for Map {
                 let blizzards: Vec<_> = self
                     .blizzards
                     .iter()
-                    .filter(|(pos, _)| *pos == (row, col))
+                    .filter(|(pos, _)| *pos == Pos(row, col))
                     .collect();
                 match blizzards.len() {
                     0 => write!(f, ".")?,
@@ -28,10 +28,7 @@ impl std::fmt::Display for Map {
 }
 
 impl Map {
-    fn new(
-        blizzards: HashSet<((Row, Col), Direction)>,
-        size: (Row, Col),
-    ) -> Self {
+    fn new(blizzards: HashSet<(Pos, Direction)>, size: Size) -> Self {
         Self { blizzards, size }
     }
 
@@ -49,7 +46,7 @@ impl Map {
         }
     }
 
-    fn blizzard(&self, pos: (Row, Col)) -> bool {
+    fn blizzard(&self, pos: Pos) -> bool {
         self.blizzards.contains(&(pos, Direction::Up))
             || self.blizzards.contains(&(pos, Direction::Down))
             || self.blizzards.contains(&(pos, Direction::Left))
@@ -58,23 +55,23 @@ impl Map {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
-enum Pos {
+enum MapPos {
     Start,
     End,
-    Pos((Row, Col)),
+    Pos(Pos),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub struct State {
     time: usize,
-    pos: Pos,
+    pos: MapPos,
 }
 
 impl State {
     fn new(start: bool) -> Self {
         Self {
             time: 0,
-            pos: if start { Pos::Start } else { Pos::End },
+            pos: if start { MapPos::Start } else { MapPos::End },
         }
     }
 }
@@ -83,17 +80,17 @@ pub fn parse(fh: File) -> Result<Map> {
     let mut lines = parse::raw_lines(fh);
     lines.next().unwrap();
     let mut blizzards = HashSet::new();
-    let mut size = (Row(0), Col(0));
+    let mut size = Size(Row(0), Col(0));
     for (row, line) in lines.enumerate() {
         let row = Row(row);
         if line.starts_with("##") {
-            size = (row, Col(line.len() - 2));
+            size = Size(row, Col(line.len() - 2));
             break;
         }
         for (col, c) in line.as_bytes().iter().enumerate() {
             let col = Col(col);
             if let Ok(direction) = Direction::try_from(*c) {
-                blizzards.insert(((row, col - 1), direction));
+                blizzards.insert((Pos(row, col - 1), direction));
             }
         }
     }
@@ -111,7 +108,7 @@ impl Pathfinder {
         }
     }
 
-    fn size(&self) -> (Row, Col) {
+    fn size(&self) -> Size {
         self.maps_at_time.borrow().first().unwrap().size
     }
 
@@ -129,54 +126,56 @@ impl Pathfinder {
     }
 }
 
-impl advent_of_code::graph::Graph<State, Pos> for Pathfinder {
-    type Edges = Vec<Pos>;
+impl advent_of_code::graph::Graph<State, MapPos> for Pathfinder {
+    type Edges = Vec<MapPos>;
 
     fn edges(&self, state: State) -> Self::Edges {
         let size = self.size();
         let next = self.map_at_time(state.time + 1);
         let mut v = vec![];
         match state.pos {
-            Pos::Start => {
-                v.push(Pos::Start);
-                if !next.blizzard((Row(0), Col(0))) {
-                    v.push(Pos::Pos((Row(0), Col(0))));
+            MapPos::Start => {
+                v.push(MapPos::Start);
+                if !next.blizzard(Pos(Row(0), Col(0))) {
+                    v.push(MapPos::Pos(Pos(Row(0), Col(0))));
                 }
             }
-            Pos::End => {
-                v.push(Pos::End);
-                if !next.blizzard((size.0 - 1, size.1 - 1)) {
-                    v.push(Pos::Pos((size.0 - 1, size.1 - 1)));
+            MapPos::End => {
+                v.push(MapPos::End);
+                if !next.blizzard(Pos(size.0 - 1, size.1 - 1)) {
+                    v.push(MapPos::Pos(Pos(size.0 - 1, size.1 - 1)));
                 }
             }
-            Pos::Pos(pos) => {
-                if pos.0 < size.0 - 1 && !next.blizzard((pos.0 + 1, pos.1)) {
-                    v.push(Pos::Pos((pos.0 + 1, pos.1)));
+            MapPos::Pos(pos) => {
+                if pos.0 < size.0 - 1 && !next.blizzard(Pos(pos.0 + 1, pos.1))
+                {
+                    v.push(MapPos::Pos(Pos(pos.0 + 1, pos.1)));
                 }
-                if pos.1 < size.1 - 1 && !next.blizzard((pos.0, pos.1 + 1)) {
-                    v.push(Pos::Pos((pos.0, pos.1 + 1)));
+                if pos.1 < size.1 - 1 && !next.blizzard(Pos(pos.0, pos.1 + 1))
+                {
+                    v.push(MapPos::Pos(Pos(pos.0, pos.1 + 1)));
                 }
-                if pos.0 > Row(0) && !next.blizzard((pos.0 - 1, pos.1)) {
-                    v.push(Pos::Pos((pos.0 - 1, pos.1)));
+                if pos.0 > Row(0) && !next.blizzard(Pos(pos.0 - 1, pos.1)) {
+                    v.push(MapPos::Pos(Pos(pos.0 - 1, pos.1)));
                 }
-                if pos.1 > Col(0) && !next.blizzard((pos.0, pos.1 - 1)) {
-                    v.push(Pos::Pos((pos.0, pos.1 - 1)));
+                if pos.1 > Col(0) && !next.blizzard(Pos(pos.0, pos.1 - 1)) {
+                    v.push(MapPos::Pos(Pos(pos.0, pos.1 - 1)));
                 }
                 if !next.blizzard(pos) {
-                    v.push(Pos::Pos(pos));
+                    v.push(MapPos::Pos(pos));
                 }
-                if pos == (Row(0), Col(0)) {
-                    v.push(Pos::Start);
+                if pos == Pos(Row(0), Col(0)) {
+                    v.push(MapPos::Start);
                 }
-                if pos == (size.0 - 1, size.1 - 1) {
-                    v.push(Pos::End);
+                if pos == Pos(size.0 - 1, size.1 - 1) {
+                    v.push(MapPos::End);
                 }
             }
         }
         v
     }
 
-    fn edge(&self, state: State, pos: Pos) -> (State, u64) {
+    fn edge(&self, state: State, pos: MapPos) -> (State, u64) {
         (
             State {
                 pos,
@@ -190,7 +189,8 @@ impl advent_of_code::graph::Graph<State, Pos> for Pathfinder {
 pub fn part1(map: Map) -> Result<u64> {
     let state = State::new(true);
     let pathfinder = Pathfinder::new(map);
-    let (dist, _) = pathfinder.dijkstra(state, |state| state.pos == Pos::End);
+    let (dist, _) =
+        pathfinder.dijkstra(state, |state| state.pos == MapPos::End);
     Ok(dist)
 }
 
@@ -198,19 +198,19 @@ pub fn part2(map: Map) -> Result<u64> {
     let state = State::new(true);
     let pathfinder = Pathfinder::new(map);
     let (dist1, _) =
-        pathfinder.dijkstra(state, |state| state.pos == Pos::End);
+        pathfinder.dijkstra(state, |state| state.pos == MapPos::End);
 
     let map = pathfinder.map_at_time(dist1 as usize).clone();
     let state = State::new(false);
     let pathfinder = Pathfinder::new(map);
     let (dist2, _) =
-        pathfinder.dijkstra(state, |state| state.pos == Pos::Start);
+        pathfinder.dijkstra(state, |state| state.pos == MapPos::Start);
 
     let map = pathfinder.map_at_time(dist2 as usize).clone();
     let state = State::new(true);
     let pathfinder = Pathfinder::new(map);
     let (dist3, _) =
-        pathfinder.dijkstra(state, |state| state.pos == Pos::End);
+        pathfinder.dijkstra(state, |state| state.pos == MapPos::End);
 
     Ok(dist1 + dist2 + dist3)
 }

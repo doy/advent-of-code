@@ -62,8 +62,7 @@ pub fn parse(fh: File) -> Result<Vec<Grid<bool>>> {
     let mut lines = parse::raw_lines(fh).peekable();
     let mut grids = vec![];
     while lines.peek().is_some() {
-        grids
-            .push(parse::grid(parse::chunk(&mut lines), |c, _, _| c == b'#'));
+        grids.push(parse::grid(parse::chunk(&mut lines), |c, _| c == b'#'));
     }
     Ok(grids)
 }

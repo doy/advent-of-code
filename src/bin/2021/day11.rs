@@ -9,23 +9,23 @@ fn iterate(grid: &mut Grid<(u8, bool)>) -> usize {
     loop {
         let mut new_flashes = 0;
         let mut updates: Grid<u8> = Grid::default();
-        updates.grow(grid.rows(), grid.cols());
-        for ((row, col), (cell, flashed)) in grid.indexed_cells_mut() {
+        updates.grow(grid.size());
+        for (pos, (cell, flashed)) in grid.indexed_cells_mut() {
             if *flashed {
                 continue;
             }
             if *cell > 9 {
                 *flashed = true;
                 new_flashes += 1;
-                for (row, col) in updates.adjacent(row, col, true) {
-                    updates[row][col] += 1;
+                for pos in updates.adjacent(pos, true) {
+                    updates[pos] += 1;
                 }
             }
         }
         if new_flashes > 0 {
             flashes += new_flashes;
-            for ((row, col), val) in updates.indexed_cells() {
-                grid[row][col].0 += val;
+            for (pos, val) in updates.indexed_cells() {
+                grid[pos].0 += val;
             }
         } else {
             break;
@@ -45,7 +45,7 @@ fn iterate(grid: &mut Grid<(u8, bool)>) -> usize {
 pub fn parse(fh: File) -> Result<Grid<(u8, bool)>> {
     Ok(parse::digit_grid(parse::raw_lines(fh))
         .indexed_cells()
-        .map(|((row, col), cell)| ((row, col), (*cell, false)))
+        .map(|(pos, cell)| (pos, (*cell, false)))
         .collect())
 }
 

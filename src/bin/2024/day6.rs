@@ -2,12 +2,12 @@ use advent_of_code::prelude::*;
 
 pub struct Map {
     grid: Grid<bool>,
-    guard: (Row, Col),
+    guard: Pos,
 }
 
 fn run(
     grid: &Grid<bool>,
-    mut guard: (Row, Col),
+    mut guard: Pos,
 ) -> Option<HashSet<(Row, Col, Direction)>> {
     let mut seen: HashSet<(Row, Col, Direction)> = HashSet::new();
     let mut direction = Direction::Up;
@@ -30,12 +30,12 @@ fn run(
 }
 
 pub fn parse(fh: File) -> Result<Map> {
-    let mut guard = (Row(0), Col(0));
-    let grid = parse::grid(parse::lines(fh), |c, row, col| match c {
+    let mut guard = Pos(Row(0), Col(0));
+    let grid = parse::grid(parse::lines(fh), |c, pos| match c {
         b'#' => false,
         b'.' => true,
         b'^' => {
-            guard = (row, col);
+            guard = pos;
             true
         }
         _ => unreachable!(),

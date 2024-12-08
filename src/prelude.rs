@@ -1,5 +1,7 @@
 pub use crate::graph::Graph as _;
-pub use crate::grid::{Col, Direction, Grid, ICol, IRow, Row};
+pub use crate::grid::{
+    Col, Direction, Grid, ICol, IPos, IRow, Pos, Row, Size,
+};
 pub use crate::opt::Opt;
 pub use crate::parse;
 pub use crate::regex_captures;

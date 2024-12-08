@@ -43,7 +43,7 @@ fn tilt_north(map: &mut Grid<Cell>) {
             }
             let mut dest_row = row;
             while dest_row > Row(0) {
-                let next_row = dest_row - 1;
+                let next_row = dest_row - 1usize;
                 if map[next_row][col] != Cell::Floor {
                     break;
                 }
@@ -87,7 +87,7 @@ fn tilt_south(map: &mut Grid<Cell>) {
             }
             let mut dest_row = row;
             while dest_row < map.rows() - 1 {
-                let next_row = dest_row + 1;
+                let next_row = dest_row + 1usize;
                 if map[next_row][col] != Cell::Floor {
                     break;
                 }
@@ -125,7 +125,7 @@ fn tilt_east(map: &mut Grid<Cell>) {
 
 fn weight(map: Grid<Cell>) -> usize {
     map.indexed_cells()
-        .map(|((row, _), cell)| {
+        .map(|(Pos(row, _), cell)| {
             if *cell == Cell::Round {
                 (map.rows() - row.0).0
             } else {
@@ -136,7 +136,7 @@ fn weight(map: Grid<Cell>) -> usize {
 }
 
 pub fn parse(fh: File) -> Result<Grid<Cell>> {
-    Ok(parse::grid(parse::raw_lines(fh), |c, _, _| {
+    Ok(parse::grid(parse::raw_lines(fh), |c, _| {
         c.try_into().unwrap()
     }))
 }

@@ -139,7 +139,7 @@ pub fn digit_grid(lines: impl Iterator<Item = String>) -> Grid<u8> {
 #[allow(clippy::redundant_closure)]
 pub fn grid<F, T>(lines: impl Iterator<Item = String>, mut f: F) -> Grid<T>
 where
-    F: FnMut(u8, Row, Col) -> T,
+    F: FnMut(u8, Pos) -> T,
     T: Default + Clone + Eq + PartialEq + std::hash::Hash,
 {
     lines
@@ -149,7 +149,7 @@ where
                 .iter()
                 .copied()
                 .enumerate()
-                .map(|(col, b)| f(b, Row(row), Col(col)))
+                .map(|(col, b)| f(b, Pos(Row(row), Col(col))))
                 .collect::<Vec<_>>()
         })
         .collect()

@@ -7,18 +7,18 @@ pub struct Paper {
 
 impl Paper {
     fn set(&mut self, row: Row, col: Col) {
-        self.grid.grow(Row(row.0 + 1), Col(col.0 + 1));
+        self.grid.grow(Size(Row(row.0 + 1), Col(col.0 + 1)));
         self.grid[row][col] = true;
     }
 
     fn fold(&mut self, horizontal: bool, coord: usize) {
         let mut clone = Self::default();
         if horizontal {
-            clone.grid.grow(
+            clone.grid.grow(Size(
                 self.grid.rows(),
                 Col(coord.max(self.grid.cols().0 - coord - 1)),
-            );
-            for ((Row(row), Col(col)), cell) in self.grid.indexed_cells() {
+            ));
+            for (Pos(Row(row), Col(col)), cell) in self.grid.indexed_cells() {
                 if *cell {
                     if coord > self.grid.cols().0 - coord - 1 {
                         if col < coord {
@@ -32,19 +32,17 @@ impl Paper {
                             Col(self.grid.cols().0 - coord * 2 - 1 + col),
                         );
                     } else if col > coord {
-                        clone.set(
-                            Row(row),
-                            Col(self.grid.cols().0 - col - 1),
-                        );
+                        clone
+                            .set(Row(row), Col(self.grid.cols().0 - col - 1));
                     }
                 }
             }
         } else {
-            clone.grid.grow(
+            clone.grid.grow(Size(
                 Row(coord.max(self.grid.rows().0 - coord - 1)),
                 self.grid.cols(),
-            );
-            for ((Row(row), Col(col)), cell) in self.grid.indexed_cells() {
+            ));
+            for (Pos(Row(row), Col(col)), cell) in self.grid.indexed_cells() {
                 if *cell {
                     if coord > self.grid.rows().0 - coord - 1 {
                         if row < coord {
@@ -58,10 +56,8 @@ impl Paper {
                             Col(col),
                         );
                     } else if row > coord {
-                        clone.set(
-                            Row(self.grid.rows().0 - row - 1),
-                            Col(col),
-                        );
+                        clone
+                            .set(Row(self.grid.rows().0 - row - 1), Col(col));
                     }
                 }
             }
