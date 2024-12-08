@@ -7,6 +7,16 @@ enum Op {
     Cat,
 }
 
+impl Op {
+    fn run(self, a: i64, b: i64) -> i64 {
+        match self {
+            Self::Add => a + b,
+            Self::Mul => a * b,
+            Self::Cat => b + a * 10i64.pow(b.ilog10() + 1),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Problem {
     total: i64,
@@ -30,77 +40,33 @@ impl std::str::FromStr for Problem {
 }
 
 impl Problem {
-    fn solve1(&self) -> Option<Vec<Op>> {
+    fn solve(&self, ops: &[Op]) -> Option<Vec<Op>> {
         let ints: Vec<i64> = self.ints.iter().copied().rev().collect();
-        self.solve1_rec(&ints)
+        self.solve_rec(&ints, ops)
             .map(|ops| ops.into_iter().rev().collect())
     }
 
-    fn solve1_rec(&self, ints: &[i64]) -> Option<Vec<Op>> {
+    fn solve_rec(&self, ints: &[i64], used_ops: &[Op]) -> Option<Vec<Op>> {
         if ints.len() == 1 {
-            if ints[0] == self.total {
-                return Some(vec![]);
-            } else {
-                return None;
-            }
+            return (ints[0] == self.total).then(Vec::new);
         }
-        if ints[ints.len() - 1] > self.total {
-            return None;
-        }
+
         let mut ints = ints.to_vec();
         let a = ints.pop().unwrap();
         let b = ints.pop().unwrap();
-        ints.push(a + b);
-        if let Some(mut ops) = self.solve1_rec(&ints) {
-            ops.push(Op::Add);
-            return Some(ops);
-        }
-        ints.pop().unwrap();
-        ints.push(a * b);
-        if let Some(mut ops) = self.solve1_rec(&ints) {
-            ops.push(Op::Mul);
-            return Some(ops);
-        }
-        None
-    }
-
-    fn solve2(&self) -> Option<Vec<Op>> {
-        let ints: Vec<i64> = self.ints.iter().copied().rev().collect();
-        self.solve2_rec(&ints)
-            .map(|ops| ops.into_iter().rev().collect())
-    }
-
-    fn solve2_rec(&self, ints: &[i64]) -> Option<Vec<Op>> {
-        if ints.len() == 1 {
-            if ints[0] == self.total {
-                return Some(vec![]);
-            } else {
-                return None;
-            }
-        }
-        if ints[ints.len() - 1] > self.total {
+        if a > self.total {
             return None;
         }
-        let mut ints = ints.to_vec();
-        let a = ints.pop().unwrap();
-        let b = ints.pop().unwrap();
-        ints.push(a + b);
-        if let Some(mut ops) = self.solve2_rec(&ints) {
-            ops.push(Op::Add);
-            return Some(ops);
+
+        for op in used_ops {
+            ints.push(op.run(a, b));
+            if let Some(mut ops) = self.solve_rec(&ints, used_ops) {
+                ops.push(*op);
+                return Some(ops);
+            }
+            ints.pop().unwrap();
         }
-        ints.pop().unwrap();
-        ints.push(a * b);
-        if let Some(mut ops) = self.solve2_rec(&ints) {
-            ops.push(Op::Mul);
-            return Some(ops);
-        }
-        ints.pop().unwrap();
-        ints.push(b + a * 10i64.pow(b.ilog10() + 1));
-        if let Some(mut ops) = self.solve2_rec(&ints) {
-            ops.push(Op::Cat);
-            return Some(ops);
-        }
+
         None
     }
 }
@@ -113,7 +79,7 @@ pub fn part1(problems: Vec<Problem>) -> Result<i64> {
     Ok(problems
         .par_iter()
         .map(|problem| {
-            if problem.solve1().is_some() {
+            if problem.solve(&[Op::Add, Op::Mul]).is_some() {
                 problem.total
             } else {
                 0
@@ -126,7 +92,7 @@ pub fn part2(problems: Vec<Problem>) -> Result<i64> {
     Ok(problems
         .par_iter()
         .map(|problem| {
-            if problem.solve2().is_some() {
+            if problem.solve(&[Op::Add, Op::Mul, Op::Cat]).is_some() {
                 problem.total
             } else {
                 0
