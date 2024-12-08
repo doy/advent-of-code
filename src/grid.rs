@@ -3,6 +3,29 @@ use rayon::iter::{
     IntoParallelRefIterator as _, ParallelIterator as _,
 };
 
+macro_rules! impl_op {
+    ($ty:ident, $inner:ty, $op_class:ident, $op_method:ident) => {
+        impl std::ops::$op_class<$inner> for $ty {
+            type Output = Self;
+            fn $op_method(self, other: $inner) -> Self::Output {
+                Self(self.0.$op_method(other))
+            }
+        }
+        impl std::ops::$op_class<$ty> for $inner {
+            type Output = $ty;
+            fn $op_method(self, other: $ty) -> Self::Output {
+                $ty(self.$op_method(other.0))
+            }
+        }
+        impl std::ops::$op_class<$ty> for $ty {
+            type Output = $ty;
+            fn $op_method(self, other: $ty) -> Self::Output {
+                $ty(self.0.$op_method(other.0))
+            }
+        }
+    };
+}
+
 #[derive(
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
 )]
@@ -25,131 +48,14 @@ impl Col {
     }
 }
 
-impl std::ops::Add<usize> for Row {
-    type Output = Self;
-    fn add(self, other: usize) -> Self::Output {
-        Self(self.0 + other)
-    }
-}
-
-impl std::ops::Add<Row> for usize {
-    type Output = Row;
-    fn add(self, other: Row) -> Self::Output {
-        Row(self + other.0)
-    }
-}
-
-impl std::ops::Add<Row> for Row {
-    type Output = Row;
-    fn add(self, other: Row) -> Self::Output {
-        Row(self.0 + other.0)
-    }
-}
-
-impl std::ops::Add<usize> for Col {
-    type Output = Self;
-    fn add(self, other: usize) -> Self::Output {
-        Self(self.0 + other)
-    }
-}
-
-impl std::ops::Add<Col> for usize {
-    type Output = Col;
-    fn add(self, other: Col) -> Self::Output {
-        Col(self + other.0)
-    }
-}
-
-impl std::ops::Add<Col> for Col {
-    type Output = Col;
-    fn add(self, other: Col) -> Self::Output {
-        Col(self.0 + other.0)
-    }
-}
-
-impl std::ops::Sub<usize> for Row {
-    type Output = Self;
-    fn sub(self, other: usize) -> Self::Output {
-        Self(self.0 - other)
-    }
-}
-
-impl std::ops::Sub<Row> for usize {
-    type Output = Row;
-    fn sub(self, other: Row) -> Self::Output {
-        Row(self - other.0)
-    }
-}
-
-impl std::ops::Sub<usize> for Col {
-    type Output = Self;
-    fn sub(self, other: usize) -> Self::Output {
-        Self(self.0 - other)
-    }
-}
-
-impl std::ops::Sub<Col> for usize {
-    type Output = Col;
-    fn sub(self, other: Col) -> Self::Output {
-        Col(self - other.0)
-    }
-}
-
-impl std::ops::Mul<usize> for Row {
-    type Output = Self;
-    fn mul(self, other: usize) -> Self::Output {
-        Self(self.0 * other)
-    }
-}
-
-impl std::ops::Mul<Row> for usize {
-    type Output = Row;
-    fn mul(self, other: Row) -> Self::Output {
-        Row(self * other.0)
-    }
-}
-
-impl std::ops::Mul<usize> for Col {
-    type Output = Self;
-    fn mul(self, other: usize) -> Self::Output {
-        Self(self.0 * other)
-    }
-}
-
-impl std::ops::Mul<Col> for usize {
-    type Output = Col;
-    fn mul(self, other: Col) -> Self::Output {
-        Col(self * other.0)
-    }
-}
-
-impl std::ops::Rem<usize> for Row {
-    type Output = Self;
-    fn rem(self, other: usize) -> Self::Output {
-        Self(self.0 % other)
-    }
-}
-
-impl std::ops::Rem<Row> for usize {
-    type Output = Row;
-    fn rem(self, other: Row) -> Self::Output {
-        Row(self % other.0)
-    }
-}
-
-impl std::ops::Rem<usize> for Col {
-    type Output = Self;
-    fn rem(self, other: usize) -> Self::Output {
-        Self(self.0 % other)
-    }
-}
-
-impl std::ops::Rem<Col> for usize {
-    type Output = Col;
-    fn rem(self, other: Col) -> Self::Output {
-        Col(self % other.0)
-    }
-}
+impl_op!(Row, usize, Add, add);
+impl_op!(Row, usize, Sub, sub);
+impl_op!(Row, usize, Mul, mul);
+impl_op!(Row, usize, Rem, rem);
+impl_op!(Col, usize, Add, add);
+impl_op!(Col, usize, Sub, sub);
+impl_op!(Col, usize, Mul, mul);
+impl_op!(Col, usize, Rem, rem);
 
 #[derive(
     Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default,
@@ -173,103 +79,14 @@ impl ICol {
     }
 }
 
-impl std::ops::Add<isize> for IRow {
-    type Output = Self;
-    fn add(self, other: isize) -> Self::Output {
-        Self(self.0 + other)
-    }
-}
-
-impl std::ops::Add<IRow> for isize {
-    type Output = IRow;
-    fn add(self, other: IRow) -> Self::Output {
-        IRow(self + other.0)
-    }
-}
-
-impl std::ops::Add<IRow> for IRow {
-    type Output = IRow;
-    fn add(self, other: IRow) -> Self::Output {
-        IRow(self.0 + other.0)
-    }
-}
-
-impl std::ops::Add<isize> for ICol {
-    type Output = Self;
-    fn add(self, other: isize) -> Self::Output {
-        Self(self.0 + other)
-    }
-}
-
-impl std::ops::Add<ICol> for isize {
-    type Output = ICol;
-    fn add(self, other: ICol) -> Self::Output {
-        ICol(self + other.0)
-    }
-}
-
-impl std::ops::Add<ICol> for ICol {
-    type Output = ICol;
-    fn add(self, other: ICol) -> Self::Output {
-        ICol(self.0 + other.0)
-    }
-}
-
-impl std::ops::Sub<isize> for IRow {
-    type Output = Self;
-    fn sub(self, other: isize) -> Self::Output {
-        Self(self.0 - other)
-    }
-}
-
-impl std::ops::Sub<IRow> for isize {
-    type Output = IRow;
-    fn sub(self, other: IRow) -> Self::Output {
-        IRow(self - other.0)
-    }
-}
-
-impl std::ops::Sub<isize> for ICol {
-    type Output = Self;
-    fn sub(self, other: isize) -> Self::Output {
-        Self(self.0 - other)
-    }
-}
-
-impl std::ops::Sub<ICol> for isize {
-    type Output = ICol;
-    fn sub(self, other: ICol) -> Self::Output {
-        ICol(self - other.0)
-    }
-}
-
-impl std::ops::Mul<isize> for IRow {
-    type Output = Self;
-    fn mul(self, other: isize) -> Self::Output {
-        Self(self.0 * other)
-    }
-}
-
-impl std::ops::Mul<IRow> for isize {
-    type Output = IRow;
-    fn mul(self, other: IRow) -> Self::Output {
-        IRow(self * other.0)
-    }
-}
-
-impl std::ops::Mul<isize> for ICol {
-    type Output = Self;
-    fn mul(self, other: isize) -> Self::Output {
-        Self(self.0 * other)
-    }
-}
-
-impl std::ops::Mul<ICol> for isize {
-    type Output = ICol;
-    fn mul(self, other: ICol) -> Self::Output {
-        ICol(self * other.0)
-    }
-}
+impl_op!(IRow, isize, Add, add);
+impl_op!(IRow, isize, Sub, sub);
+impl_op!(IRow, isize, Mul, mul);
+impl_op!(IRow, isize, Rem, rem);
+impl_op!(ICol, isize, Add, add);
+impl_op!(ICol, isize, Sub, sub);
+impl_op!(ICol, isize, Mul, mul);
+impl_op!(ICol, isize, Rem, rem);
 
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct GridRow<T: Clone + Eq + PartialEq + std::hash::Hash> {
