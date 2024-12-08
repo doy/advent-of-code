@@ -53,18 +53,19 @@ impl Problem {
 
         let mut ints = ints.to_vec();
         let a = ints.pop().unwrap();
-        let b = ints.pop().unwrap();
         if a > self.total {
             return None;
         }
+        let b = ints.pop().unwrap();
+        ints.push(0);
+        let idx = ints.len() - 1;
 
         for op in used_ops {
-            ints.push(op.run(a, b));
+            ints[idx] = op.run(a, b);
             if let Some(mut ops) = self.solve_rec(&ints, used_ops) {
                 ops.push(*op);
                 return Some(ops);
             }
-            ints.pop().unwrap();
         }
 
         None
