@@ -54,17 +54,35 @@ pub fn part1(mut disk: Vec<u32>) -> Result<i64> {
 }
 
 pub fn part2(mut disk: Vec<u32>) -> Result<i64> {
+    let mut file_pos = disk.len();
+    let mut disk_pos = 0;
     let mut id = disk[disk.len() - 1];
     loop {
-        let file_pos = disk.iter().position(|c| *c == id).unwrap();
-        let file_len = disk[file_pos..]
+        let file_end = disk[..file_pos]
             .iter()
-            .position(|c| *c != id)
-            .unwrap_or(disk[file_pos..].len());
+            .copied()
+            .rposition(|c| c == id)
+            .unwrap()
+            + 1;
+        file_pos = if let Some(pos) =
+            disk[..file_end].iter().copied().rposition(|c| c != id)
+        {
+            pos + 1
+        } else {
+            0
+        };
+        let file_len = file_end - file_pos;
         let mut hole_pos = usize::MAX;
         let mut hole_len = 0;
-        for (i, id) in disk[..file_pos].iter().copied().enumerate() {
+        let mut first_hole = true;
+        for (i, id) in
+            disk[..file_pos].iter().copied().enumerate().skip(disk_pos)
+        {
             if id == u32::MAX {
+                if first_hole {
+                    disk_pos = i;
+                    first_hole = false;
+                }
                 if hole_pos == usize::MAX {
                     hole_pos = i;
                     hole_len = 1;
