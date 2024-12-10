@@ -31,7 +31,7 @@ fn run(
 
 pub fn parse(fh: File) -> Result<Map> {
     let mut guard = Pos(Row(0), Col(0));
-    let grid = parse::grid(parse::lines(fh), |c, pos| match c {
+    let grid = parse::grid(parse::raw_lines(fh), |c, pos| match c {
         b'#' => false,
         b'.' => true,
         b'^' => {

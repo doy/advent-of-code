@@ -59,7 +59,7 @@ fn word_x(grid: &Grid<u8>, pos: Pos) -> Vec<u8> {
 }
 
 pub fn parse(fh: File) -> Result<Grid<u8>> {
-    Ok(parse::grid(parse::lines(fh), |c, _| c))
+    Ok(parse::grid(parse::raw_lines(fh), |c, _| c))
 }
 
 pub fn part1(grid: Grid<u8>) -> Result<i64> {
