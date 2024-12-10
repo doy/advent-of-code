@@ -8,17 +8,17 @@ pub struct Map {
 fn run(
     grid: &Grid<bool>,
     mut guard: Pos,
-) -> Option<HashSet<(Row, Col, Direction)>> {
-    let mut seen: HashSet<(Row, Col, Direction)> = HashSet::new();
+) -> Option<HashSet<(Pos, Direction)>> {
+    let mut seen: HashSet<(Pos, Direction)> = HashSet::new();
     let mut direction = Direction::Up;
     loop {
-        let cur = (guard.0, guard.1, direction);
+        let cur = (guard, direction);
         if seen.contains(&cur) {
             return None;
         }
         seen.insert(cur);
         if let Some(next) = direction.move_checked(guard, grid.size()) {
-            if grid[next.0][next.1] {
+            if grid[next] {
                 guard = next;
             } else {
                 direction = direction.turn_right();
@@ -47,8 +47,8 @@ pub fn part1(map: Map) -> Result<i64> {
     Ok(run(&map.grid, map.guard)
         .unwrap()
         .into_iter()
-        .map(|(row, col, _)| (row, col))
-        .collect::<HashSet<(Row, Col)>>()
+        .map(|(pos, _)| pos)
+        .collect::<HashSet<Pos>>()
         .len()
         .try_into()
         .unwrap())
@@ -58,12 +58,13 @@ pub fn part2(map: Map) -> Result<i64> {
     Ok(run(&map.grid, map.guard)
         .unwrap()
         .into_iter()
-        .map(|(row, col, _)| (row, col))
-        .collect::<HashSet<(Row, Col)>>()
+        .map(|(pos, _)| pos)
+        .collect::<HashSet<Pos>>()
         .par_iter()
-        .map(|(row, col)| {
+        .copied()
+        .map(|pos| {
             let mut grid = map.grid.clone();
-            grid[*row][*col] = false;
+            grid[pos] = false;
             if run(&grid, map.guard).is_none() {
                 1
             } else {
