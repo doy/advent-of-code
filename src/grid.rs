@@ -1,7 +1,4 @@
-use rayon::iter::{
-    IndexedParallelIterator as _, IntoParallelIterator as _,
-    IntoParallelRefIterator as _, ParallelIterator as _,
-};
+use crate::prelude::*;
 
 macro_rules! impl_op {
     ($ty:ident, $inner:ident, $other:ident, $op_class:ident, $op_method:ident) => {
@@ -350,16 +347,25 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         }
     }
 
-    pub fn flood_fill(&mut self, pos: Pos, fill: &T, diagonal: bool) {
+    pub fn flood_fill(
+        &mut self,
+        pos: Pos,
+        fill: &T,
+        should_fill: impl Fn(&T) -> bool,
+        diagonal: bool,
+    ) -> HashSet<Pos> {
+        let mut done = HashSet::new();
         let mut todo = vec![pos];
         while let Some(pos) = todo.pop() {
-            self[pos.0][pos.1] = fill.clone();
+            done.insert(pos);
+            self[pos] = fill.clone();
             for pos in self.adjacent(pos, diagonal) {
-                if self[pos.0][pos.1] != *fill {
+                if should_fill(&self[pos]) {
                     todo.push(pos);
                 }
             }
         }
+        done
     }
 }
 

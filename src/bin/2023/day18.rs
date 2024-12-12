@@ -100,7 +100,7 @@ pub fn part1(instructions: Vec<Instruction>) -> Result<i64> {
         }
     }
     let internal_cell = internal_cell.unwrap();
-    map.flood_fill(internal_cell, &true, true);
+    map.flood_fill(internal_cell, &true, |c| !*c, true);
 
     Ok(map.cells().filter(|dug| **dug).count().try_into().unwrap())
 }
