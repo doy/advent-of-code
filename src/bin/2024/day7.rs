@@ -12,7 +12,7 @@ impl Op {
         match self {
             Self::Add => a + b,
             Self::Mul => a * b,
-            Self::Cat => b + a * 10i64.pow(b.ilog10() + 1),
+            Self::Cat => b + a * 10i64.pow(advent_of_code::num::digits(b)),
         }
     }
 }

@@ -11,6 +11,7 @@
 
 pub mod graph;
 pub mod grid;
+pub mod num;
 pub mod opt;
 pub mod parse;
 pub mod prelude;

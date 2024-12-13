@@ -1,17 +1,15 @@
 use advent_of_code::prelude::*;
 
 fn even_digits(i: i64) -> bool {
-    i.ilog10() % 2 == 1
+    advent_of_code::num::digits(i) % 2 == 0
 }
 
 fn first_half(i: i64) -> i64 {
-    let digits = i.ilog10() + 1;
-    i / 10i64.pow(digits / 2)
+    i / 10i64.pow(advent_of_code::num::digits(i) / 2)
 }
 
 fn last_half(i: i64) -> i64 {
-    let digits = i.ilog10() + 1;
-    i % 10i64.pow(digits / 2)
+    i % 10i64.pow(advent_of_code::num::digits(i) / 2)
 }
 
 fn blink(
