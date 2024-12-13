@@ -1,25 +1,5 @@
 use advent_of_code::prelude::*;
 
-fn bounding_box(region: &HashSet<Pos>) -> (Pos, Pos) {
-    let mut min = Pos(Row(usize::MAX), Col(usize::MAX));
-    let mut max = Pos(Row(0), Col(0));
-    for pos in region {
-        if pos.0 < min.0 {
-            min.0 = pos.0;
-        }
-        if pos.0 > max.0 {
-            max.0 = pos.0
-        }
-        if pos.1 < min.1 {
-            min.1 = pos.1;
-        }
-        if pos.1 > max.1 {
-            max.1 = pos.1
-        }
-    }
-    (min, max)
-}
-
 pub fn parse(fh: File) -> Result<Grid<u8>> {
     Ok(parse::grid(parse::raw_lines(fh), |c, _| c))
 }
@@ -37,7 +17,7 @@ pub fn part1(plot: Grid<u8>) -> Result<i64> {
             false,
         );
         let area = region.len();
-        let (min, max) = bounding_box(&region);
+        let (min, max) = advent_of_code::grid::bounding_box(&region);
         let rows = min.0.to_inclusive(max.0);
         let cols = min.1.to_inclusive(max.1);
         let mut perimeter = 0;
@@ -89,7 +69,7 @@ pub fn part2(plot: Grid<u8>) -> Result<i64> {
             false,
         );
         let area = region.len();
-        let (min, max) = bounding_box(&region);
+        let (min, max) = advent_of_code::grid::bounding_box(&region);
         let rows = min.0.to_inclusive(max.0);
         let cols = min.1.to_inclusive(max.1);
         let mut sides = 0;

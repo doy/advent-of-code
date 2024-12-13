@@ -68,6 +68,9 @@ pub struct Pos(pub Row, pub Col);
 pub struct Size(pub Row, pub Col);
 
 impl Row {
+    pub const MIN: Self = Self(usize::MIN);
+    pub const MAX: Self = Self(usize::MAX);
+
     pub fn i(self) -> IRow {
         IRow(self.0.try_into().unwrap())
     }
@@ -86,6 +89,9 @@ impl Row {
 }
 
 impl Col {
+    pub const MIN: Self = Self(usize::MIN);
+    pub const MAX: Self = Self(usize::MAX);
+
     pub fn i(self) -> ICol {
         ICol(self.0.try_into().unwrap())
     }
@@ -104,6 +110,9 @@ impl Col {
 }
 
 impl Pos {
+    pub const MIN: Self = Self(Row::MIN, Col::MIN);
+    pub const MAX: Self = Self(Row::MAX, Col::MAX);
+
     pub fn i(self) -> IPos {
         IPos(self.0.i(), self.1.i())
     }
@@ -155,6 +164,9 @@ pub struct IPos(pub IRow, pub ICol);
 pub struct ISize(pub IRow, pub ICol);
 
 impl IRow {
+    pub const MIN: Self = Self(isize::MIN);
+    pub const MAX: Self = Self(isize::MAX);
+
     pub fn u(self) -> Row {
         Row(self.0.try_into().unwrap())
     }
@@ -173,6 +185,9 @@ impl IRow {
 }
 
 impl ICol {
+    pub const MIN: Self = Self(isize::MIN);
+    pub const MAX: Self = Self(isize::MAX);
+
     pub fn u(self) -> Col {
         Col(self.0.try_into().unwrap())
     }
@@ -191,6 +206,9 @@ impl ICol {
 }
 
 impl IPos {
+    pub const MIN: Self = Self(IRow::MIN, ICol::MIN);
+    pub const MAX: Self = Self(IRow::MAX, ICol::MAX);
+
     pub fn u(self) -> Pos {
         Pos(self.0.u(), self.1.u())
     }
@@ -218,6 +236,18 @@ impl std::ops::Sub<IPos> for IPos {
     fn sub(self, other: IPos) -> Self::Output {
         Self(self.0 - other.0, self.1 - other.1)
     }
+}
+
+pub fn bounding_box<'a>(
+    region: impl IntoIterator<Item = &'a Pos>,
+) -> (Pos, Pos) {
+    let mut min = Pos::MAX;
+    let mut max = Pos::MIN;
+    for pos in region {
+        min = Pos(pos.0.min(min.0), pos.1.min(min.1));
+        max = Pos(pos.0.max(max.0), pos.1.max(max.1));
+    }
+    (min, max)
 }
 
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
