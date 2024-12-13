@@ -1,15 +1,23 @@
 use advent_of_code::prelude::*;
 
-fn find_new_region(plot: &Grid<(u8, bool)>) -> Option<Pos> {
-    plot.indexed_cells()
-        .find(|(_, (_, seen))| !seen)
-        .map(|(pos, _)| pos)
-}
-
-fn find_new_region_hole(plot: &Grid<bool>) -> Option<Pos> {
-    plot.indexed_cells()
-        .find(|(_, seen)| !*seen)
-        .map(|(pos, _)| pos)
+fn bounding_box(region: &HashSet<Pos>) -> (Pos, Pos) {
+    let mut min = Pos(Row(usize::MAX), Col(usize::MAX));
+    let mut max = Pos(Row(0), Col(0));
+    for pos in region {
+        if pos.0 < min.0 {
+            min.0 = pos.0;
+        }
+        if pos.0 > max.0 {
+            max.0 = pos.0
+        }
+        if pos.1 < min.1 {
+            min.1 = pos.1;
+        }
+        if pos.1 > max.1 {
+            max.1 = pos.1
+        }
+    }
+    (min, max)
 }
 
 pub fn parse(fh: File) -> Result<Grid<u8>> {
@@ -17,192 +25,152 @@ pub fn parse(fh: File) -> Result<Grid<u8>> {
 }
 
 pub fn part1(plot: Grid<u8>) -> Result<i64> {
-    let mut seen = plot
-        .indexed_cells()
-        .map(|(pos, c)| (pos, (*c, false)))
-        .collect();
+    let mut seen: Grid<bool> = Grid::default();
+    seen.grow(plot.size());
     let mut total = 0;
-    while let Some(pos) = find_new_region(&seen) {
+    while let Some(pos) = seen.find_next(|_, seen| !*seen) {
         let plant = plot[pos];
         let region = seen.flood_fill(
             pos,
-            &(plant, true),
-            |(c, seen)| !seen && *c == plant,
+            &true,
+            |pos, seen| !seen && plot[pos] == plant,
             false,
         );
         let area = region.len();
-        let mut interior = 0;
-        for pos in &region {
-            if region.contains(&Pos(pos.0, pos.1 + 1))
-                && region.contains(&Pos(pos.0 + 1, pos.1))
-                && region.contains(&Pos(pos.0 + 1, pos.1 + 1))
-            {
-                interior += 1;
-            }
+        let (min, max) = bounding_box(&region);
+        let rows = min.0.to_inclusive(max.0);
+        let cols = min.1.to_inclusive(max.1);
+        let mut perimeter = 0;
+        // outer edges
+        for row in [min.0, max.0] {
+            perimeter += cols
+                .clone()
+                .filter(|col| region.contains(&Pos(row, *col)))
+                .count();
         }
-        let mut overlaps = 0;
-        for pos in &region {
-            if !region.contains(&Pos(pos.0, pos.1 + 1))
-                && !region.contains(&Pos(pos.0 + 1, pos.1))
-                && region.contains(&Pos(pos.0 + 1, pos.1 + 1))
-            {
-                overlaps += 1;
-            }
-            if pos.0 > Row(0)
-                && !region.contains(&Pos(pos.0, pos.1 + 1))
-                && !region.contains(&Pos(pos.0 - 1, pos.1))
-                && region.contains(&Pos(pos.0 - 1, pos.1 + 1))
-            {
-                overlaps += 1;
-            }
+        for col in [min.1, max.1] {
+            perimeter += rows
+                .clone()
+                .filter(|row| region.contains(&Pos(*row, col)))
+                .count();
         }
-        let mut holes = 0;
-        let mut seen_hole: Grid<_> = plot
-            .indexed_cells()
-            .map(|(pos, _)| (pos, region.contains(&pos)))
-            .collect();
-        while let Some(pos) = find_new_region_hole(&seen_hole) {
-            let hole_region =
-                seen_hole.flood_fill(pos, &true, |seen| !seen, false);
-            if !hole_region.iter().any(|pos| {
-                pos.0 == Row(0)
-                    || pos.0 == seen_hole.rows() - 1
-                    || pos.1 == Col(0)
-                    || pos.1 == seen_hole.cols() - 1
-            }) {
-                holes += 1;
-            }
-        }
-        let perimeter = 2 * (area + 1 - interior - holes + overlaps);
-        let price = area * perimeter;
-        total += price;
+        // interior
+        perimeter += rows
+            .clone()
+            .skip(1)
+            .flat_map(|row| cols.clone().map(move |col| Pos(row, col)))
+            .filter(|pos| {
+                region.contains(pos) ^ region.contains(&Pos(pos.0 - 1, pos.1))
+            })
+            .count();
+        perimeter += cols
+            .clone()
+            .skip(1)
+            .flat_map(|col| rows.clone().map(move |row| Pos(row, col)))
+            .filter(|pos| {
+                region.contains(pos) ^ region.contains(&Pos(pos.0, pos.1 - 1))
+            })
+            .count();
+        total += area * perimeter;
     }
     Ok(total.try_into().unwrap())
 }
 
 pub fn part2(plot: Grid<u8>) -> Result<i64> {
-    let mut seen = plot
-        .indexed_cells()
-        .map(|(pos, c)| (pos, (*c, false)))
-        .collect();
+    let mut seen: Grid<bool> = Grid::default();
+    seen.grow(plot.size());
     let mut total = 0;
-    while let Some(pos) = find_new_region(&seen) {
+    while let Some(pos) = seen.find_next(|_, seen| !*seen) {
         let plant = plot[pos];
         let region = seen.flood_fill(
             pos,
-            &(plant, true),
-            |(c, seen)| !seen && *c == plant,
+            &true,
+            |pos, seen| !seen && plot[pos] == plant,
             false,
         );
         let area = region.len();
-
-        let min_row = region.iter().min_by_key(|pos| pos.0 .0).unwrap().0;
-        let max_row = region.iter().max_by_key(|pos| pos.0 .0).unwrap().0;
-        let min_col = region.iter().min_by_key(|pos| pos.1 .0).unwrap().1;
-        let max_col = region.iter().max_by_key(|pos| pos.1 .0).unwrap().1;
-
-        let mut horiz = 0;
-        let mut fence = false;
-        for col in (min_col.0..=max_col.0).map(Col) {
-            let pos = Pos(min_row, col);
-            if region.contains(&pos) {
-                if !fence {
-                    fence = true;
-                    horiz += 1;
-                }
-            } else {
-                fence = false;
-            }
-        }
-        for row in (min_row.0 + 1..=max_row.0).map(Row) {
-            let mut cur_fence = None;
-            for col in (min_col.0..=max_col.0).map(Col) {
+        let (min, max) = bounding_box(&region);
+        let rows = min.0.to_inclusive(max.0);
+        let cols = min.1.to_inclusive(max.1);
+        let mut sides = 0;
+        // outer edges
+        for row in [min.0, max.0] {
+            let mut seen_side = false;
+            for col in cols.clone() {
                 let pos = Pos(row, col);
-                let pos_above = Pos(row - 1, col);
-                if region.contains(&pos) ^ region.contains(&pos_above) {
-                    if cur_fence
-                        != Some((
-                            region.contains(&pos),
-                            region.contains(&pos_above),
-                        ))
-                    {
-                        cur_fence = Some((
-                            region.contains(&pos),
-                            region.contains(&pos_above),
-                        ));
-                        horiz += 1;
+                if region.contains(&pos) {
+                    if !seen_side {
+                        sides += 1;
+                        seen_side = true;
                     }
                 } else {
-                    cur_fence = None;
+                    seen_side = false;
                 }
             }
         }
-        fence = false;
-        for col in (min_col.0..=max_col.0).map(Col) {
-            let pos = Pos(max_row, col);
-            if region.contains(&pos) {
-                if !fence {
-                    fence = true;
-                    horiz += 1;
-                }
-            } else {
-                fence = false;
-            }
-        }
-
-        let mut vert = 0;
-        let mut fence = false;
-        for row in (min_row.0..=max_row.0).map(Row) {
-            let pos = Pos(row, min_col);
-            if region.contains(&pos) {
-                if !fence {
-                    fence = true;
-                    vert += 1;
-                }
-            } else {
-                fence = false;
-            }
-        }
-        for col in (min_col.0 + 1..=max_col.0).map(Col) {
-            let mut cur_fence = None;
-            for row in (min_row.0..=max_row.0).map(Row) {
+        for col in [min.1, max.1] {
+            let mut seen_side = false;
+            for row in rows.clone() {
                 let pos = Pos(row, col);
-                let pos_left = Pos(row, col - 1);
-                if region.contains(&pos) ^ region.contains(&pos_left) {
-                    if cur_fence
-                        != Some((
-                            region.contains(&pos),
-                            region.contains(&pos_left),
-                        ))
-                    {
-                        cur_fence = Some((
-                            region.contains(&pos),
-                            region.contains(&pos_left),
-                        ));
-                        vert += 1;
+                if region.contains(&pos) {
+                    if !seen_side {
+                        sides += 1;
+                        seen_side = true;
                     }
                 } else {
-                    cur_fence = None;
+                    seen_side = false;
                 }
             }
         }
-        fence = false;
-        for row in (min_row.0..=max_row.0).map(Row) {
-            let pos = Pos(row, max_col);
-            if region.contains(&pos) {
-                if !fence {
-                    fence = true;
-                    vert += 1;
+        // interior
+        for row in rows.clone().skip(1) {
+            let mut seen_side = None;
+            for col in cols.clone() {
+                let pos = Pos(row, col);
+                let prev_pos = Pos(row - 1, col);
+                if region.contains(&pos) ^ region.contains(&prev_pos) {
+                    if seen_side
+                        != Some((
+                            region.contains(&pos),
+                            region.contains(&prev_pos),
+                        ))
+                    {
+                        seen_side = Some((
+                            region.contains(&pos),
+                            region.contains(&prev_pos),
+                        ));
+                        sides += 1;
+                    }
+                } else {
+                    seen_side = None;
                 }
-            } else {
-                fence = false;
             }
         }
-
-        let sides = horiz + vert;
+        for col in cols.clone().skip(1) {
+            let mut seen_side = None;
+            for row in rows.clone() {
+                let pos = Pos(row, col);
+                let prev_pos = Pos(row, col - 1);
+                if region.contains(&pos) ^ region.contains(&prev_pos) {
+                    if seen_side
+                        != Some((
+                            region.contains(&pos),
+                            region.contains(&prev_pos),
+                        ))
+                    {
+                        seen_side = Some((
+                            region.contains(&pos),
+                            region.contains(&prev_pos),
+                        ));
+                        sides += 1;
+                    }
+                } else {
+                    seen_side = None;
+                }
+            }
+        }
         total += area * sides;
     }
-
     Ok(total.try_into().unwrap())
 }
 

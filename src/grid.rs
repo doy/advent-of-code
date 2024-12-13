@@ -74,6 +74,15 @@ impl Row {
     pub fn abs_diff(self, other: Self) -> Self {
         Self(self.0.abs_diff(other.0))
     }
+    pub fn to(self, other: Self) -> impl Iterator<Item = Self> + Clone {
+        (self.0..other.0).map(Self)
+    }
+    pub fn to_inclusive(
+        self,
+        other: Self,
+    ) -> impl Iterator<Item = Self> + Clone {
+        (self.0..=other.0).map(Self)
+    }
 }
 
 impl Col {
@@ -82,6 +91,15 @@ impl Col {
     }
     pub fn abs_diff(self, other: Self) -> Self {
         Self(self.0.abs_diff(other.0))
+    }
+    pub fn to(self, other: Self) -> impl Iterator<Item = Self> + Clone {
+        (self.0..other.0).map(Self)
+    }
+    pub fn to_inclusive(
+        self,
+        other: Self,
+    ) -> impl Iterator<Item = Self> + Clone {
+        (self.0..=other.0).map(Self)
     }
 }
 
@@ -143,6 +161,15 @@ impl IRow {
     pub fn abs_diff(self, other: Self) -> Row {
         Row(self.0.abs_diff(other.0))
     }
+    pub fn to(self, other: Self) -> impl Iterator<Item = Self> + Clone {
+        (self.0..other.0).map(Self)
+    }
+    pub fn to_inclusive(
+        self,
+        other: Self,
+    ) -> impl Iterator<Item = Self> + Clone {
+        (self.0..=other.0).map(Self)
+    }
 }
 
 impl ICol {
@@ -151,6 +178,15 @@ impl ICol {
     }
     pub fn abs_diff(self, other: Self) -> Col {
         Col(self.0.abs_diff(other.0))
+    }
+    pub fn to(self, other: Self) -> impl Iterator<Item = Self> + Clone {
+        (self.0..other.0).map(Self)
+    }
+    pub fn to_inclusive(
+        self,
+        other: Self,
+    ) -> impl Iterator<Item = Self> + Clone {
+        (self.0..=other.0).map(Self)
     }
 }
 
@@ -329,6 +365,12 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         })
     }
 
+    pub fn find_next(&self, f: impl Fn(Pos, &T) -> bool) -> Option<Pos> {
+        self.indexed_cells()
+            .find(|(pos, cell)| f(*pos, cell))
+            .map(|(pos, _)| pos)
+    }
+
     pub fn in_bounds(&self, pos: IPos) -> bool {
         pos.0 >= IRow(0)
             && pos.0 < self.rows().i()
@@ -351,7 +393,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         &mut self,
         pos: Pos,
         fill: &T,
-        should_fill: impl Fn(&T) -> bool,
+        should_fill: impl Fn(Pos, &T) -> bool,
         diagonal: bool,
     ) -> HashSet<Pos> {
         let mut done = HashSet::new();
@@ -360,7 +402,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
             done.insert(pos);
             self[pos] = fill.clone();
             for pos in self.adjacent(pos, diagonal) {
-                if should_fill(&self[pos]) {
+                if should_fill(pos, &self[pos]) {
                     todo.push(pos);
                 }
             }
