@@ -132,10 +132,12 @@ impl Pos {
 impl_op!(Row, usize, isize, Add, add);
 impl_op!(Row, usize, isize, Sub, sub);
 impl_op!(Row, usize, isize, Mul, mul);
+impl_op!(Row, usize, isize, Div, div);
 impl_op!(Row, usize, isize, Rem, rem);
 impl_op!(Col, usize, isize, Add, add);
 impl_op!(Col, usize, isize, Sub, sub);
 impl_op!(Col, usize, isize, Mul, mul);
+impl_op!(Col, usize, isize, Div, div);
 impl_op!(Col, usize, isize, Rem, rem);
 
 impl std::ops::Add<Pos> for Pos {
@@ -228,10 +230,12 @@ impl IPos {
 impl_op!(IRow, isize, usize, Add, add);
 impl_op!(IRow, isize, usize, Sub, sub);
 impl_op!(IRow, isize, usize, Mul, mul);
+impl_op!(IRow, isize, usize, Div, div);
 impl_op!(IRow, isize, usize, Rem, rem);
 impl_op!(ICol, isize, usize, Add, add);
 impl_op!(ICol, isize, usize, Sub, sub);
 impl_op!(ICol, isize, usize, Mul, mul);
+impl_op!(ICol, isize, usize, Div, div);
 impl_op!(ICol, isize, usize, Rem, rem);
 
 impl std::ops::Add<IPos> for IPos {

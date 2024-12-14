@@ -62,7 +62,7 @@ pub fn part1(mut robots: Vec<Robot>) -> Result<i64> {
         }
     }
     let mut quadrants = vec![0, 0, 0, 0];
-    let center = Pos(Row(size.0 .0 / 2), Col(size.1 .0 / 2));
+    let center = Pos(size.0 / 2, size.1 / 2);
     for robot in robots {
         if robot.pos.0 < center.0 && robot.pos.1 < center.1 {
             quadrants[0] += 1;
