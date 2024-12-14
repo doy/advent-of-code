@@ -6,18 +6,13 @@ pub struct Robot {
 }
 
 impl Robot {
-    fn at_second(&self, size: Size, t: isize) -> Self {
-        Self {
-            pos: Pos(
-                ((size.0.i() * t + self.pos.0.i() + self.v.0 * t)
-                    % size.0.i())
+    fn at_second(&self, size: Size, t: isize) -> Pos {
+        Pos(
+            ((size.0.i() * t + self.pos.0.i() + self.v.0 * t) % size.0.i())
                 .u(),
-                ((size.1.i() * t + self.pos.1.i() + self.v.1 * t)
-                    % size.1.i())
+            ((size.1.i() * t + self.pos.1.i() + self.v.1 * t) % size.1.i())
                 .u(),
-            ),
-            v: self.v,
-        }
+        )
     }
 }
 
@@ -61,24 +56,25 @@ pub fn parse(fh: File) -> Result<Vec<Robot>> {
     Ok(parse::lines(fh).collect())
 }
 
-pub fn part1(mut robots: Vec<Robot>) -> Result<i64> {
+pub fn part1(robots: Vec<Robot>) -> Result<i64> {
     let size = Size(Row(103), Col(101));
-    robots.par_iter_mut().for_each(|robot| {
-        *robot = robot.at_second(size, 100);
-    });
+    let positions: Vec<_> = robots
+        .par_iter()
+        .map(|robot| robot.at_second(size, 100))
+        .collect();
     let mut quadrants = vec![0, 0, 0, 0];
     let center = Pos(size.0 / 2, size.1 / 2);
-    for robot in robots {
-        if robot.pos.0 < center.0 && robot.pos.1 < center.1 {
+    for pos in positions {
+        if pos.0 < center.0 && pos.1 < center.1 {
             quadrants[0] += 1;
         }
-        if robot.pos.0 < center.0 && robot.pos.1 > center.1 {
+        if pos.0 < center.0 && pos.1 > center.1 {
             quadrants[1] += 1;
         }
-        if robot.pos.0 > center.0 && robot.pos.1 < center.1 {
+        if pos.0 > center.0 && pos.1 < center.1 {
             quadrants[2] += 1;
         }
-        if robot.pos.0 > center.0 && robot.pos.1 > center.1 {
+        if pos.0 > center.0 && pos.1 > center.1 {
             quadrants[3] += 1;
         }
     }
@@ -93,7 +89,7 @@ pub fn part2(robots: Vec<Robot>) -> Result<i64> {
         .find_first(|t| {
             let positions: HashSet<Pos> = robots
                 .iter()
-                .map(|robot| robot.at_second(size, *t).pos)
+                .map(|robot| robot.at_second(size, *t))
                 .collect();
             positions
                 .iter()
