@@ -6,11 +6,18 @@ pub struct Robot {
 }
 
 impl Robot {
-    fn mv(&mut self, size: Size) {
-        self.pos = Pos(
-            ((size.0.i() + self.pos.0.i() + self.v.0) % size.0.i()).u(),
-            ((size.1.i() + self.pos.1.i() + self.v.1) % size.1.i()).u(),
-        );
+    fn at_second(&self, size: Size, t: isize) -> Self {
+        Self {
+            pos: Pos(
+                ((size.0.i() * t + self.pos.0.i() + self.v.0 * t)
+                    % size.0.i())
+                .u(),
+                ((size.1.i() * t + self.pos.1.i() + self.v.1 * t)
+                    % size.1.i())
+                .u(),
+            ),
+            v: self.v,
+        }
     }
 }
 
@@ -56,11 +63,9 @@ pub fn parse(fh: File) -> Result<Vec<Robot>> {
 
 pub fn part1(mut robots: Vec<Robot>) -> Result<i64> {
     let size = Size(Row(103), Col(101));
-    for _ in 0..100 {
-        for robot in &mut robots {
-            robot.mv(size);
-        }
-    }
+    robots.par_iter_mut().for_each(|robot| {
+        *robot = robot.at_second(size, 100);
+    });
     let mut quadrants = vec![0, 0, 0, 0];
     let center = Pos(size.0 / 2, size.1 / 2);
     for robot in robots {
@@ -80,30 +85,29 @@ pub fn part1(mut robots: Vec<Robot>) -> Result<i64> {
     Ok(quadrants.into_iter().product())
 }
 
-pub fn part2(mut robots: Vec<Robot>) -> Result<i64> {
+pub fn part2(robots: Vec<Robot>) -> Result<i64> {
     let size = Size(Row(103), Col(101));
-    let mut seconds = 0;
-    loop {
-        seconds += 1;
-        for robot in &mut robots {
-            robot.mv(size);
-        }
-        let positions: HashSet<Pos> =
-            robots.iter().map(|robot| robot.pos).collect();
-        if positions
-            .iter()
-            .filter(|pos| {
-                pos.adjacent(size, true).all(|pos| positions.contains(&pos))
-            })
-            .take(5)
-            .count()
-            == 5
-        {
-            // display(&robots);
-            break;
-        }
-    }
-    Ok(seconds)
+    Ok((0..isize::MAX)
+        .into_par_iter()
+        .by_exponential_blocks()
+        .find_first(|t| {
+            let positions: HashSet<Pos> = robots
+                .iter()
+                .map(|robot| robot.at_second(size, *t).pos)
+                .collect();
+            positions
+                .iter()
+                .filter(|pos| {
+                    pos.adjacent(size, true)
+                        .all(|pos| positions.contains(&pos))
+                })
+                .take(5)
+                .count()
+                == 5
+        })
+        .unwrap()
+        .try_into()
+        .unwrap())
 }
 
 #[test]
