@@ -117,35 +117,15 @@ impl Pos {
         IPos(self.0.i(), self.1.i())
     }
 
-    pub fn adjacent(self, size: Size, diagonal: bool) -> Vec<Self> {
-        let mut adjacent = vec![];
-        if self.0 > Row(0) {
-            adjacent.push(Self(self.0 - 1, self.1));
+    pub fn adjacent(self, size: Size, diagonal: bool) -> Adjacent {
+        Adjacent {
+            row: self.0 .0,
+            col: self.1 .0,
+            rows: size.0 .0,
+            cols: size.1 .0,
+            diagonal,
+            pos: 0,
         }
-        if self.1 > Col(0) {
-            adjacent.push(Self(self.0, self.1 - 1));
-        }
-        if self.0 < size.0 - 1 {
-            adjacent.push(Self(self.0 + 1, self.1));
-        }
-        if self.1 < size.1 - 1 {
-            adjacent.push(Self(self.0, self.1 + 1));
-        }
-        if diagonal {
-            if self.0 > Row(0) && self.1 > Col(0) {
-                adjacent.push(Self(self.0 - 1, self.1 - 1));
-            }
-            if self.0 > Row(0) && self.1 < size.1 - 1 {
-                adjacent.push(Self(self.0 - 1, self.1 + 1));
-            }
-            if self.0 < size.0 - 1 && self.1 > Col(0) {
-                adjacent.push(Self(self.0 + 1, self.1 - 1));
-            }
-            if self.0 < size.0 - 1 && self.1 < size.1 - 1 {
-                adjacent.push(Self(self.0 + 1, self.1 + 1));
-            }
-        }
-        adjacent
     }
 }
 

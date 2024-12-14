@@ -90,17 +90,15 @@ pub fn part2(mut robots: Vec<Robot>) -> Result<i64> {
         }
         let positions: HashSet<Pos> =
             robots.iter().map(|robot| robot.pos).collect();
-        let near = positions
+        if positions
             .iter()
-            .map(|pos| {
-                pos.adjacent(size, true)
-                    .into_iter()
-                    .filter(|pos| positions.contains(pos))
-                    .count()
+            .filter(|pos| {
+                pos.adjacent(size, true).all(|pos| positions.contains(&pos))
             })
-            .filter(|near| *near == 8)
-            .count();
-        if near > 20 {
+            .take(5)
+            .count()
+            == 5
+        {
             // display(&robots);
             break;
         }
