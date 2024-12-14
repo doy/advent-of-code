@@ -1,4 +1,5 @@
 use advent_of_code::prelude::*;
+use rayon::iter::IntoParallelIterator;
 
 #[derive(Debug)]
 pub struct Game {
@@ -46,49 +47,51 @@ pub fn parse(fh: File) -> Result<Vec<Game>> {
 }
 
 pub fn part1(games: Vec<Game>) -> Result<i64> {
-    let mut total = 0;
-    for game in games {
-        let a = i64::try_from(game.a.0 .0).unwrap();
-        let b = i64::try_from(game.b.0 .0).unwrap();
-        let c = i64::try_from(game.a.1 .0).unwrap();
-        let d = i64::try_from(game.b.1 .0).unwrap();
-        let x = i64::try_from(game.prize.0 .0).unwrap();
-        let y = i64::try_from(game.prize.1 .0).unwrap();
-        let det = a * d - b * c;
-        if det == 0
-            || (d * x - b * y) % det != 0
-            || (a * y - c * x) % det != 0
-        {
-            continue;
-        }
-        let a_presses = (d * x - b * y) / det;
-        let b_presses = (a * y - c * x) / det;
-        total += a_presses * 3 + b_presses;
-    }
-    Ok(total)
+    Ok(games
+        .into_par_iter()
+        .map(|game| {
+            let a = i64::try_from(game.a.0 .0).unwrap();
+            let b = i64::try_from(game.b.0 .0).unwrap();
+            let c = i64::try_from(game.a.1 .0).unwrap();
+            let d = i64::try_from(game.b.1 .0).unwrap();
+            let x = i64::try_from(game.prize.0 .0).unwrap();
+            let y = i64::try_from(game.prize.1 .0).unwrap();
+            let det = a * d - b * c;
+            if det == 0
+                || (d * x - b * y) % det != 0
+                || (a * y - c * x) % det != 0
+            {
+                return 0;
+            }
+            let a_presses = (d * x - b * y) / det;
+            let b_presses = (a * y - c * x) / det;
+            a_presses * 3 + b_presses
+        })
+        .sum())
 }
 
 pub fn part2(games: Vec<Game>) -> Result<i64> {
-    let mut total = 0;
-    for game in games {
-        let a = i64::try_from(game.a.0 .0).unwrap();
-        let b = i64::try_from(game.b.0 .0).unwrap();
-        let c = i64::try_from(game.a.1 .0).unwrap();
-        let d = i64::try_from(game.b.1 .0).unwrap();
-        let x = i64::try_from(game.prize.0 .0 + 10000000000000).unwrap();
-        let y = i64::try_from(game.prize.1 .0 + 10000000000000).unwrap();
-        let det = a * d - b * c;
-        if det == 0
-            || (d * x - b * y) % det != 0
-            || (a * y - c * x) % det != 0
-        {
-            continue;
-        }
-        let a_presses = (d * x - b * y) / det;
-        let b_presses = (a * y - c * x) / det;
-        total += a_presses * 3 + b_presses;
-    }
-    Ok(total)
+    Ok(games
+        .into_par_iter()
+        .map(|game| {
+            let a = i64::try_from(game.a.0 .0).unwrap();
+            let b = i64::try_from(game.b.0 .0).unwrap();
+            let c = i64::try_from(game.a.1 .0).unwrap();
+            let d = i64::try_from(game.b.1 .0).unwrap();
+            let x = i64::try_from(game.prize.0 .0 + 10000000000000).unwrap();
+            let y = i64::try_from(game.prize.1 .0 + 10000000000000).unwrap();
+            let det = a * d - b * c;
+            if det == 0
+                || (d * x - b * y) % det != 0
+                || (a * y - c * x) % det != 0
+            {
+                return 0;
+            }
+            let a_presses = (d * x - b * y) / det;
+            let b_presses = (a * y - c * x) / det;
+            a_presses * 3 + b_presses
+        })
+        .sum())
 }
 
 #[test]
