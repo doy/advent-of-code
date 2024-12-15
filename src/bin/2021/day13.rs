@@ -78,7 +78,7 @@ impl std::fmt::Display for Paper {
         write!(
             f,
             "{}",
-            self.grid.display_packed(|b| if *b { '#' } else { '.' })
+            self.grid.display_packed(|_, b| if *b { '#' } else { '.' })
         )
     }
 }
