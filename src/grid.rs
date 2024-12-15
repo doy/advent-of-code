@@ -483,7 +483,7 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 impl<T: Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display>
     Grid<T>
 {
-    pub fn display_packed<F: Fn(&T) -> char>(
+    pub fn display_packed<F: Fn(Pos, &T) -> char>(
         &self,
         f: F,
     ) -> DisplayPacked<T, F> {
@@ -584,7 +584,7 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
 pub struct DisplayPacked<
     'a,
     T: Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display,
-    F: Fn(&'a T) -> char,
+    F: Fn(Pos, &'a T) -> char,
 >(&'a Grid<T>, F);
 
 impl<
@@ -595,16 +595,16 @@ impl<
             + PartialEq
             + std::hash::Hash
             + std::fmt::Display,
-        F: Fn(&'a T) -> char,
+        F: Fn(Pos, &'a T) -> char,
     > std::fmt::Display for DisplayPacked<'a, T, F>
 {
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> Result<(), std::fmt::Error> {
-        for row in &self.0.rows {
-            for col in &row.cells {
-                write!(f, "{}", self.1(col))?;
+        for (row, grid_row) in self.0.rows.iter().enumerate() {
+            for (col, cell) in grid_row.cells.iter().enumerate() {
+                write!(f, "{}", self.1(Pos(Row(row), Col(col)), cell))?;
             }
             writeln!(f)?;
         }
