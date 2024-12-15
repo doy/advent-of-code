@@ -62,6 +62,21 @@ impl Warehouse {
             .collect();
     }
 
+    fn box_left(&self, pos: Pos) -> Pos {
+        match self.map[pos] {
+            Cell::BoxLeft => pos,
+            Cell::BoxRight => Pos(pos.0, pos.1 - 1),
+            _ => unreachable!(),
+        }
+    }
+    fn box_right(&self, pos: Pos) -> Pos {
+        match self.map[pos] {
+            Cell::BoxLeft => Pos(pos.0, pos.1 + 1),
+            Cell::BoxRight => pos,
+            _ => unreachable!(),
+        }
+    }
+
     fn mv(&mut self, direction: Direction) {
         let next_pos =
             direction.move_checked(self.robot, self.map.size()).unwrap();
@@ -86,22 +101,8 @@ impl Warehouse {
                     }
                 }
             }
-            Cell::Wall => {}
-            Cell::BoxLeft | Cell::BoxRight => unreachable!(),
-        }
-    }
-
-    fn mv_big(&mut self, direction: Direction) {
-        let next_pos =
-            direction.move_checked(self.robot, self.map.size()).unwrap();
-        match self.map[next_pos] {
-            Cell::Floor => self.robot = next_pos,
             Cell::BoxLeft | Cell::BoxRight => {
-                let mut box_end = if self.map[next_pos] == Cell::BoxLeft {
-                    next_pos
-                } else {
-                    Pos(next_pos.0, next_pos.1 - 1)
-                };
+                let mut box_end = self.box_left(next_pos);
                 if direction.horizontal() {
                     while self.map[box_end] == Cell::BoxLeft
                         || self.map[box_end] == Cell::BoxRight
@@ -112,18 +113,16 @@ impl Warehouse {
                     }
                     match self.map[box_end] {
                         Cell::Floor => {
-                            let mut col = next_pos.1;
-                            while col != box_end.1 {
-                                let pos = Pos(next_pos.0, col);
+                            let mut pos = next_pos;
+                            while pos != box_end {
                                 self.map[pos] = match self.map[pos] {
                                     Cell::BoxLeft => Cell::BoxRight,
                                     Cell::BoxRight => Cell::BoxLeft,
                                     _ => unreachable!(),
                                 };
-                                col = direction
+                                pos = direction
                                     .move_checked(pos, self.map.size())
-                                    .unwrap()
-                                    .1;
+                                    .unwrap();
                             }
                             self.map[box_end] = self.map[next_pos];
                             self.map[next_pos] = Cell::Floor;
@@ -136,13 +135,7 @@ impl Warehouse {
                     }
                 } else {
                     let mut to_check = VecDeque::new();
-                    to_check.push_front(
-                        if self.map[next_pos] == Cell::BoxLeft {
-                            next_pos
-                        } else {
-                            Pos(next_pos.0, next_pos.1 - 1)
-                        },
-                    );
+                    to_check.push_front(self.box_left(next_pos));
                     let mut boxes_to_move = vec![];
                     while let Some(pos) = to_check.pop_back() {
                         boxes_to_move.push(pos);
@@ -152,16 +145,16 @@ impl Warehouse {
                                 .unwrap(),
                             direction
                                 .move_checked(
-                                    Pos(pos.0, pos.1 + 1),
+                                    self.box_right(pos),
                                     self.map.size(),
                                 )
                                 .unwrap(),
                         ] {
                             match self.map[next] {
                                 Cell::Floor => {}
-                                Cell::BoxLeft => to_check.push_front(next),
-                                Cell::BoxRight => to_check
-                                    .push_front(Pos(next.0, next.1 - 1)),
+                                Cell::BoxLeft | Cell::BoxRight => {
+                                    to_check.push_front(self.box_left(next))
+                                }
                                 Cell::Wall => return,
                                 Cell::Box => unreachable!(),
                             }
@@ -169,7 +162,9 @@ impl Warehouse {
                     }
                     for pos in boxes_to_move.into_iter().rev() {
                         let src_left = pos;
-                        let src_right = Pos(pos.0, pos.1 + 1);
+                        let src_right = Direction::Right
+                            .move_checked(pos, self.map.size())
+                            .unwrap();
                         let dest_left = direction
                             .move_checked(src_left, self.map.size())
                             .unwrap();
@@ -185,8 +180,17 @@ impl Warehouse {
                 }
             }
             Cell::Wall => {}
-            Cell::Box => unreachable!(),
         }
+    }
+
+    fn coord_sum(&self) -> i64 {
+        self.map
+            .indexed_cells()
+            .filter(|(_, cell)| {
+                **cell == Cell::Box || **cell == Cell::BoxLeft
+            })
+            .map(|(pos, _)| i64::try_from(pos.0 .0 * 100 + pos.1 .0).unwrap())
+            .sum()
     }
 }
 
@@ -218,16 +222,7 @@ pub fn part1(
     for direction in moves {
         warehouse.mv(direction);
     }
-    let mut total = 0;
-    for pos in warehouse
-        .map
-        .indexed_cells()
-        .filter(|(_, cell)| **cell == Cell::Box)
-        .map(|(pos, _)| pos)
-    {
-        total += pos.0 .0 * 100 + pos.1 .0;
-    }
-    Ok(total.try_into().unwrap())
+    Ok(warehouse.coord_sum())
 }
 
 pub fn part2(
@@ -235,18 +230,9 @@ pub fn part2(
 ) -> Result<i64> {
     warehouse.make_big();
     for direction in moves {
-        warehouse.mv_big(direction);
+        warehouse.mv(direction);
     }
-    let mut total = 0;
-    for pos in warehouse
-        .map
-        .indexed_cells()
-        .filter(|(_, cell)| **cell == Cell::BoxLeft)
-        .map(|(pos, _)| pos)
-    {
-        total += pos.0 .0 * 100 + pos.1 .0;
-    }
-    Ok(total.try_into().unwrap())
+    Ok(warehouse.coord_sum())
 }
 
 #[test]
