@@ -58,45 +58,55 @@ pub fn part1(map: Map) -> Result<i64> {
 }
 
 pub fn part2(map: Map) -> Result<i64> {
-    let min_distance = map
-        .dijkstra((map.start, Direction::Right), |(pos, _)| pos == map.end)
-        .0;
     let from_start = map.dijkstra_full((map.start, Direction::Right));
-    let from_end = [
-        map.dijkstra_full((map.end, Direction::Right)),
-        map.dijkstra_full((map.end, Direction::Left)),
-        map.dijkstra_full((map.end, Direction::Up)),
-        map.dijkstra_full((map.end, Direction::Down)),
-    ];
-    let mut total = 0;
-    for pos in map
-        .map
-        .indexed_cells()
-        .filter(|(_, c)| **c)
-        .map(|(pos, _)| pos)
-    {
-        if [
-            Direction::Up,
-            Direction::Down,
-            Direction::Left,
-            Direction::Right,
-        ]
-        .iter()
-        .any(|direction| {
-            from_start[&(pos, *direction)].1
-                + from_end
-                    .iter()
-                    .map(|from_end| {
-                        from_end[&(pos, direction.turn_around())].1
-                    })
-                    .min()
-                    .unwrap()
-                == min_distance
-        }) {
-            total += 1;
+    let mut from_end = vec![];
+    for direction in [
+        Direction::Left,
+        Direction::Right,
+        Direction::Up,
+        Direction::Down,
+    ] {
+        if map.map[direction.move_checked(map.end, map.map.size()).unwrap()] {
+            from_end
+                .push(map.dijkstra_full((map.end, direction.turn_around())));
         }
     }
-    Ok(total)
+    let min_distance = from_end
+        .iter()
+        .map(|from_end| {
+            from_end[&(map.start, Direction::Right.turn_around())].1
+        })
+        .min()
+        .unwrap();
+    Ok(map
+        .map
+        .par_indexed_cells()
+        .filter(|(_, c)| **c)
+        .map(|(pos, _)| {
+            if [
+                Direction::Up,
+                Direction::Down,
+                Direction::Left,
+                Direction::Right,
+            ]
+            .iter()
+            .any(|direction| {
+                from_start[&(pos, *direction)].1
+                    + from_end
+                        .iter()
+                        .map(|from_end| {
+                            from_end[&(pos, direction.turn_around())].1
+                        })
+                        .min()
+                        .unwrap()
+                    == min_distance
+            }) {
+                1
+            } else {
+                0
+            }
+        })
+        .sum())
 }
 
 #[test]
