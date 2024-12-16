@@ -814,6 +814,15 @@ impl Direction {
         }
     }
 
+    pub fn turn_around(&self) -> Self {
+        match self {
+            Direction::Up => Direction::Down,
+            Direction::Down => Direction::Up,
+            Direction::Left => Direction::Right,
+            Direction::Right => Direction::Left,
+        }
+    }
+
     pub fn offset(&self) -> IPos {
         match self {
             Self::Up => IPos(IRow(-1), ICol(0)),
