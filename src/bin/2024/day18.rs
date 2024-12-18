@@ -57,13 +57,23 @@ pub fn part2(map: Map) -> Result<i64> {
     grid.grow(size);
     let start = Pos::default();
     let end = Pos(size.0 - 1, size.1 - 1);
-    for byte in &map.bytes {
-        grid[*byte] = true;
-        if BoolGrid(&grid).dijkstra(start, |pos| pos == end).is_none() {
-            return Ok((byte.0 .0 + byte.1 .0 * 100).try_into().unwrap());
-        }
-    }
-    unreachable!()
+    let idx: Vec<_> = (0..map.bytes.len()).collect();
+    let i = idx
+        .binary_search_by(|i| {
+            let mut grid = grid.clone();
+            for pos in &map.bytes[..=*i] {
+                grid[*pos] = true;
+            }
+            if BoolGrid(&grid).dijkstra(start, |pos| pos == end).is_none() {
+                Ordering::Greater
+            } else {
+                Ordering::Less
+            }
+        })
+        .unwrap_err();
+    Ok((map.bytes[i].0 .0 + map.bytes[i].1 .0 * 100)
+        .try_into()
+        .unwrap())
 }
 
 #[test]
