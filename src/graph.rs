@@ -10,7 +10,11 @@ where
     fn edge(&self, v: Vertex, e: Edge) -> (Vertex, u64);
 
     fn dijkstra_full(&self, start: Vertex) -> HashMap<Vertex, (Vertex, u64)> {
-        let mut to_visit = priority_queue::PriorityQueue::new();
+        let mut to_visit = priority_queue::PriorityQueue::<
+            _,
+            _,
+            ahash::RandomState,
+        >::with_default_hasher();
         let mut prev = HashMap::new();
         prev.insert(start, (start, 0));
         to_visit.push(start, std::cmp::Reverse(0));
@@ -44,7 +48,11 @@ where
         start: Vertex,
         end: F,
     ) -> Option<(u64, Vec<Vertex>)> {
-        let mut to_visit = priority_queue::PriorityQueue::new();
+        let mut to_visit = priority_queue::PriorityQueue::<
+            _,
+            _,
+            ahash::RandomState,
+        >::with_default_hasher();
         let mut prev = HashMap::new();
         prev.insert(start, start);
         to_visit.push(start, std::cmp::Reverse(0));
