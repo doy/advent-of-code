@@ -43,11 +43,12 @@ pub fn part1(map: Map) -> Result<i64> {
     for byte in &map.bytes[..1024] {
         grid[*byte] = true;
     }
-    let Some((len, _)) = BoolGrid(&grid).dijkstra(start, |pos| pos == end)
-    else {
-        unreachable!()
-    };
-    Ok(len.try_into().unwrap())
+    Ok(BoolGrid(&grid)
+        .dijkstra(start, |pos| pos == end)
+        .unwrap()
+        .0
+        .try_into()
+        .unwrap())
 }
 
 pub fn part2(map: Map) -> Result<i64> {
