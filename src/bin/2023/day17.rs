@@ -159,24 +159,24 @@ pub fn parse(fh: File) -> Result<Grid<u8>> {
 
 pub fn part1(map: Grid<u8>) -> Result<i64> {
     let crucible = Crucible { map };
-    let (weight, _) =
-        crucible.dijkstra((Pos(Row(0), Col(0)), None, 0), |(pos, _, _)| {
+    let (weight, _) = crucible
+        .dijkstra((Pos(Row(0), Col(0)), None, 0), |(pos, _, _)| {
             pos.0 == crucible.map.rows() - 1
                 && pos.1 == crucible.map.cols() - 1
-        });
+        })
+        .unwrap();
     Ok(weight.try_into().unwrap())
 }
 
 pub fn part2(map: Grid<u8>) -> Result<i64> {
     let crucible = UltraCrucible { map };
-    let (weight, _) = crucible.dijkstra(
-        (Pos(Row(0), Col(0)), None, 0),
-        |(pos, _, length)| {
+    let (weight, _) = crucible
+        .dijkstra((Pos(Row(0), Col(0)), None, 0), |(pos, _, length)| {
             pos.0 == crucible.map.rows() - 1
                 && pos.1 == crucible.map.cols() - 1
                 && length + 1 >= 4
-        },
-    );
+        })
+        .unwrap();
     Ok(weight.try_into().unwrap())
 }
 

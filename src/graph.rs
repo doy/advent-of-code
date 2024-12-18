@@ -43,7 +43,7 @@ where
         &self,
         start: Vertex,
         end: F,
-    ) -> (u64, Vec<Vertex>) {
+    ) -> Option<(u64, Vec<Vertex>)> {
         let mut to_visit = priority_queue::PriorityQueue::new();
         let mut prev = HashMap::new();
         prev.insert(start, start);
@@ -59,7 +59,7 @@ where
                     path.insert(0, *next);
                     cur = *next;
                 }
-                return (distance, path);
+                return Some((distance, path));
             }
 
             for e in self.edges(v) {
@@ -83,6 +83,6 @@ where
                 }
             }
         }
-        unreachable!()
+        None
     }
 }

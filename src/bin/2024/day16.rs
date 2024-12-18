@@ -52,6 +52,7 @@ impl advent_of_code::graph::Graph<(Pos, Direction), (Pos, Direction)>
 pub fn part1(map: Map) -> Result<i64> {
     Ok(map
         .dijkstra((map.start, Direction::Right), |(pos, _)| pos == map.end)
+        .unwrap()
         .0
         .try_into()
         .unwrap())

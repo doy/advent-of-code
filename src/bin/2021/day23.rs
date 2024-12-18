@@ -1707,8 +1707,9 @@ pub fn parse(fh: File) -> Result<Burrow> {
 }
 
 pub fn part1(burrow: Burrow) -> Result<u64> {
-    let (cost, _path) =
-        Pathfinder.dijkstra(burrow, |v| v == Burrow::done(false));
+    let (cost, _path) = Pathfinder
+        .dijkstra(burrow, |v| v == Burrow::done(false))
+        .unwrap();
     // for burrow in path {
     //     eprintln!("{}", burrow);
     // }
@@ -1716,8 +1717,9 @@ pub fn part1(burrow: Burrow) -> Result<u64> {
 }
 
 pub fn part2(burrow: Burrow) -> Result<u64> {
-    let (cost, _path) =
-        Pathfinder.dijkstra(burrow.to_big(), |v| v == Burrow::done(true));
+    let (cost, _path) = Pathfinder
+        .dijkstra(burrow.to_big(), |v| v == Burrow::done(true))
+        .unwrap();
     // for burrow in path {
     //     eprintln!("{}", burrow);
     // }

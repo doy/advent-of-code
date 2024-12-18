@@ -189,28 +189,32 @@ impl advent_of_code::graph::Graph<State, MapPos> for Pathfinder {
 pub fn part1(map: Map) -> Result<u64> {
     let state = State::new(true);
     let pathfinder = Pathfinder::new(map);
-    let (dist, _) =
-        pathfinder.dijkstra(state, |state| state.pos == MapPos::End);
+    let (dist, _) = pathfinder
+        .dijkstra(state, |state| state.pos == MapPos::End)
+        .unwrap();
     Ok(dist)
 }
 
 pub fn part2(map: Map) -> Result<u64> {
     let state = State::new(true);
     let pathfinder = Pathfinder::new(map);
-    let (dist1, _) =
-        pathfinder.dijkstra(state, |state| state.pos == MapPos::End);
+    let (dist1, _) = pathfinder
+        .dijkstra(state, |state| state.pos == MapPos::End)
+        .unwrap();
 
     let map = pathfinder.map_at_time(dist1 as usize).clone();
     let state = State::new(false);
     let pathfinder = Pathfinder::new(map);
-    let (dist2, _) =
-        pathfinder.dijkstra(state, |state| state.pos == MapPos::Start);
+    let (dist2, _) = pathfinder
+        .dijkstra(state, |state| state.pos == MapPos::Start)
+        .unwrap();
 
     let map = pathfinder.map_at_time(dist2 as usize).clone();
     let state = State::new(true);
     let pathfinder = Pathfinder::new(map);
-    let (dist3, _) =
-        pathfinder.dijkstra(state, |state| state.pos == MapPos::End);
+    let (dist3, _) = pathfinder
+        .dijkstra(state, |state| state.pos == MapPos::End)
+        .unwrap();
 
     Ok(dist1 + dist2 + dist3)
 }

@@ -27,6 +27,7 @@ pub fn part1(map: Map) -> Result<u64> {
         .dijkstra(Pos(Row(0), Col(0)), |v| {
             v == Pos(map.grid.rows() - 1, map.grid.cols() - 1)
         })
+        .unwrap()
         .0)
 }
 
@@ -51,6 +52,7 @@ pub fn part2(map: Map) -> Result<u64> {
         .dijkstra(Pos(Row(0), Col(0)), |v| {
             v == Pos(large_map.grid.rows() - 1, large_map.grid.cols() - 1)
         })
+        .unwrap()
         .0)
 }
 

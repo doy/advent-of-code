@@ -50,11 +50,14 @@ pub fn parse(fh: File) -> Result<Map> {
 }
 
 pub fn part1(map: Map) -> Result<u64> {
-    Ok(map.dijkstra(map.end, |v| v == map.start).0)
+    Ok(map.dijkstra(map.end, |v| v == map.start).unwrap().0)
 }
 
 pub fn part2(map: Map) -> Result<u64> {
-    Ok(map.dijkstra(map.end, |v| map.grid[v.0][v.1] == 0).0)
+    Ok(map
+        .dijkstra(map.end, |v| map.grid[v.0][v.1] == 0)
+        .unwrap()
+        .0)
 }
 
 #[test]

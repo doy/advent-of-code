@@ -1,0 +1,78 @@
+use advent_of_code::prelude::*;
+
+pub struct Map {
+    bytes: Vec<Pos>,
+}
+
+struct BoolGrid<'a>(&'a Grid<bool>);
+
+impl advent_of_code::graph::Graph<Pos, Pos> for BoolGrid<'_> {
+    type Edges = Vec<Pos>;
+
+    fn edges(&self, v: Pos) -> Self::Edges {
+        self.0
+            .adjacent(v, false)
+            .filter(|pos| !self.0[*pos])
+            .collect()
+    }
+
+    fn edge(&self, _: Pos, e: Pos) -> (Pos, u64) {
+        (e, 1)
+    }
+}
+
+pub fn parse(fh: File) -> Result<Map> {
+    Ok(Map {
+        bytes: parse::raw_lines(fh)
+            .map(|line| {
+                let mut parts = line.split(',');
+                let col = parts.next().unwrap().parse().unwrap();
+                let row = parts.next().unwrap().parse().unwrap();
+                Pos(Row(row), Col(col))
+            })
+            .collect(),
+    })
+}
+
+pub fn part1(map: Map) -> Result<i64> {
+    let size = Size(Row(71), Col(71));
+    let mut grid = Grid::default();
+    grid.grow(size);
+    let start = Pos::default();
+    let end = Pos(size.0 - 1, size.1 - 1);
+    for byte in &map.bytes[..1024] {
+        grid[*byte] = true;
+    }
+    let Some((len, _)) = BoolGrid(&grid).dijkstra(start, |pos| pos == end)
+    else {
+        unreachable!()
+    };
+    Ok(len.try_into().unwrap())
+}
+
+pub fn part2(map: Map) -> Result<i64> {
+    let size = Size(Row(71), Col(71));
+    let mut grid = Grid::default();
+    grid.grow(size);
+    let start = Pos::default();
+    let end = Pos(size.0 - 1, size.1 - 1);
+    for byte in &map.bytes {
+        grid[*byte] = true;
+        if BoolGrid(&grid).dijkstra(start, |pos| pos == end).is_none() {
+            return Ok((byte.0 .0 + byte.1 .0 * 100).try_into().unwrap());
+        }
+    }
+    unreachable!()
+}
+
+#[test]
+fn test() {
+    assert_eq!(
+        part1(parse(parse::data(2024, 18).unwrap()).unwrap()).unwrap(),
+        316
+    );
+    assert_eq!(
+        part2(parse(parse::data(2024, 18).unwrap()).unwrap()).unwrap(),
+        4518
+    );
+}
