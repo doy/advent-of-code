@@ -61,25 +61,31 @@ pub fn parse(fh: File) -> Result<Towels> {
 }
 
 pub fn part1(towels: Towels) -> Result<i64> {
-    let mut total = 0;
-    let mut cache = HashMap::new();
-    cache.insert(&[][..], true);
-    for design in &towels.designs {
-        if towels.can_make(design, &mut cache) {
-            total += 1;
-        }
-    }
-    Ok(total)
+    Ok(towels
+        .designs
+        .par_iter()
+        .map(|design| {
+            let mut cache = HashMap::new();
+            cache.insert(&[][..], true);
+            if towels.can_make(design, &mut cache) {
+                1
+            } else {
+                0
+            }
+        })
+        .sum())
 }
 
 pub fn part2(towels: Towels) -> Result<i64> {
-    let mut total = 0;
-    let mut cache = HashMap::new();
-    cache.insert(&[][..], 1);
-    for design in &towels.designs {
-        total += towels.count_arrangements(design, &mut cache);
-    }
-    Ok(total)
+    Ok(towels
+        .designs
+        .par_iter()
+        .map(|design| {
+            let mut cache = HashMap::new();
+            cache.insert(&[][..], 1);
+            towels.count_arrangements(design, &mut cache)
+        })
+        .sum())
 }
 
 #[test]
