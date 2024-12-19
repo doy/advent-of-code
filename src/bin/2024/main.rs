@@ -18,6 +18,7 @@ mod day7;
 mod day8;
 mod day9;
 mod day18;
+mod day19;
 // NEXT MOD
 
 #[paw::main]
@@ -42,6 +43,7 @@ fn main(opt: Opt) -> Result<()> {
         16 => advent_of_code::day!(2024, opt.day, opt.puzzle, day16),
         17 => advent_of_code::day!(2024, opt.day, opt.puzzle, day17),
         18 => advent_of_code::day!(2024, opt.day, opt.puzzle, day18),
+        19 => advent_of_code::day!(2024, opt.day, opt.puzzle, day19),
         // NEXT PART
         _ => panic!("unknown day {}", opt.day),
     }
