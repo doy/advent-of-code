@@ -117,14 +117,27 @@ impl Pos {
         IPos(self.0.i(), self.1.i())
     }
 
-    pub fn adjacent(self, size: Size, diagonal: bool) -> Adjacent {
-        Adjacent {
+    pub fn adjacent(self, size: Size, diagonal: bool) -> Near {
+        self.near(size, diagonal, 1)
+    }
+
+    pub fn near(self, size: Size, diagonal: bool, distance: usize) -> Near {
+        Near {
             row: self.0 .0,
             col: self.1 .0,
             rows: size.0 .0,
             cols: size.1 .0,
             diagonal,
+            distance,
             pos: 0,
+        }
+    }
+
+    pub fn distance(self, other: Self, diagonal: bool) -> usize {
+        if diagonal {
+            self.0.abs_diff(other.0).0.min(self.1.abs_diff(other.1).0)
+        } else {
+            self.0.abs_diff(other.0).0 + self.1.abs_diff(other.1).0
         }
     }
 }
@@ -423,13 +436,18 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
             && pos.1 < self.cols().i()
     }
 
-    pub fn adjacent(&self, pos: Pos, diagonal: bool) -> Adjacent {
-        Adjacent {
+    pub fn adjacent(&self, pos: Pos, diagonal: bool) -> Near {
+        self.near(pos, diagonal, 1)
+    }
+
+    pub fn near(&self, pos: Pos, diagonal: bool, distance: usize) -> Near {
+        Near {
             row: pos.0 .0,
             col: pos.1 .0,
             rows: self.rows().0,
             cols: self.cols().0,
             diagonal,
+            distance,
             pos: 0,
         }
     }
@@ -612,41 +630,54 @@ impl<
     }
 }
 
-pub struct Adjacent {
+pub struct Near {
     row: usize,
     col: usize,
     rows: usize,
     cols: usize,
     diagonal: bool,
-    pos: u8,
+    distance: usize,
+    pos: usize,
 }
 
-impl Iterator for Adjacent {
+impl Iterator for Near {
     type Item = Pos;
 
     fn next(&mut self) -> Option<Self::Item> {
+        let width = self.distance * 2 + 1;
         loop {
-            if self.pos >= 9 {
+            if self.pos >= width.pow(2) {
                 return None;
             }
-            let pos_row = self.pos / 3;
-            let pos_col = self.pos - pos_row * 3;
+            let pos_row = self.pos / width;
+            let pos_col = self.pos - pos_row * width;
             self.pos += 1;
-            if pos_row == 0 && self.row == 0
-                || pos_col == 0 && self.col == 0
-                || pos_row == 2 && self.row == self.rows - 1
-                || pos_col == 2 && self.col == self.cols - 1
-                || pos_row == 1 && pos_col == 1
-                || (!self.diagonal
-                    && ((pos_row == pos_col)
-                        || (pos_row == 2 && pos_col == 0)
-                        || (pos_row == 0 && pos_col == 2)))
-            {
+            if pos_row == self.distance && pos_col == self.distance {
                 continue;
             }
+            if pos_row + self.row < self.distance {
+                continue;
+            }
+            if pos_col + self.col < self.distance {
+                continue;
+            }
+            if pos_row + self.row >= self.distance + self.rows {
+                continue;
+            }
+            if pos_col + self.col >= self.distance + self.cols {
+                continue;
+            }
+            if !self.diagonal {
+                if pos_row.abs_diff(self.distance)
+                    + pos_col.abs_diff(self.distance)
+                    > self.distance
+                {
+                    continue;
+                }
+            }
             return Some(Pos(
-                Row(self.row + usize::from(pos_row) - 1),
-                Col(self.col + usize::from(pos_col) - 1),
+                Row(self.row + pos_row - self.distance),
+                Col(self.col + pos_col - self.distance),
             ));
         }
     }

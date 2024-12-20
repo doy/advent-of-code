@@ -5,7 +5,7 @@ pub struct Map {
 }
 
 impl advent_of_code::graph::Graph<Pos, Pos> for Map {
-    type Edges = advent_of_code::grid::Adjacent;
+    type Edges = advent_of_code::grid::Near;
 
     fn edges(&self, v: Pos) -> Self::Edges {
         self.grid.adjacent(v, false)
