@@ -592,7 +592,7 @@ impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash>
     {
         let mut self_ = Self::default();
         for (pos, cell) in iter {
-            self_.grow(Size(Row(pos.0 .0 + 1), Col(pos.1 .0 + 1)));
+            self_.grow(Size(pos.0 + 1, pos.1 + 1));
             self_[pos] = cell;
         }
         self_
