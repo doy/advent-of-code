@@ -77,6 +77,9 @@ impl Row {
     pub fn abs_diff(self, other: Self) -> Self {
         Self(self.0.abs_diff(other.0))
     }
+    pub fn checked_sub(&self, other: Self) -> Option<Self> {
+        self.0.checked_sub(other.0).map(Self)
+    }
     pub fn to(self, other: Self) -> impl Iterator<Item = Self> + Clone {
         (self.0..other.0).map(Self)
     }
@@ -97,6 +100,9 @@ impl Col {
     }
     pub fn abs_diff(self, other: Self) -> Self {
         Self(self.0.abs_diff(other.0))
+    }
+    pub fn checked_sub(&self, other: Self) -> Option<Self> {
+        self.0.checked_sub(other.0).map(Self)
     }
     pub fn to(self, other: Self) -> impl Iterator<Item = Self> + Clone {
         (self.0..other.0).map(Self)
@@ -123,13 +129,11 @@ impl Pos {
 
     pub fn near(self, size: Size, diagonal: bool, distance: usize) -> Near {
         Near {
-            row: self.0 .0,
-            col: self.1 .0,
-            rows: size.0 .0,
-            cols: size.1 .0,
+            pos: self,
+            size,
             diagonal,
             distance,
-            pos: 0,
+            i: 0,
         }
     }
 
@@ -442,13 +446,11 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 
     pub fn near(&self, pos: Pos, diagonal: bool, distance: usize) -> Near {
         Near {
-            row: pos.0 .0,
-            col: pos.1 .0,
-            rows: self.rows().0,
-            cols: self.cols().0,
+            pos,
+            size: self.size(),
             diagonal,
             distance,
-            pos: 0,
+            i: 0,
         }
     }
 
@@ -631,13 +633,11 @@ impl<
 }
 
 pub struct Near {
-    row: usize,
-    col: usize,
-    rows: usize,
-    cols: usize,
+    pos: Pos,
+    size: Size,
     diagonal: bool,
     distance: usize,
-    pos: usize,
+    i: usize,
 }
 
 impl Iterator for Near {
@@ -646,25 +646,25 @@ impl Iterator for Near {
     fn next(&mut self) -> Option<Self::Item> {
         let width = self.distance * 2 + 1;
         loop {
-            if self.pos >= width.pow(2) {
+            if self.i >= width.pow(2) {
                 return None;
             }
-            let pos_row = self.pos / width;
-            let pos_col = self.pos - pos_row * width;
-            self.pos += 1;
+            let pos_row = self.i / width;
+            let pos_col = self.i - pos_row * width;
+            self.i += 1;
             if pos_row == self.distance && pos_col == self.distance {
                 continue;
             }
-            if pos_row + self.row < self.distance {
+            if pos_row + self.pos.0 < Row(self.distance) {
                 continue;
             }
-            if pos_col + self.col < self.distance {
+            if pos_col + self.pos.1 < Col(self.distance) {
                 continue;
             }
-            if pos_row + self.row >= self.distance + self.rows {
+            if pos_row + self.pos.0 >= self.distance + self.size.0 {
                 continue;
             }
-            if pos_col + self.col >= self.distance + self.cols {
+            if pos_col + self.pos.1 >= self.distance + self.size.1 {
                 continue;
             }
             if !self.diagonal {
@@ -676,8 +676,8 @@ impl Iterator for Near {
                 }
             }
             return Some(Pos(
-                Row(self.row + pos_row - self.distance),
-                Col(self.col + pos_col - self.distance),
+                self.pos.0 + pos_row - self.distance,
+                self.pos.1 + pos_col - self.distance,
             ));
         }
     }
@@ -780,21 +780,19 @@ impl Direction {
 
     pub fn move_checked(self, pos: Pos, size: Size) -> Option<Pos> {
         match self {
-            Self::Up => {
-                pos.0 .0.checked_sub(1).map(|row| Pos(Row(row), pos.1))
-            }
+            Self::Up => pos.0.checked_sub(Row(1)).map(|row| Pos(row, pos.1)),
             Self::Down => {
-                if pos.0 .0 >= size.0 .0 - 1 {
+                if pos.0 >= size.0 - 1 {
                     None
                 } else {
                     Some(Pos(pos.0 + 1, pos.1))
                 }
             }
             Self::Left => {
-                pos.1 .0.checked_sub(1).map(|col| Pos(pos.0, Col(col)))
+                pos.1.checked_sub(Col(1)).map(|col| Pos(pos.0, col))
             }
             Self::Right => {
-                if pos.1 .0 >= size.1 .0 - 1 {
+                if pos.1 >= size.1 - 1 {
                     None
                 } else {
                     Some(Pos(pos.0, pos.1 + 1))
@@ -805,10 +803,10 @@ impl Direction {
 
     pub fn move_wrapped(self, pos: Pos, size: Size) -> Pos {
         match self {
-            Self::Up => Pos((size.0 .0 + pos.0 - 1) % size.0 .0, pos.1),
-            Self::Down => Pos((pos.0 + 1) % size.0 .0, pos.1),
-            Self::Left => Pos(pos.0, (size.1 .0 + pos.1 - 1) % size.1 .0),
-            Self::Right => Pos(pos.0, (pos.1 + 1) % size.1 .0),
+            Self::Up => Pos((size.0 + pos.0 - 1) % size.0, pos.1),
+            Self::Down => Pos((pos.0 + 1) % size.0, pos.1),
+            Self::Left => Pos(pos.0, (size.1 + pos.1 - 1) % size.1),
+            Self::Right => Pos(pos.0, (pos.1 + 1) % size.1),
         }
     }
 
