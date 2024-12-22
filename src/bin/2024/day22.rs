@@ -53,23 +53,28 @@ pub fn part2(secrets: Vec<i64>) -> Result<i64> {
             prices.windows(2).map(|pair| pair[1] - pair[0]).collect()
         })
         .collect();
-    let signals = changes
-        .par_iter()
-        .zip(prices.par_iter())
-        .map(|(changes, prices)| {
-            changes
-                .windows(4)
-                .zip(prices.iter().copied().skip(4))
-                .rev()
-                .collect()
-        })
-        .reduce(HashMap::new, |mut signals, buyer_signals| {
-            for (signal, price) in buyer_signals {
-                *signals.entry(signal).or_default() += price;
-            }
-            signals
-        });
-    Ok(signals.values().copied().max().unwrap())
+    let mut price_map = [0; 19usize.pow(4)];
+    for (changes, prices) in changes.iter().zip(prices.iter()) {
+        let mut buyer_price_map = [0; 19usize.pow(4)];
+        for (signal, price) in
+            changes.windows(4).zip(prices.iter().copied().skip(4)).rev()
+        {
+            let key = usize::try_from(
+                (signal[0] + 9)
+                    + (signal[1] + 9) * 19
+                    + (signal[2] + 9) * 19 * 19
+                    + (signal[3] + 9) * 19 * 19 * 19,
+            )
+            .unwrap();
+            buyer_price_map[key] = price;
+        }
+        for (total, buyer) in
+            price_map.iter_mut().zip(buyer_price_map.iter_mut())
+        {
+            *total += *buyer;
+        }
+    }
+    Ok(price_map.iter().copied().max().unwrap())
 }
 
 #[test]
