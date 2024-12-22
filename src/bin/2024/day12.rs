@@ -17,7 +17,8 @@ pub fn part1(plot: Grid<u8>) -> Result<i64> {
             false,
         );
         let area = region.len();
-        let (min, max) = advent_of_code::grid::bounding_box(&region);
+        let (min, max) =
+            advent_of_code::grid::bounding_box(region.iter().copied());
         let rows = min.0.to_inclusive(max.0);
         let cols = min.1.to_inclusive(max.1);
         let mut perimeter = 0;
@@ -69,7 +70,8 @@ pub fn part2(plot: Grid<u8>) -> Result<i64> {
             false,
         );
         let area = region.len();
-        let (min, max) = advent_of_code::grid::bounding_box(&region);
+        let (min, max) =
+            advent_of_code::grid::bounding_box(region.iter().copied());
         let rows = min.0.to_inclusive(max.0);
         let cols = min.1.to_inclusive(max.1);
         let mut sides = 0;

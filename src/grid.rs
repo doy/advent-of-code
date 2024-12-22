@@ -270,9 +270,7 @@ impl std::ops::Sub<IPos> for IPos {
     }
 }
 
-pub fn bounding_box<'a>(
-    region: impl IntoIterator<Item = &'a Pos>,
-) -> (Pos, Pos) {
+pub fn bounding_box(region: impl IntoIterator<Item = Pos>) -> (Pos, Pos) {
     let mut min = Pos::MAX;
     let mut max = Pos::MIN;
     for pos in region {
