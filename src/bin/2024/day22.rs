@@ -15,12 +15,13 @@ fn next_secret(mut n: i64) -> i64 {
     n
 }
 
-pub fn parse(fh: File) -> Result<impl Iterator<Item = i64>> {
-    Ok(parse::lines(fh))
+pub fn parse(fh: File) -> Result<Vec<i64>> {
+    Ok(parse::lines(fh).collect())
 }
 
-pub fn part1(secrets: impl Iterator<Item = i64>) -> Result<i64> {
+pub fn part1(secrets: Vec<i64>) -> Result<i64> {
     Ok(secrets
+        .into_par_iter()
         .map(|mut n| {
             for _ in 0..2000 {
                 n = next_secret(n);
@@ -30,8 +31,9 @@ pub fn part1(secrets: impl Iterator<Item = i64>) -> Result<i64> {
         .sum())
 }
 
-pub fn part2(secrets: impl Iterator<Item = i64>) -> Result<i64> {
-    let secrets: Vec<Vec<i64>> = secrets
+pub fn part2(secrets: Vec<i64>) -> Result<i64> {
+    let prices: Vec<Vec<_>> = secrets
+        .into_par_iter()
         .map(|mut secret| {
             std::iter::once(secret)
                 .chain(
@@ -41,32 +43,32 @@ pub fn part2(secrets: impl Iterator<Item = i64>) -> Result<i64> {
                     })
                     .take(2000),
                 )
+                .map(|secret| secret % 10)
                 .collect()
         })
         .collect();
-    let prices: Vec<Vec<_>> = secrets
-        .iter()
-        .map(|secrets| secrets.iter().map(|secret| secret % 10).collect())
-        .collect();
     let changes: Vec<Vec<_>> = prices
-        .iter()
+        .par_iter()
         .map(|prices| {
             prices.windows(2).map(|pair| pair[1] - pair[0]).collect()
         })
         .collect();
-    let mut signals = HashMap::new();
-    for (changes, prices) in changes.iter().zip(prices.iter()) {
-        let mut buyer_signals = HashMap::new();
-        for (signal, price) in changes.windows(4).zip(prices.iter().skip(4)) {
-            let entry = buyer_signals.entry(signal).or_default();
-            if *entry == 0 {
-                *entry = *price;
+    let signals = changes
+        .par_iter()
+        .zip(prices.par_iter())
+        .map(|(changes, prices)| {
+            changes
+                .windows(4)
+                .zip(prices.iter().copied().skip(4))
+                .rev()
+                .collect()
+        })
+        .reduce(HashMap::new, |mut signals, buyer_signals| {
+            for (signal, price) in buyer_signals {
+                *signals.entry(signal).or_default() += price;
             }
-        }
-        for (signal, price) in buyer_signals {
-            *signals.entry(signal).or_default() += price;
-        }
-    }
+            signals
+        });
     Ok(signals.values().copied().max().unwrap())
 }
 
