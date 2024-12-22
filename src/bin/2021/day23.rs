@@ -1674,9 +1674,7 @@ impl Move {
 struct Pathfinder;
 
 impl advent_of_code::graph::Graph<Burrow, Move> for Pathfinder {
-    type Edges = Vec<Move>;
-
-    fn edges(&self, v: Burrow) -> Self::Edges {
+    fn edges(&self, v: Burrow) -> impl IntoIterator<Item = Move> {
         v.legal_moves()
     }
 

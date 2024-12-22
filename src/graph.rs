@@ -4,9 +4,7 @@ pub trait Graph<Vertex, Edge>
 where
     Vertex: std::hash::Hash + Clone + Copy + PartialEq + Eq + std::fmt::Debug,
 {
-    type Edges: IntoIterator<Item = Edge>;
-
-    fn edges(&self, v: Vertex) -> Self::Edges;
+    fn edges(&self, v: Vertex) -> impl IntoIterator<Item = Edge>;
     fn edge(&self, v: Vertex, e: Edge) -> (Vertex, u64);
 
     fn dijkstra_full(&self, start: Vertex) -> HashMap<Vertex, (Vertex, u64)> {

@@ -7,13 +7,8 @@ pub struct Map {
 struct BoolGrid<'a>(&'a Grid<bool>);
 
 impl advent_of_code::graph::Graph<Pos, Pos> for BoolGrid<'_> {
-    type Edges = Vec<Pos>;
-
-    fn edges(&self, v: Pos) -> Self::Edges {
-        self.0
-            .adjacent(v, false)
-            .filter(|pos| !self.0[*pos])
-            .collect()
+    fn edges(&self, v: Pos) -> impl IntoIterator<Item = Pos> {
+        self.0.adjacent(v, false).filter(|pos| !self.0[*pos])
     }
 
     fn edge(&self, _: Pos, e: Pos) -> (Pos, u64) {

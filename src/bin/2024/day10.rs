@@ -16,13 +16,10 @@ impl Map {
 }
 
 impl advent_of_code::graph::Graph<Pos, Pos> for Map {
-    type Edges = Vec<Pos>;
-
-    fn edges(&self, v: Pos) -> Self::Edges {
+    fn edges(&self, v: Pos) -> impl IntoIterator<Item = Pos> {
         self.0
             .adjacent(v, false)
-            .filter(|e| self.0[v] + 1 == self.0[*e])
-            .collect()
+            .filter(move |e| self.0[v] + 1 == self.0[*e])
     }
 
     fn edge(&self, _: Pos, e: Pos) -> (Pos, u64) {

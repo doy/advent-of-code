@@ -28,9 +28,10 @@ pub fn parse(fh: File) -> Result<Map> {
 impl advent_of_code::graph::Graph<(Pos, Direction), (Pos, Direction)>
     for Map
 {
-    type Edges = Vec<(Pos, Direction)>;
-
-    fn edges(&self, (pos, direction): (Pos, Direction)) -> Self::Edges {
+    fn edges(
+        &self,
+        (pos, direction): (Pos, Direction),
+    ) -> impl IntoIterator<Item = (Pos, Direction)> {
         let mut edges =
             vec![(pos, direction.turn_left()), (pos, direction.turn_right())];
         let next = direction.move_checked(pos, self.map.size()).unwrap();

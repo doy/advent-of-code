@@ -12,10 +12,8 @@ pub struct Map {
 }
 
 impl advent_of_code::graph::Graph<usize, usize> for Map {
-    type Edges = Vec<usize>;
-
-    fn edges(&self, v: usize) -> Self::Edges {
-        self.connectivity[v].clone()
+    fn edges(&self, v: usize) -> impl IntoIterator<Item = usize> {
+        self.connectivity[v].iter().copied()
     }
 
     fn edge(&self, _: usize, e: usize) -> (usize, u64) {

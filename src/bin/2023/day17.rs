@@ -22,9 +22,10 @@ pub struct Crucible {
 impl advent_of_code::graph::Graph<(Pos, Option<Direction>, u8), Pos>
     for Crucible
 {
-    type Edges = Vec<Pos>;
-
-    fn edges(&self, v: (Pos, Option<Direction>, u8)) -> Self::Edges {
+    fn edges(
+        &self,
+        v: (Pos, Option<Direction>, u8),
+    ) -> impl IntoIterator<Item = Pos> {
         let (pos, direction, length) = v;
 
         if let Some(direction) = direction {
@@ -91,9 +92,10 @@ pub struct UltraCrucible {
 impl advent_of_code::graph::Graph<(Pos, Option<Direction>, u8), Pos>
     for UltraCrucible
 {
-    type Edges = Vec<Pos>;
-
-    fn edges(&self, v: (Pos, Option<Direction>, u8)) -> Self::Edges {
+    fn edges(
+        &self,
+        v: (Pos, Option<Direction>, u8),
+    ) -> impl IntoIterator<Item = Pos> {
         let (pos, direction, length) = v;
 
         if let Some(direction) = direction {

@@ -127,9 +127,7 @@ impl Pathfinder {
 }
 
 impl advent_of_code::graph::Graph<State, MapPos> for Pathfinder {
-    type Edges = Vec<MapPos>;
-
-    fn edges(&self, state: State) -> Self::Edges {
+    fn edges(&self, state: State) -> impl IntoIterator<Item = MapPos> {
         let size = self.size();
         let next = self.map_at_time(state.time + 1);
         let mut v = vec![];
