@@ -53,25 +53,32 @@ pub fn part2(secrets: Vec<u32>) -> Result<i64> {
             prices.windows(2).map(|pair| pair[1] - pair[0]).collect()
         })
         .collect();
-    let mut price_map = [0i64; 19usize.pow(4)];
-    for (changes, prices) in changes.iter().zip(prices.iter()) {
-        let mut buyer_price_map = [0u8; 19usize.pow(4)];
-        for (signal, price) in
-            changes.windows(4).zip(prices.iter().copied().skip(4)).rev()
-        {
-            let key = usize::from(signal[0] + 9)
-                + usize::from(signal[1] + 9) * 19
-                + usize::from(signal[2] + 9) * 19 * 19
-                + usize::from(signal[3] + 9) * 19 * 19 * 19;
-            buyer_price_map[key] = price;
-        }
-        for (total, buyer) in
-            price_map.iter_mut().zip(buyer_price_map.iter_mut())
-        {
-            *total += i64::from(*buyer);
-        }
-    }
-    Ok(price_map.iter().copied().max().unwrap())
+    let price_map = changes
+        .par_iter()
+        .zip(prices.par_iter())
+        .map(|(changes, prices)| {
+            let mut buyer_price_map = [0u16; 19usize.pow(4)];
+            for (signal, price) in
+                changes.windows(4).zip(prices.iter().copied().skip(4)).rev()
+            {
+                let key = usize::from(signal[0] + 9)
+                    + usize::from(signal[1] + 9) * 19
+                    + usize::from(signal[2] + 9) * 19 * 19
+                    + usize::from(signal[3] + 9) * 19 * 19 * 19;
+                buyer_price_map[key] = u16::from(price);
+            }
+            Box::new(buyer_price_map)
+        })
+        .reduce(
+            || Box::new([0u16; 19usize.pow(4)]),
+            |mut map1, map2| {
+                for (total, buyer) in map1.iter_mut().zip(map2.iter()) {
+                    *total += *buyer;
+                }
+                map1
+            },
+        );
+    Ok(i64::from(price_map.iter().copied().max().unwrap()))
 }
 
 #[test]
