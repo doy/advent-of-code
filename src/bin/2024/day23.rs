@@ -87,7 +87,9 @@ pub fn part2(edges: Vec<(String, String)>) -> Result<i64> {
         .max_by_key(|clique| clique.len())
         .unwrap();
     max_clique.sort_unstable();
-    println!("{}", max_clique.join(","));
+
+    // uncomment this to print the actual solution
+    // println!("{}", max_clique.join(","));
 
     // TODO: this is arbitrary just to give the test suite something to check
     // probably refactor this at some point to let problems return strings
