@@ -13,34 +13,26 @@ fn last_half(i: i64) -> i64 {
 }
 
 fn blink(
-    stones: &[i64],
+    stone: i64,
     depth: usize,
     cache: &mut HashMap<(i64, usize), i64>,
 ) -> i64 {
     if depth == 0 {
-        return stones.len().try_into().unwrap();
-    }
-    let mut total = 0;
-    for stone in stones.iter().copied() {
-        if let Some(count) = cache.get(&(stone, depth)) {
-            total += count;
+        1
+    } else if let Some(count) = cache.get(&(stone, depth)) {
+        *count
+    } else {
+        let count = if stone == 0 {
+            blink(1, depth - 1, cache)
+        } else if even_digits(stone) {
+            blink(first_half(stone), depth - 1, cache)
+                + blink(last_half(stone), depth - 1, cache)
         } else {
-            let count = if stone == 0 {
-                blink(&[1], depth - 1, cache)
-            } else if even_digits(stone) {
-                blink(
-                    &[first_half(stone), last_half(stone)],
-                    depth - 1,
-                    cache,
-                )
-            } else {
-                blink(&[stone * 2024], depth - 1, cache)
-            };
-            cache.insert((stone, depth), count);
-            total += count;
-        }
+            blink(stone * 2024, depth - 1, cache)
+        };
+        cache.insert((stone, depth), count);
+        count
     }
-    total
 }
 
 pub fn parse(fh: File) -> Result<Vec<i64>> {
@@ -48,11 +40,19 @@ pub fn parse(fh: File) -> Result<Vec<i64>> {
 }
 
 pub fn part1(stones: Vec<i64>) -> Result<i64> {
-    Ok(blink(&stones, 25, &mut HashMap::new()))
+    let mut cache = HashMap::new();
+    Ok(stones
+        .into_iter()
+        .map(|stone| blink(stone, 25, &mut cache))
+        .sum())
 }
 
 pub fn part2(stones: Vec<i64>) -> Result<i64> {
-    Ok(blink(&stones, 75, &mut HashMap::new()))
+    let mut cache = HashMap::new();
+    Ok(stones
+        .into_iter()
+        .map(|stone| blink(stone, 75, &mut cache))
+        .sum())
 }
 
 #[test]
