@@ -1,6 +1,6 @@
 use advent_of_code::prelude::*;
 
-pub fn parse(fh: File) -> Result<Vec<u32>> {
+pub fn parse(fh: File) -> Result<Vec<u16>> {
     let mut on = true;
     let mut id = 0;
     let mut disk = vec![];
@@ -13,26 +13,26 @@ pub fn parse(fh: File) -> Result<Vec<u32>> {
             disk.extend(std::iter::repeat(id).take(len.into()));
             id += 1;
         } else {
-            disk.extend(std::iter::repeat(u32::MAX).take(len.into()));
+            disk.extend(std::iter::repeat(u16::MAX).take(len.into()));
         }
         on = !on;
     }
     Ok(disk)
 }
 
-pub fn part1(mut disk: Vec<u32>) -> Result<i64> {
+pub fn part1(mut disk: Vec<u16>) -> Result<i64> {
     let mut start = 0;
     let mut end = disk.len() - 1;
     loop {
         let new_start = start
             + disk[start..=end]
                 .iter()
-                .position(|c| *c == u32::MAX)
+                .position(|c| *c == u16::MAX)
                 .unwrap();
         let new_end = start
             + disk[start..=end]
                 .iter()
-                .rposition(|c| *c != u32::MAX)
+                .rposition(|c| *c != u16::MAX)
                 .unwrap();
         if new_start > new_end {
             break;
@@ -40,12 +40,12 @@ pub fn part1(mut disk: Vec<u32>) -> Result<i64> {
         start = new_start;
         end = new_end;
         disk[start] = disk[end];
-        disk[end] = u32::MAX;
+        disk[end] = u16::MAX;
     }
     let mut total = 0;
     for (i, id) in disk
         .into_iter()
-        .take_while(|id| *id != u32::MAX)
+        .take_while(|id| *id != u16::MAX)
         .enumerate()
     {
         total += i64::try_from(i).unwrap() * i64::from(id);
@@ -53,7 +53,7 @@ pub fn part1(mut disk: Vec<u32>) -> Result<i64> {
     Ok(total)
 }
 
-pub fn part2(mut disk: Vec<u32>) -> Result<i64> {
+pub fn part2(mut disk: Vec<u16>) -> Result<i64> {
     let mut file_pos = disk.len();
     let mut disk_pos = 0;
     let mut id = disk[disk.len() - 1];
@@ -78,7 +78,7 @@ pub fn part2(mut disk: Vec<u32>) -> Result<i64> {
         for (i, id) in
             disk[..file_pos].iter().copied().enumerate().skip(disk_pos)
         {
-            if id == u32::MAX {
+            if id == u16::MAX {
                 if first_hole {
                     disk_pos = i;
                     first_hole = false;
@@ -99,7 +99,7 @@ pub fn part2(mut disk: Vec<u32>) -> Result<i64> {
         if hole_len == file_len {
             for i in 0..hole_len {
                 disk[hole_pos + i] = disk[file_pos + i];
-                disk[file_pos + i] = u32::MAX;
+                disk[file_pos + i] = u16::MAX;
             }
         }
         if id == 0 {
@@ -109,7 +109,7 @@ pub fn part2(mut disk: Vec<u32>) -> Result<i64> {
     }
     let mut total = 0;
     for (i, id) in disk.into_iter().enumerate() {
-        if id != u32::MAX {
+        if id != u16::MAX {
             total += i64::try_from(i).unwrap() * i64::from(id);
         }
     }
