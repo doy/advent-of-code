@@ -1,8 +1,6 @@
 use advent_of_code::prelude::*;
 
-static RX: once_cell::sync::Lazy<Regex> = once_cell::sync::Lazy::new(|| {
-    Regex::new(r"(mul|do|don't)\((?:([0-9]+),([0-9]+))?\)").unwrap()
-});
+const OP: &str = r"(mul|do|don't)\((?:([0-9]+),([0-9]+))?\)";
 
 pub fn parse(fh: File) -> Result<String> {
     Ok(parse::string(fh))
@@ -10,7 +8,7 @@ pub fn parse(fh: File) -> Result<String> {
 
 pub fn part1(insns: String) -> Result<i64> {
     let mut total = 0;
-    for cap in RX.captures_iter(&insns) {
+    for cap in regex_captures_iter!(OP, &insns) {
         if cap.get(1).unwrap().as_str() != "mul" {
             continue;
         }
@@ -24,7 +22,7 @@ pub fn part1(insns: String) -> Result<i64> {
 pub fn part2(insns: String) -> Result<i64> {
     let mut total = 0;
     let mut enabled = true;
-    for cap in RX.captures_iter(&insns) {
+    for cap in regex_captures_iter!(OP, &insns) {
         match cap.get(1).unwrap().as_str() {
             "mul" => {
                 if enabled {

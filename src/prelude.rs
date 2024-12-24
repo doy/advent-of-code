@@ -4,8 +4,8 @@ pub use crate::grid::{
 };
 pub use crate::opt::Opt;
 pub use crate::parse;
-pub use crate::regex_captures;
 pub use crate::tree::Tree;
+pub use crate::{regex_captures, regex_captures_iter};
 
 pub use std::cmp::Ordering;
 pub use std::collections::VecDeque;
