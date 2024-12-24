@@ -40,21 +40,20 @@ impl std::str::FromStr for Problem {
 }
 
 impl Problem {
-    fn solve(&self, ops: &[Op]) -> Option<Vec<Op>> {
-        let ints: Vec<i64> = self.ints.iter().copied().rev().collect();
+    fn solve(&self, ops: &[Op]) -> bool {
+        let ints: Vec<_> = self.ints.iter().copied().rev().collect();
         self.solve_rec(&ints, ops)
-            .map(|ops| ops.into_iter().rev().collect())
     }
 
-    fn solve_rec(&self, ints: &[i64], used_ops: &[Op]) -> Option<Vec<Op>> {
+    fn solve_rec(&self, ints: &[i64], used_ops: &[Op]) -> bool {
         if ints.len() == 1 {
-            return (ints[0] == self.total).then(Vec::new);
+            return ints[0] == self.total;
         }
 
         let mut ints = ints.to_vec();
         let a = ints.pop().unwrap();
         if a > self.total {
-            return None;
+            return false;
         }
         let b = ints.pop().unwrap();
         ints.push(0);
@@ -62,13 +61,12 @@ impl Problem {
 
         for op in used_ops {
             ints[idx] = op.run(a, b);
-            if let Some(mut ops) = self.solve_rec(&ints, used_ops) {
-                ops.push(*op);
-                return Some(ops);
+            if self.solve_rec(&ints, used_ops) {
+                return true;
             }
         }
 
-        None
+        false
     }
 }
 
@@ -80,7 +78,7 @@ pub fn part1(problems: Vec<Problem>) -> Result<i64> {
     Ok(problems
         .par_iter()
         .map(|problem| {
-            if problem.solve(&[Op::Add, Op::Mul]).is_some() {
+            if problem.solve(&[Op::Add, Op::Mul]) {
                 problem.total
             } else {
                 0
@@ -93,7 +91,7 @@ pub fn part2(problems: Vec<Problem>) -> Result<i64> {
     Ok(problems
         .par_iter()
         .map(|problem| {
-            if problem.solve(&[Op::Add, Op::Mul, Op::Cat]).is_some() {
+            if problem.solve(&[Op::Add, Op::Mul, Op::Cat]) {
                 problem.total
             } else {
                 0
