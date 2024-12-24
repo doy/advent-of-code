@@ -8,23 +8,26 @@ pub struct Map {
 fn run(
     grid: &Grid<bool>,
     mut guard: Pos,
-) -> Option<HashSet<(Pos, Direction)>> {
-    let mut seen: HashSet<(Pos, Direction)> = HashSet::new();
+    obstacle: Option<Pos>,
+) -> Option<impl Iterator<Item = Pos>> {
+    let mut seen: Grid<[bool; 4]> = Grid::default();
+    seen.grow(grid.size());
     let mut direction = Direction::Up;
     loop {
-        let cur = (guard, direction);
-        if seen.contains(&cur) {
+        if seen[guard][direction as usize] {
             return None;
         }
-        seen.insert(cur);
+        seen[guard][direction as usize] = true;
         if let Some(next) = direction.move_checked(guard, grid.size()) {
-            if grid[next] {
+            if grid[next] && obstacle != Some(next) {
                 guard = next;
             } else {
                 direction = direction.turn_right();
             }
         } else {
-            return Some(seen);
+            return Some(seen.into_indexed_cells().filter_map(
+                |(pos, dirs)| dirs.iter().any(|b| *b).then_some(pos),
+            ));
         }
     }
 }
@@ -44,28 +47,20 @@ pub fn parse(fh: File) -> Result<Map> {
 }
 
 pub fn part1(map: Map) -> Result<i64> {
-    Ok(run(&map.grid, map.guard)
+    Ok(run(&map.grid, map.guard, None)
         .unwrap()
-        .into_iter()
-        .map(|(pos, _)| pos)
-        .collect::<HashSet<Pos>>()
-        .len()
+        .count()
         .try_into()
         .unwrap())
 }
 
 pub fn part2(map: Map) -> Result<i64> {
-    Ok(run(&map.grid, map.guard)
-        .unwrap()
-        .into_iter()
-        .map(|(pos, _)| pos)
-        .collect::<HashSet<Pos>>()
+    let path: Vec<_> = run(&map.grid, map.guard, None).unwrap().collect();
+    Ok(path
         .par_iter()
         .copied()
         .map(|pos| {
-            let mut grid = map.grid.clone();
-            grid[pos] = false;
-            if run(&grid, map.guard).is_none() {
+            if run(&map.grid, map.guard, Some(pos)).is_none() {
                 1
             } else {
                 0

@@ -425,6 +425,15 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
         })
     }
 
+    pub fn into_indexed_cells(self) -> impl Iterator<Item = (Pos, T)> {
+        self.rows.into_iter().enumerate().flat_map(|(i, row)| {
+            row.cells
+                .into_iter()
+                .enumerate()
+                .map(move |(j, cell)| (Pos(Row(i), Col(j)), cell))
+        })
+    }
+
     pub fn find_next(&self, f: impl Fn(Pos, &T) -> bool) -> Option<Pos> {
         self.indexed_cells()
             .find(|(pos, cell)| f(*pos, cell))
@@ -683,7 +692,7 @@ impl Iterator for Near {
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Hash)]
 pub enum Direction {
-    Up,
+    Up = 0,
     Down,
     Left,
     Right,
