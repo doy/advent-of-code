@@ -29,7 +29,7 @@ impl Monkey {
 
         let line = it.next().unwrap();
         let cap = regex_captures!(
-            r"^  Operation: new = old ([+*]) (\d+|old)$",
+            r"^  Operation: new = old ([+*]) ([0-9]+|old)$",
             &line
         )
         .unwrap();
@@ -49,20 +49,24 @@ impl Monkey {
         };
 
         let line = it.next().unwrap();
-        let cap =
-            regex_captures!(r"^  Test: divisible by (\d+)$", &line).unwrap();
+        let cap = regex_captures!(r"^  Test: divisible by ([0-9]+)$", &line)
+            .unwrap();
         let test = cap[1].parse().unwrap();
 
         let line = it.next().unwrap();
-        let cap =
-            regex_captures!(r"^    If true: throw to monkey (\d+)$", &line)
-                .unwrap();
+        let cap = regex_captures!(
+            r"^    If true: throw to monkey ([0-9]+)$",
+            &line
+        )
+        .unwrap();
         let if_true = cap[1].parse().unwrap();
 
         let line = it.next().unwrap();
-        let cap =
-            regex_captures!(r"^    If false: throw to monkey (\d+)$", &line)
-                .unwrap();
+        let cap = regex_captures!(
+            r"^    If false: throw to monkey ([0-9]+)$",
+            &line
+        )
+        .unwrap();
         let if_false = cap[1].parse().unwrap();
 
         assert!(it.next().is_none());
@@ -113,7 +117,8 @@ impl Monkeys {
         let mut it = it.peekable();
         while it.peek().is_some() {
             let header = it.next().unwrap();
-            let cap = regex_captures!(r"^Monkey (\d+):$", &header).unwrap();
+            let cap =
+                regex_captures!(r"^Monkey ([0-9]+):$", &header).unwrap();
             let monkey_idx: usize = cap[1].parse().unwrap();
             assert_eq!(monkey_idx, monkeys.len());
             monkeys.push(Monkey::parse(parse::chunk(&mut it)));

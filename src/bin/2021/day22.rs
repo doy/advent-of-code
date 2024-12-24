@@ -121,7 +121,7 @@ struct Rule {
 impl Rule {
     fn parse(line: &str) -> Self {
         let captures = regex_captures!(
-            r"^(\w+) x=(-?\d+)..(-?\d+),y=(-?\d+)..(-?\d+),z=(-?\d+)..(-?\d+)$",
+            r"^([^ ]+) x=(-?[0-9]+)..(-?[0-9]+),y=(-?[0-9]+)..(-?[0-9]+),z=(-?[0-9]+)..(-?[0-9]+)$",
             line
         )
         .unwrap();

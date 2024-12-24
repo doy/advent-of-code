@@ -246,7 +246,7 @@ fn run(inp: &[i64], ops: &[Op]) -> Option<i64> {
 pub fn parse(fh: File) -> Result<impl Iterator<Item = Op>> {
     Ok(parse::raw_lines(fh).map(|line| {
         let captures = regex_captures!(
-            r"(inp|add|mul|div|mod|eql) ([wxyz])(?: ([wxyz]|-?\d+))?",
+            r"(inp|add|mul|div|mod|eql) ([wxyz])(?: ([wxyz]|-?[0-9]+))?",
             &line
         )
         .unwrap();

@@ -74,7 +74,7 @@ impl Map {
 
 pub fn parse(fh: File) -> Result<impl Iterator<Item = Vec<usize>>> {
     Ok(parse::raw_lines(fh).map(move |line| {
-        regex_captures!(r"^(\d+),(\d+) -> (\d+),(\d+)$", &line)
+        regex_captures!(r"^([0-9]+),([0-9]+) -> ([0-9]+),([0-9]+)$", &line)
             .unwrap()
             .iter()
             .skip(1)

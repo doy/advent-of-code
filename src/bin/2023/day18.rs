@@ -13,7 +13,7 @@ impl std::str::FromStr for Instruction {
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         let cap = regex_captures!(
-            r"^(U|D|L|R) (\d+) \(#([0-9a-f]{5})([0-9a-f])\)",
+            r"^(U|D|L|R) ([0-9]+) \(#([0-9a-f]{5})([0-9a-f])\)",
             s
         )
         .ok_or_else(|| anyhow::anyhow!("failed to parse line"))?;

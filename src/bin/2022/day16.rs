@@ -77,7 +77,7 @@ pub fn parse(fh: File) -> Result<Map> {
     let mut pos = None;
     for line in parse::raw_lines(fh) {
         let cap = regex_captures!(
-            r"Valve ([^ ]+) has flow rate=(\d+); tunnels? leads? to valves? (.*)",
+            r"Valve ([^ ]+) has flow rate=([0-9]+); tunnels? leads? to valves? (.*)",
             &line
         )
         .ok_or_else(|| anyhow!("failed to parse"))?;

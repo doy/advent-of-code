@@ -16,7 +16,7 @@ impl std::str::FromStr for NamedMonkey {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let cap = regex_captures!(r"^(\w+): (\d+|\w+ [+*/-] \w+)$", s)
+        let cap = regex_captures!(r"^([^:]+): ([0-9]+|[^ ]+ [+*/-] .+)$", s)
             .ok_or_else(|| anyhow!("failed to parse"))?;
         let name = cap[1].to_string();
         if let Ok(n) = cap[2].parse::<i64>() {

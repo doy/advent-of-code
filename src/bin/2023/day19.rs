@@ -311,15 +311,17 @@ pub fn parse(fh: File) -> Result<(Workflows, Vec<Part>)> {
     let mut lines = parse::raw_lines(fh);
     let workflows = parse::chunk(&mut lines)
         .map(|line| {
-            let cap = regex_captures!(r"(\w+)\{(.*)\}", &line).unwrap();
+            let cap = regex_captures!(r"([^{]+)\{(.*)\}", &line).unwrap();
             let workflow = cap[1].to_string();
             let rules = cap[2]
                 .split(',')
                 .map(|rule| {
                     if rule.contains(':') {
-                        let cap =
-                            regex_captures!(r"(\w+)(<|>)(\d+):(\w+)", &rule)
-                                .unwrap();
+                        let cap = regex_captures!(
+                            r"([^<>]+)(<|>)([0-9]+):(.+)",
+                            &rule
+                        )
+                        .unwrap();
                         let category = cap[1].parse().unwrap();
                         let less = &cap[2] == "<";
                         let val = cap[3].parse().unwrap();

@@ -272,7 +272,7 @@ impl std::str::FromStr for Blueprint {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let cap = regex_captures!(r"Blueprint \d+: Each ore robot costs (\d+) ore. Each clay robot costs (\d+) ore. Each obsidian robot costs (\d+) ore and (\d+) clay. Each geode robot costs (\d+) ore and (\d+) obsidian.", s).unwrap();
+        let cap = regex_captures!(r"Blueprint [0-9]+: Each ore robot costs ([0-9]+) ore. Each clay robot costs ([0-9]+) ore. Each obsidian robot costs ([0-9]+) ore and ([0-9]+) clay. Each geode robot costs ([0-9]+) ore and ([0-9]+) obsidian.", s).unwrap();
         let ore = cap[1].parse()?;
         let clay = cap[2].parse()?;
         let obsidian_ore = cap[3].parse()?;

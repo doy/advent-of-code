@@ -58,7 +58,7 @@ impl Map {
 pub fn parse(fh: File) -> Result<Map> {
     let mut sensors = vec![];
     for line in parse::raw_lines(fh) {
-        let cap = regex_captures!(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)", &line)
+        let cap = regex_captures!(r"Sensor at x=(-?[0-9]+), y=(-?[0-9]+): closest beacon is at x=(-?[0-9]+), y=(-?[0-9]+)", &line)
             .ok_or_else(|| anyhow::anyhow!("no match"))?;
         let sensor_x: isize = cap[1].parse()?;
         let sensor_y: isize = cap[2].parse()?;

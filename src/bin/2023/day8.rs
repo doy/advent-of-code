@@ -33,8 +33,9 @@ pub fn parse(fh: File) -> Result<Network> {
             .collect(),
         graph: lines
             .map(|line| {
-                let cap = regex_captures!(r"(\w+) = \((\w+), (\w+)\)", &line)
-                    .unwrap();
+                let cap =
+                    regex_captures!(r"([^ ]+) = \(([^,]+), ([^)]+)\)", &line)
+                        .unwrap();
                 (cap[1].to_string(), (cap[2].to_string(), cap[3].to_string()))
             })
             .collect(),

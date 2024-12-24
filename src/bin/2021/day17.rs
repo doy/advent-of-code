@@ -42,7 +42,7 @@ pub fn parse(
 ) -> Result<(std::ops::RangeInclusive<i64>, std::ops::RangeInclusive<i64>)> {
     let line = parse::raw_lines(fh).next().unwrap();
     let captures = regex_captures!(
-        r"target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)",
+        r"target area: x=(-?[0-9]+)..(-?[0-9]+), y=(-?[0-9]+)..(-?[0-9]+)",
         &line,
     )
     .unwrap();

@@ -110,7 +110,7 @@ pub fn parse(fh: File) -> Result<HashMap<String, Wire>> {
     let gates: Vec<_> = parse::chunk(&mut lines)
         .map(|line| {
             let cap = regex_captures!(
-                r"^(\S+) (AND|OR|XOR) (\S+) -> (\S+)$",
+                r"^([^ ]+) (AND|OR|XOR) ([^ ]+) -> (.+)$",
                 &line.trim()
             )
             .unwrap();
