@@ -6,17 +6,17 @@ edition = "2021"
 
 [dependencies]
 advent-of-code-ocr = "0.1.1"
-ahash = "0.8.11"
-anyhow = "1.0.93"
-once_cell = "1.20.2"
+ahash = "0.8.12"
+anyhow = "1.0.100"
+once_cell = "1.21.3"
 paw = "1.0.0"
-priority-queue = "2.1.1"
-rayon = "1.10.0"
-regex = { version = "1.11.1", default-features = false, features = ["std", "perf"] }
+priority-queue = "2.7.0"
+rayon = "1.11.0"
+regex = { version = "1.12.2", default-features = false, features = ["std", "perf"] }
 structopt = { version = "0.3.26", features = ["paw", "wrap_help"] }
 
 [dev-dependencies]
-criterion = { version = "0.5.1", features = ["html_reports"] }
+criterion = { version = "0.8.0", features = ["html_reports"] }
 paste = "1.0.15"
 
 [[bench]]
