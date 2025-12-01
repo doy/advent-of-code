@@ -1,7 +1,7 @@
 use advent_of_code::prelude::*;
 
 fn even_digits(i: i64) -> bool {
-    advent_of_code::num::digits(i) % 2 == 0
+    advent_of_code::num::digits(i).is_multiple_of(2)
 }
 
 fn first_half(i: i64) -> i64 {

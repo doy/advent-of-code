@@ -91,6 +91,7 @@ where
 }
 
 pub fn bytes<R: std::io::Read>(fh: R) -> impl Iterator<Item = u8> {
+    let fh = std::io::BufReader::new(fh);
     fh.bytes().map(|res| res.unwrap())
 }
 

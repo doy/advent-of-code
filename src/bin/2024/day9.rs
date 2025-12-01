@@ -10,10 +10,10 @@ pub fn parse(fh: File) -> Result<Vec<u16>> {
         }
         let len = c - b'0';
         if on {
-            disk.extend(std::iter::repeat(id).take(len.into()));
+            disk.extend(std::iter::repeat_n(id, len.into()));
             id += 1;
         } else {
-            disk.extend(std::iter::repeat(u16::MAX).take(len.into()));
+            disk.extend(std::iter::repeat_n(u16::MAX, len.into()));
         }
         on = !on;
     }

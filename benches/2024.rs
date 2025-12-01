@@ -3,22 +3,6 @@ mod helpers;
 
 #[path = "../src/bin/2024/day1.rs"]
 mod day1;
-#[path = "../src/bin/2024/day2.rs"]
-mod day2;
-#[path = "../src/bin/2024/day3.rs"]
-mod day3;
-#[path = "../src/bin/2024/day4.rs"]
-mod day4;
-#[path = "../src/bin/2024/day5.rs"]
-mod day5;
-#[path = "../src/bin/2024/day6.rs"]
-mod day6;
-#[path = "../src/bin/2024/day7.rs"]
-mod day7;
-#[path = "../src/bin/2024/day8.rs"]
-mod day8;
-#[path = "../src/bin/2024/day9.rs"]
-mod day9;
 #[path = "../src/bin/2024/day10.rs"]
 mod day10;
 #[path = "../src/bin/2024/day11.rs"]
@@ -39,6 +23,8 @@ mod day17;
 mod day18;
 #[path = "../src/bin/2024/day19.rs"]
 mod day19;
+#[path = "../src/bin/2024/day2.rs"]
+mod day2;
 #[path = "../src/bin/2024/day20.rs"]
 mod day20;
 #[path = "../src/bin/2024/day21.rs"]
@@ -51,6 +37,20 @@ mod day23;
 mod day24;
 #[path = "../src/bin/2024/day25.rs"]
 mod day25;
+#[path = "../src/bin/2024/day3.rs"]
+mod day3;
+#[path = "../src/bin/2024/day4.rs"]
+mod day4;
+#[path = "../src/bin/2024/day5.rs"]
+mod day5;
+#[path = "../src/bin/2024/day6.rs"]
+mod day6;
+#[path = "../src/bin/2024/day7.rs"]
+mod day7;
+#[path = "../src/bin/2024/day8.rs"]
+mod day8;
+#[path = "../src/bin/2024/day9.rs"]
+mod day9;
 // NEXT MOD
 
 day!(2024, 1, day1);

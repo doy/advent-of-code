@@ -1,16 +1,11 @@
 use advent_of_code::prelude::*;
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum Cell {
     Down,
     Right,
+    #[default]
     None,
-}
-
-impl Default for Cell {
-    fn default() -> Self {
-        Self::None
-    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]

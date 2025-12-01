@@ -513,7 +513,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display>
     pub fn display_packed<F: Fn(Pos, &T) -> char>(
         &self,
         f: F,
-    ) -> DisplayPacked<T, F> {
+    ) -> DisplayPacked<'_, T, F> {
         DisplayPacked(self, f)
     }
 }

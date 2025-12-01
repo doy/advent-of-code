@@ -89,7 +89,7 @@ impl Monkey {
         let item = (self.op)(item);
         let item = item / self.divisor;
         let item = item % self.modulo;
-        if item % self.test == 0 {
+        if item.is_multiple_of(self.test) {
             Some((item, self.if_true))
         } else {
             Some((item, self.if_false))
