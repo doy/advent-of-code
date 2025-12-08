@@ -39,6 +39,10 @@ harness = false
 name = "2024"
 harness = false
 
+[[bench]]
+name = "2025"
+harness = false
+
 [lints.clippy]
 cognitive_complexity = "allow"
 collapsible_else_if = "allow"

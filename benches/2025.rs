@@ -29,8 +29,8 @@ day!(2025, 7, day7);
 day!(2025, 8, day8);
 // NEXT DAY
 
-fn bench_2024(c: &mut criterion::Criterion) {
-    c.bench_function("2024", |b| {
+fn bench_2025(c: &mut criterion::Criterion) {
+    c.bench_function("2025", |b| {
         b.iter(|| {
             day_combined!(2025, 1, day1);
             day_combined!(2025, 2, day2);
@@ -44,10 +44,10 @@ fn bench_2024(c: &mut criterion::Criterion) {
         })
     });
 }
-criterion::criterion_group!(benches_2024, bench_2024);
+criterion::criterion_group!(benches_2025, bench_2025);
 
 criterion::criterion_main!(
-    benches_2024,
+    benches_2025,
     bench_2025day1,
     bench_2025day2,
     bench_2025day3,
