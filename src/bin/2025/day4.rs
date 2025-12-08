@@ -21,7 +21,7 @@ pub fn part2(mut map: Grid<bool>) -> Result<i64> {
     let mut removed = 0;
     loop {
         let to_remove: Vec<_> = map
-            .indexed_cells()
+            .par_indexed_cells()
             .filter_map(|(pos, cell)| {
                 (*cell
                     && map

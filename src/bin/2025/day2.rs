@@ -1,17 +1,17 @@
 use advent_of_code::prelude::*;
 
-pub fn parse(
-    fh: File,
-) -> Result<impl Iterator<Item = std::ops::RangeInclusive<i64>>> {
-    Ok(parse::split::<_, String>(fh, b',').map(|range| {
-        let mut parts = range.split('-');
-        let start = parts.next().unwrap().parse().unwrap();
-        let end = parts.next().unwrap().parse().unwrap();
-        start..=end
-    }))
+pub fn parse(fh: File) -> Result<Vec<std::ops::RangeInclusive<i64>>> {
+    Ok(parse::split::<_, String>(fh, b',')
+        .map(|range| {
+            let mut parts = range.split('-');
+            let start = parts.next().unwrap().parse().unwrap();
+            let end = parts.next().unwrap().parse().unwrap();
+            start..=end
+        })
+        .collect())
 }
 
-fn is_silly(i: i64) -> bool {
+fn is_silly(i: &i64) -> bool {
     let digits = i.ilog10() + 1;
     if !digits.is_multiple_of(2) {
         return false;
@@ -20,7 +20,7 @@ fn is_silly(i: i64) -> bool {
     i / q == i % q
 }
 
-fn is_extra_silly(i: i64) -> bool {
+fn is_extra_silly(i: &i64) -> bool {
     let digits = i.ilog10() + 1;
     for n in 2..=digits {
         if digits.is_multiple_of(n) {
@@ -33,32 +33,18 @@ fn is_extra_silly(i: i64) -> bool {
     false
 }
 
-pub fn part1(
-    ranges: impl Iterator<Item = std::ops::RangeInclusive<i64>>,
-) -> Result<i64> {
-    let mut total = 0;
-    for range in ranges {
-        for i in range {
-            if is_silly(i) {
-                total += i;
-            }
-        }
-    }
-    Ok(total)
+pub fn part1(ranges: Vec<std::ops::RangeInclusive<i64>>) -> Result<i64> {
+    Ok(ranges
+        .into_par_iter()
+        .map(|range| range.into_iter().filter(is_silly).sum::<i64>())
+        .sum())
 }
 
-pub fn part2(
-    ranges: impl Iterator<Item = std::ops::RangeInclusive<i64>>,
-) -> Result<i64> {
-    let mut total = 0;
-    for range in ranges {
-        for i in range {
-            if is_extra_silly(i) {
-                total += i;
-            }
-        }
-    }
-    Ok(total)
+pub fn part2(ranges: Vec<std::ops::RangeInclusive<i64>>) -> Result<i64> {
+    Ok(ranges
+        .into_par_iter()
+        .map(|range| range.into_iter().filter(is_extra_silly).sum::<i64>())
+        .sum())
 }
 
 #[test]

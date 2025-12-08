@@ -58,19 +58,19 @@ impl Forest {
 pub fn part1(boxes: Vec<(i64, i64, i64)>) -> Result<i64> {
     let mut forest = Forest::new_disjoint(boxes.len());
     let mut distances: Vec<_> = boxes
-        .iter()
+        .par_iter()
         .copied()
         .enumerate()
         .flat_map(|(i1, p1)| {
             boxes
-                .iter()
+                .par_iter()
                 .copied()
                 .enumerate()
                 .skip(i1 + 1)
                 .map(move |(i2, p2)| ((i1, i2), distance(p1, p2)))
         })
         .collect();
-    distances.sort_by_key(|(_, dist)| *dist);
+    distances.par_sort_unstable_by_key(|(_, dist)| *dist);
     for (box1, box2) in distances.into_iter().map(|(i, _)| i).take(1000) {
         forest.union(box1, box2);
     }
@@ -83,7 +83,7 @@ pub fn part1(boxes: Vec<(i64, i64, i64)>) -> Result<i64> {
             acc
         },
     );
-    sizes.sort_by_key(|(_, size)| std::cmp::Reverse(*size));
+    sizes.par_sort_unstable_by_key(|(_, size)| std::cmp::Reverse(*size));
 
     Ok(sizes[0].1 * sizes[1].1 * sizes[2].1)
 }
@@ -91,19 +91,19 @@ pub fn part1(boxes: Vec<(i64, i64, i64)>) -> Result<i64> {
 pub fn part2(boxes: Vec<(i64, i64, i64)>) -> Result<i64> {
     let mut forest = Forest::new_disjoint(boxes.len());
     let mut distances: Vec<_> = boxes
-        .iter()
+        .par_iter()
         .copied()
         .enumerate()
         .flat_map(|(i1, p1)| {
             boxes
-                .iter()
+                .par_iter()
                 .copied()
                 .enumerate()
                 .skip(i1 + 1)
                 .map(move |(i2, p2)| ((i1, i2), distance(p1, p2)))
         })
         .collect();
-    distances.sort_by_key(|(_, dist)| *dist);
+    distances.par_sort_unstable_by_key(|(_, dist)| *dist);
     for (box1, box2) in distances.into_iter().map(|(i, _)| i) {
         forest.union(box1, box2);
         if (0..boxes.len()).all(|i| forest.find(i) == forest.find(0)) {
