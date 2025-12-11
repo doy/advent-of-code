@@ -144,7 +144,7 @@ pub fn part2(map: Grid<Tile>) -> Result<i64> {
             continue;
         }
         let mut count = 0;
-        for offset in 0..=(pos.0 .0.min(pos.1 .0)) {
+        for offset in 0..=(pos.0.0.min(pos.1.0)) {
             let check_row = pos.0 - offset;
             let check_col = pos.1 - offset;
             if !pipe_loop.contains(&Pos(check_row, check_col)) {

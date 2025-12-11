@@ -2,8 +2,8 @@ use advent_of_code::prelude::*;
 
 fn add_offset(pos: Pos, offset: IPos, max: Size) -> Option<Pos> {
     if let (Some(row), Some(col)) = (
-        pos.0 .0.checked_add_signed(offset.0 .0),
-        pos.1 .0.checked_add_signed(offset.1 .0),
+        pos.0.0.checked_add_signed(offset.0.0),
+        pos.1.0.checked_add_signed(offset.1.0),
     ) {
         let row = Row(row);
         let col = Col(col);

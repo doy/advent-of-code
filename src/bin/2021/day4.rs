@@ -45,11 +45,7 @@ impl Board {
             .zip(self.numbers.iter())
             .filter_map(
                 |(marked, n)| {
-                    if !*marked {
-                        Some(u64::from(*n))
-                    } else {
-                        None
-                    }
+                    if !*marked { Some(u64::from(*n)) } else { None }
                 },
             )
             .sum()

@@ -44,9 +44,9 @@ pub struct Map {
 
 impl std::fmt::Debug for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "({}, {})", self.size.0 .0, self.size.1 .0)?;
-        for row in (0..self.size.0 .0).rev() {
-            for col in 0..self.size.1 .0 {
+        writeln!(f, "({}, {})", self.size.0.0, self.size.1.0)?;
+        for row in (0..self.size.0.0).rev() {
+            for col in 0..self.size.1.0 {
                 write!(
                     f,
                     "{}",
@@ -88,79 +88,70 @@ impl Map {
         let (Row(row), Col(col)) = self.rope.knots[0];
         match dir {
             Direction::Up => {
-                if row == self.size.0 .0 - 1 {
+                if row == self.size.0.0 - 1 {
                     let mut row_contents = std::collections::VecDeque::new();
-                    row_contents
-                        .resize_with(self.size.1 .0, Default::default);
+                    row_contents.resize_with(self.size.1.0, Default::default);
                     self.grid.push_back(row_contents);
-                    self.size.0 = Row(self.size.0 .0 + 1);
+                    self.size.0 = Row(self.size.0.0 + 1);
                 }
-                self.rope.knots[0].0 = Row(self.rope.knots[0].0 .0 + 1);
+                self.rope.knots[0].0 = Row(self.rope.knots[0].0.0 + 1);
             }
             Direction::Down => {
                 if row == 0 {
                     let mut row_contents = std::collections::VecDeque::new();
-                    row_contents
-                        .resize_with(self.size.1 .0, Default::default);
+                    row_contents.resize_with(self.size.1.0, Default::default);
                     self.grid.push_front(row_contents);
                     for knot in &mut self.rope.knots {
-                        knot.0 = Row(knot.0 .0 + 1);
+                        knot.0 = Row(knot.0.0 + 1);
                     }
-                    self.size.0 = Row(self.size.0 .0 + 1);
+                    self.size.0 = Row(self.size.0.0 + 1);
                 }
-                self.rope.knots[0].0 = Row(self.rope.knots[0].0 .0 - 1);
+                self.rope.knots[0].0 = Row(self.rope.knots[0].0.0 - 1);
             }
             Direction::Left => {
                 if col == 0 {
-                    for i in 0..self.size.0 .0 {
+                    for i in 0..self.size.0.0 {
                         self.grid[i].push_front(Default::default());
                     }
                     for knot in &mut self.rope.knots {
-                        knot.1 = Col(knot.1 .0 + 1);
+                        knot.1 = Col(knot.1.0 + 1);
                     }
-                    self.size.1 = Col(self.size.1 .0 + 1);
+                    self.size.1 = Col(self.size.1.0 + 1);
                 }
-                self.rope.knots[0].1 = Col(self.rope.knots[0].1 .0 - 1);
+                self.rope.knots[0].1 = Col(self.rope.knots[0].1.0 - 1);
             }
             Direction::Right => {
-                if col == self.size.1 .0 - 1 {
-                    for i in 0..self.size.0 .0 {
+                if col == self.size.1.0 - 1 {
+                    for i in 0..self.size.0.0 {
                         self.grid[i].push_back(Default::default());
                     }
-                    self.size.1 = Col(self.size.1 .0 + 1);
+                    self.size.1 = Col(self.size.1.0 + 1);
                 }
-                self.rope.knots[0].1 = Col(self.rope.knots[0].1 .0 + 1);
+                self.rope.knots[0].1 = Col(self.rope.knots[0].1.0 + 1);
             }
         }
 
         for i in 0..(self.rope.knots.len() - 1) {
-            if self.rope.knots[i + 1]
-                .0
-                 .0
-                .abs_diff(self.rope.knots[i].0 .0)
-                > 1
-                || self.rope.knots[i + 1]
-                    .1
-                     .0
-                    .abs_diff(self.rope.knots[i].1 .0)
+            if self.rope.knots[i + 1].0.0.abs_diff(self.rope.knots[i].0.0) > 1
+                || self.rope.knots[i + 1].1.0.abs_diff(self.rope.knots[i].1.0)
                     > 1
             {
-                if self.rope.knots[i + 1].0 .0 < self.rope.knots[i].0 .0 {
-                    self.rope.knots[i + 1].0 .0 += 1;
+                if self.rope.knots[i + 1].0.0 < self.rope.knots[i].0.0 {
+                    self.rope.knots[i + 1].0.0 += 1;
                 }
-                if self.rope.knots[i + 1].0 .0 > self.rope.knots[i].0 .0 {
-                    self.rope.knots[i + 1].0 .0 -= 1;
+                if self.rope.knots[i + 1].0.0 > self.rope.knots[i].0.0 {
+                    self.rope.knots[i + 1].0.0 -= 1;
                 }
-                if self.rope.knots[i + 1].1 .0 < self.rope.knots[i].1 .0 {
-                    self.rope.knots[i + 1].1 .0 += 1;
+                if self.rope.knots[i + 1].1.0 < self.rope.knots[i].1.0 {
+                    self.rope.knots[i + 1].1.0 += 1;
                 }
-                if self.rope.knots[i + 1].1 .0 > self.rope.knots[i].1 .0 {
-                    self.rope.knots[i + 1].1 .0 -= 1;
+                if self.rope.knots[i + 1].1.0 > self.rope.knots[i].1.0 {
+                    self.rope.knots[i + 1].1.0 -= 1;
                 }
             }
         }
-        self.grid[self.rope.knots.last().unwrap().0 .0]
-            [self.rope.knots.last().unwrap().1 .0] = true;
+        self.grid[self.rope.knots.last().unwrap().0.0]
+            [self.rope.knots.last().unwrap().1.0] = true;
     }
 }
 

@@ -129,7 +129,7 @@ impl Scanner {
         None
     }
 
-    fn each_orientation(&self) -> impl Iterator<Item = Vec<Point>> {
+    fn each_orientation(&self) -> impl Iterator<Item = Vec<Point>> + use<> {
         let beacons = self.beacons.clone();
         ORIENTATIONS.iter().map(move |orientation| {
             beacons.iter().map(|beacon| orientation(*beacon)).collect()

@@ -189,7 +189,7 @@ impl Warehouse {
             .filter(|(_, cell)| {
                 **cell == Cell::Box || **cell == Cell::BoxLeft
             })
-            .map(|(pos, _)| i64::try_from(pos.0 .0 * 100 + pos.1 .0).unwrap())
+            .map(|(pos, _)| i64::try_from(pos.0.0 * 100 + pos.1.0).unwrap())
             .sum()
     }
 }

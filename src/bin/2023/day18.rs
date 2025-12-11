@@ -70,8 +70,8 @@ pub fn part1(instructions: Vec<Instruction>) -> Result<i64> {
         let offset = instruction.direction.offset();
         for _ in 0..instruction.distance {
             pos = Pos(
-                Row(pos.0 .0.checked_add_signed(offset.0 .0).unwrap()),
-                Col(pos.1 .0.checked_add_signed(offset.1 .0).unwrap()),
+                Row(pos.0.0.checked_add_signed(offset.0.0).unwrap()),
+                Col(pos.1.0.checked_add_signed(offset.1.0).unwrap()),
             );
             map.grow(Size(pos.0 + 1, pos.1 + 1));
             map[pos.0][pos.1] = true;
@@ -88,7 +88,7 @@ pub fn part1(instructions: Vec<Instruction>) -> Result<i64> {
             continue;
         }
         let mut count = 0;
-        for offset in 0..=(pos.0 .0.min(pos.1 .0)) {
+        for offset in 0..=(pos.0.0.min(pos.1.0)) {
             let check_row = pos.0 - offset;
             let check_col = pos.1 - offset;
             if trench.contains(&Pos(check_row, check_col)) {
@@ -133,8 +133,8 @@ pub fn part2(instructions: Vec<Instruction>) -> Result<i64> {
     let mut area = 0;
     for i in 0..vertices.len() {
         let next = if i == vertices.len() - 1 { 0 } else { i + 1 };
-        area += vertices[i].0 .0 * vertices[next].1 .0
-            - vertices[next].0 .0 * vertices[i].1 .0;
+        area += vertices[i].0.0 * vertices[next].1.0
+            - vertices[next].0.0 * vertices[i].1.0;
     }
     area /= 2;
 

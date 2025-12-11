@@ -64,19 +64,17 @@ pub fn part1(mut elves: HashSet<(IRow, ICol)>) -> Result<isize> {
             }
             for diff in &possible {
                 let occupied = if diff.0 == IRow(0) {
-                    elves.contains(&(elf.0 - 1, elf.1 + diff.1 .0))
-                        || elves.contains(&(elf.0, elf.1 + diff.1 .0))
-                        || elves.contains(&(elf.0 + 1, elf.1 + diff.1 .0))
+                    elves.contains(&(elf.0 - 1, elf.1 + diff.1.0))
+                        || elves.contains(&(elf.0, elf.1 + diff.1.0))
+                        || elves.contains(&(elf.0 + 1, elf.1 + diff.1.0))
                 } else {
-                    elves.contains(&(elf.0 + diff.0 .0, elf.1 - 1))
-                        || elves.contains(&(elf.0 + diff.0 .0, elf.1))
-                        || elves.contains(&(elf.0 + diff.0 .0, elf.1 + 1))
+                    elves.contains(&(elf.0 + diff.0.0, elf.1 - 1))
+                        || elves.contains(&(elf.0 + diff.0.0, elf.1))
+                        || elves.contains(&(elf.0 + diff.0.0, elf.1 + 1))
                 };
                 if !occupied {
-                    moves.insert((
-                        *elf,
-                        (elf.0 + diff.0 .0, elf.1 + diff.1 .0),
-                    ));
+                    moves
+                        .insert((*elf, (elf.0 + diff.0.0, elf.1 + diff.1.0)));
                     break;
                 }
             }
@@ -122,19 +120,17 @@ pub fn part2(mut elves: HashSet<(IRow, ICol)>) -> Result<usize> {
             }
             for diff in &possible {
                 let occupied = if diff.0 == IRow(0) {
-                    elves.contains(&(elf.0 - 1, elf.1 + diff.1 .0))
-                        || elves.contains(&(elf.0, elf.1 + diff.1 .0))
-                        || elves.contains(&(elf.0 + 1, elf.1 + diff.1 .0))
+                    elves.contains(&(elf.0 - 1, elf.1 + diff.1.0))
+                        || elves.contains(&(elf.0, elf.1 + diff.1.0))
+                        || elves.contains(&(elf.0 + 1, elf.1 + diff.1.0))
                 } else {
-                    elves.contains(&(elf.0 + diff.0 .0, elf.1 - 1))
-                        || elves.contains(&(elf.0 + diff.0 .0, elf.1))
-                        || elves.contains(&(elf.0 + diff.0 .0, elf.1 + 1))
+                    elves.contains(&(elf.0 + diff.0.0, elf.1 - 1))
+                        || elves.contains(&(elf.0 + diff.0.0, elf.1))
+                        || elves.contains(&(elf.0 + diff.0.0, elf.1 + 1))
                 };
                 if !occupied {
-                    moves.insert((
-                        *elf,
-                        (elf.0 + diff.0 .0, elf.1 + diff.1 .0),
-                    ));
+                    moves
+                        .insert((*elf, (elf.0 + diff.0.0, elf.1 + diff.1.0)));
                     break;
                 }
             }

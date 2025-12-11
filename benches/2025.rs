@@ -3,6 +3,10 @@ mod helpers;
 
 #[path = "../src/bin/2025/day1.rs"]
 mod day1;
+#[path = "../src/bin/2025/day10.rs"]
+mod day10;
+#[path = "../src/bin/2025/day11.rs"]
+mod day11;
 #[path = "../src/bin/2025/day2.rs"]
 mod day2;
 #[path = "../src/bin/2025/day3.rs"]
@@ -19,10 +23,6 @@ mod day7;
 mod day8;
 #[path = "../src/bin/2025/day9.rs"]
 mod day9;
-#[path = "../src/bin/2025/day10.rs"]
-mod day10;
-#[path = "../src/bin/2025/day11.rs"]
-mod day11;
 // NEXT MOD
 
 day!(2025, 1, day1);

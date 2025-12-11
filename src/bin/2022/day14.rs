@@ -69,15 +69,15 @@ pub fn parse(fh: File) -> Result<Map> {
             grid.grow(Size(pos.0 + 1, pos.1 + 1));
             grid.grow(Size(next_pos.0 + 1, next_pos.1 + 1));
             if pos.0 == next_pos.0 {
-                for col in (pos.1 .0.min(next_pos.1 .0)
-                    ..=pos.1 .0.max(next_pos.1 .0))
+                for col in (pos.1.0.min(next_pos.1.0)
+                    ..=pos.1.0.max(next_pos.1.0))
                     .map(Col)
                 {
                     grid[pos.0][col] = true;
                 }
             } else if pos.1 == next_pos.1 {
-                for row in (pos.0 .0.min(next_pos.0 .0)
-                    ..=pos.0 .0.max(next_pos.0 .0))
+                for row in (pos.0.0.min(next_pos.0.0)
+                    ..=pos.0.0.max(next_pos.0.0))
                     .map(Row)
                 {
                     grid[row][pos.1] = true;

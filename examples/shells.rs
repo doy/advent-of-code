@@ -17,11 +17,11 @@ struct Puzzle {
 
 impl Puzzle {
     fn at(&self, pos: Pos) -> Shell {
-        self.cells[pos.0 .0][pos.1 .0]
+        self.cells[pos.0.0][pos.1.0]
     }
 
     fn set_at(&mut self, pos: Pos, val: Shell) {
-        self.cells[pos.0 .0][pos.1 .0] = val
+        self.cells[pos.0.0][pos.1.0] = val
     }
 
     fn empty(&self) -> Pos {

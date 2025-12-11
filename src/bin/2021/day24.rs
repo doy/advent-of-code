@@ -236,11 +236,7 @@ fn run(inp: &[i64], ops: &[Op]) -> Option<i64> {
         return None;
     }
 
-    if alu.z == 0 {
-        Some(val)
-    } else {
-        None
-    }
+    if alu.z == 0 { Some(val) } else { None }
 }
 
 pub fn parse(fh: File) -> Result<impl Iterator<Item = Op>> {

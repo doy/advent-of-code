@@ -110,7 +110,7 @@ impl std::str::FromStr for Network {
         for name in module_names {
             let destinations = modules[&name].destinations.clone();
             for dest in destinations {
-                if let Some(ModuleType::Conjunction(ref mut inputs)) =
+                if let Some(ModuleType::Conjunction(inputs)) =
                     modules.get_mut(&dest).map(|module| &mut module.ty)
                 {
                     inputs.insert(name.clone(), false);

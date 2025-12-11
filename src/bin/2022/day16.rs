@@ -35,11 +35,7 @@ impl Map {
     }
 
     fn pos(&self, elephant: bool) -> usize {
-        if elephant {
-            self.elephant
-        } else {
-            self.pos
-        }
+        if elephant { self.elephant } else { self.pos }
     }
 
     fn set_pos(&mut self, elephant: bool, pos: usize) {

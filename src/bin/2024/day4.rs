@@ -33,7 +33,7 @@ fn word_diag(grid: &Grid<u8>, pos: Pos) -> String {
 fn word_diag2(grid: &Grid<u8>, pos: Pos) -> String {
     let mut chars = vec![0u8; 4];
     for offset in 0..4 {
-        if pos.0 + offset < grid.rows() && pos.1 .0 >= offset {
+        if pos.0 + offset < grid.rows() && pos.1.0 >= offset {
             chars[offset] = grid[pos.0 + offset][pos.1 - offset];
         }
     }
@@ -42,14 +42,14 @@ fn word_diag2(grid: &Grid<u8>, pos: Pos) -> String {
 
 fn word_x(grid: &Grid<u8>, pos: Pos) -> Vec<u8> {
     let mut chars = vec![0u8; 5];
-    if pos.0 .0 > 0 && pos.1 .0 > 0 {
+    if pos.0.0 > 0 && pos.1.0 > 0 {
         chars[0] = grid[pos.0 - 1usize][pos.1 - 1];
     }
-    if pos.0 .0 > 0 && pos.1 + 1 < grid.cols() {
+    if pos.0.0 > 0 && pos.1 + 1 < grid.cols() {
         chars[1] = grid[pos.0 - 1usize][pos.1 + 1];
     }
     chars[2] = grid[pos.0][pos.1];
-    if pos.0 + 1 < grid.rows() && pos.1 .0 > 0 {
+    if pos.0 + 1 < grid.rows() && pos.1.0 > 0 {
         chars[3] = grid[pos.0 + 1usize][pos.1 - 1];
     }
     if pos.0 + 1 < grid.rows() && pos.1 + 1 < grid.cols() {

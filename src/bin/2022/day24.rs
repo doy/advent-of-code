@@ -8,8 +8,8 @@ pub struct Map {
 
 impl std::fmt::Display for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for row in (0..self.size.0 .0).map(Row) {
-            for col in (0..self.size.1 .0).map(Col) {
+        for row in (0..self.size.0.0).map(Row) {
+            for col in (0..self.size.1.0).map(Col) {
                 let blizzards: Vec<_> = self
                     .blizzards
                     .iter()

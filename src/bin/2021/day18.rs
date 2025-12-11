@@ -118,7 +118,7 @@ impl Number {
         idx: &mut usize,
     ) {
         match self {
-            Self::Value(ref mut n) => {
+            Self::Value(n) => {
                 if *idx + 1 == explode_idx {
                     *n += left_val;
                 } else if *idx == explode_idx + 1 {

@@ -338,13 +338,14 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 
     pub fn each_row(
         &self,
-    ) -> impl DoubleEndedIterator<Item = Row> + ExactSizeIterator {
+    ) -> impl DoubleEndedIterator<Item = Row> + ExactSizeIterator + use<T>
+    {
         (0..self.rows().0).map(Row)
     }
 
     pub fn par_each_row(
         &self,
-    ) -> impl rayon::iter::ParallelIterator<Item = Row> {
+    ) -> impl rayon::iter::ParallelIterator<Item = Row> + use<T> {
         (0..self.rows().0).into_par_iter().map(Row)
     }
 
@@ -358,13 +359,14 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 
     pub fn each_col(
         &self,
-    ) -> impl DoubleEndedIterator<Item = Col> + ExactSizeIterator {
+    ) -> impl DoubleEndedIterator<Item = Col> + ExactSizeIterator + use<T>
+    {
         (0..self.cols().0).map(Col)
     }
 
     pub fn par_each_col(
         &self,
-    ) -> impl rayon::iter::ParallelIterator<Item = Col> {
+    ) -> impl rayon::iter::ParallelIterator<Item = Col> + use<T> {
         (0..self.cols().0).into_par_iter().map(Col)
     }
 
@@ -486,10 +488,10 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
 impl<T: Default + Clone + Eq + PartialEq + std::hash::Hash> Grid<T> {
     pub fn grow(&mut self, size: Size) {
         self.rows
-            .resize_with(size.0 .0.max(self.rows.len()), GridRow::default);
+            .resize_with(size.0.0.max(self.rows.len()), GridRow::default);
         for row in &mut self.rows {
             row.cells
-                .resize_with(size.1 .0.max(row.cells.len()), T::default);
+                .resize_with(size.1.0.max(row.cells.len()), T::default);
         }
     }
 
@@ -557,7 +559,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::Index<Pos>
 {
     type Output = T;
     fn index(&self, pos: Pos) -> &Self::Output {
-        &self.rows[pos.0 .0][pos.1]
+        &self.rows[pos.0.0][pos.1]
     }
 }
 
@@ -565,7 +567,7 @@ impl<T: Clone + Eq + PartialEq + std::hash::Hash> std::ops::IndexMut<Pos>
     for Grid<T>
 {
     fn index_mut(&mut self, pos: Pos) -> &mut Self::Output {
-        &mut self.rows[pos.0 .0][pos.1]
+        &mut self.rows[pos.0.0][pos.1]
     }
 }
 
@@ -615,15 +617,10 @@ pub struct DisplayPacked<
 >(&'a Grid<T>, F);
 
 impl<
-        'a,
-        T: Default
-            + Clone
-            + Eq
-            + PartialEq
-            + std::hash::Hash
-            + std::fmt::Display,
-        F: Fn(Pos, &'a T) -> char,
-    > std::fmt::Display for DisplayPacked<'a, T, F>
+    'a,
+    T: Default + Clone + Eq + PartialEq + std::hash::Hash + std::fmt::Display,
+    F: Fn(Pos, &'a T) -> char,
+> std::fmt::Display for DisplayPacked<'a, T, F>
 {
     fn fmt(
         &self,
@@ -767,11 +764,7 @@ impl Direction {
     pub fn from_pos(from: Pos, to: Pos) -> Self {
         if from.0.abs_diff(to.0) == Row(1) && from.1.abs_diff(to.1) == Col(0)
         {
-            if from.0 > to.0 {
-                Self::Up
-            } else {
-                Self::Down
-            }
+            if from.0 > to.0 { Self::Up } else { Self::Down }
         } else if from.1.abs_diff(to.1) == Col(1)
             && from.0.abs_diff(to.0) == Row(0)
         {

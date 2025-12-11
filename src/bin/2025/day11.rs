@@ -57,11 +57,7 @@ impl Reactor {
         cache: &mut [HashMap<Vec<usize>, i64>],
     ) -> i64 {
         if end == start {
-            if through.is_empty() {
-                1
-            } else {
-                0
-            }
+            if through.is_empty() { 1 } else { 0 }
         } else if let Some(val) = cache[end].get(through) {
             *val
         } else {

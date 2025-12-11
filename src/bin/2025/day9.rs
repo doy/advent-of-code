@@ -21,18 +21,18 @@ fn intersecting(p1: Pos, p2: Pos, greens: &[(Pos, Pos)]) -> bool {
     let pbr = Pos(p1.0.max(p2.0), p1.1.max(p2.1));
     greens.iter().any(|(gp1, gp2)| {
         if gp1.0 == gp2.0 {
-            if ((ptl.0 .0 + 1)..=(pbr.0 .0 - 1)).contains(&gp1.0 .0) {
+            if ((ptl.0.0 + 1)..=(pbr.0.0 - 1)).contains(&gp1.0.0) {
                 let l = gp1.1.min(gp2.1).0;
                 let r = gp1.1.max(gp2.1).0;
-                !(l >= pbr.1 .0 || r <= ptl.1 .0)
+                !(l >= pbr.1.0 || r <= ptl.1.0)
             } else {
                 false
             }
         } else if gp1.1 == gp2.1 {
-            if ((ptl.1 .0 + 1)..=(pbr.1 .0 - 1)).contains(&gp1.1 .0) {
+            if ((ptl.1.0 + 1)..=(pbr.1.0 - 1)).contains(&gp1.1.0) {
                 let t = gp1.0.min(gp2.0).0;
                 let b = gp1.0.max(gp2.0).0;
-                !(t >= pbr.0 .0 || b <= ptl.0 .0)
+                !(t >= pbr.0.0 || b <= ptl.0.0)
             } else {
                 false
             }

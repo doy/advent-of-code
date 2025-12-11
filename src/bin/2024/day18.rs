@@ -66,7 +66,7 @@ pub fn part2(map: Map) -> Result<i64> {
             }
         })
         .unwrap_err();
-    Ok((map.bytes[i].0 .0 + map.bytes[i].1 .0 * 100)
+    Ok((map.bytes[i].0.0 + map.bytes[i].1.0 * 100)
         .try_into()
         .unwrap())
 }

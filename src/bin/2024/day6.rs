@@ -9,7 +9,7 @@ fn run(
     grid: &Grid<bool>,
     mut guard: Pos,
     obstacle: Option<Pos>,
-) -> Option<impl Iterator<Item = Pos>> {
+) -> Option<impl Iterator<Item = Pos> + use<>> {
     let mut seen: Grid<[bool; 4]> = Grid::default();
     seen.grow(grid.size());
     let mut direction = Direction::Up;

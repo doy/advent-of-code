@@ -129,7 +129,7 @@ pub fn part1(map: Map) -> Result<usize> {
             }
         }
     }
-    Ok((pos.0 .0 + 1) * 1000 + (pos.1 .0 + 1) * 4 + direction_value(facing))
+    Ok((pos.0.0 + 1) * 1000 + (pos.1.0 + 1) * 4 + direction_value(facing))
 }
 
 pub fn part2(map: Map) -> Result<usize> {

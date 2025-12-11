@@ -2,11 +2,7 @@ use advent_of_code::prelude::*;
 
 pub fn parse(fh: File) -> Result<Grid<Option<u8>>> {
     Ok(parse::grid(parse::raw_lines(fh), |c, _| {
-        if c == b'.' {
-            None
-        } else {
-            Some(c)
-        }
+        if c == b'.' { None } else { Some(c) }
     }))
 }
 

@@ -32,7 +32,7 @@ impl std::fmt::Display for Chamber {
                 .0
                 .iter()
                 .map(|(row, col)| {
-                    (*row + piece_pos.0 .0, *col + piece_pos.1 .0)
+                    (*row + piece_pos.0.0, *col + piece_pos.1.0)
                 })
                 .collect()
         } else {
@@ -128,8 +128,7 @@ impl Chamber {
 
     fn collides(&self, piece: &Piece, piece_pos: (Row, Col)) -> bool {
         for pos in &piece.0 {
-            let absolute_pos =
-                (piece_pos.0 + pos.0 .0, piece_pos.1 + pos.1 .0);
+            let absolute_pos = (piece_pos.0 + pos.0.0, piece_pos.1 + pos.1.0);
             if absolute_pos.1 >= Col(7) {
                 return true;
             }
@@ -142,8 +141,7 @@ impl Chamber {
 
     fn apply(&mut self, piece: &Piece, piece_pos: (Row, Col)) {
         for pos in &piece.0 {
-            let absolute_pos =
-                (piece_pos.0 + pos.0 .0, piece_pos.1 + pos.1 .0);
+            let absolute_pos = (piece_pos.0 + pos.0.0, piece_pos.1 + pos.1.0);
             assert!(!self.grid[absolute_pos.0][absolute_pos.1]);
             self.grid[absolute_pos.0][absolute_pos.1] = true;
         }
