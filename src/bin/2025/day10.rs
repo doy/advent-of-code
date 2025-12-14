@@ -75,12 +75,17 @@ fn find_basis(
     (basis, removed_rows, extra_col, extra_cols)
 }
 
-fn all_possibilities(dim: usize, max: u64) -> impl Iterator<Item = Vec<f64>> {
-    (0..((max + 1).pow(dim as u32))).map(move |n| {
-        (0..dim)
-            .map(|d| ((n / (max + 1).pow(d as u32)) % (max + 1)) as f64)
-            .collect()
-    })
+fn all_possibilities(
+    dim: usize,
+    max: u64,
+) -> impl ParallelIterator<Item = Vec<f64>> {
+    (0..((max + 1).pow(dim as u32)))
+        .into_par_iter()
+        .map(move |n| {
+            (0..dim)
+                .map(|d| ((n / (max + 1).pow(d as u32)) % (max + 1)) as f64)
+                .collect()
+        })
 }
 
 fn check_solution(
