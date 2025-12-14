@@ -75,34 +75,24 @@ fn find_basis(
     (basis, removed_rows, extra_col, extra_cols)
 }
 
-fn all_possibilities(
-    dim: usize,
-    max: u64,
-) -> Box<dyn Iterator<Item = Vec<u64>>> {
-    let mut iter = Box::new(std::iter::once(vec![]))
-        as Box<dyn Iterator<Item = Vec<u64>>>;
-    for _ in 0..dim {
-        iter = Box::new(iter.flat_map(move |v| {
-            (0..=max).map(move |n| {
-                let mut v = v.clone();
-                v.push(n);
-                v
-            })
-        }))
-    }
-    iter
+fn all_possibilities(dim: usize, max: u64) -> impl Iterator<Item = Vec<f64>> {
+    (0..((max + 1).pow(dim as u32))).map(move |n| {
+        (0..dim)
+            .map(|d| ((n / (max + 1).pow(d as u32)) % (max + 1)) as f64)
+            .collect()
+    })
 }
 
 fn check_solution(
     buttons: &nalgebra::DMatrix<f64>,
     joltages: &nalgebra::DMatrix<f64>,
-    missing: &[u64],
+    missing: &[f64],
     extra_cols: &[usize],
     solution: &nalgebra::DMatrix<f64>,
 ) -> bool {
     let mut solution = solution.clone();
     for (i, col) in extra_cols.iter().enumerate() {
-        solution = solution.insert_row(*col, missing[i] as f64);
+        solution = solution.insert_row(*col, missing[i]);
     }
     buttons * &solution == *joltages
 }
@@ -154,10 +144,10 @@ impl Machine {
                 .filter_map(|missing| {
                     let joltages = &joltages
                         - (&extra
-                            * nalgebra::DMatrix::from_iterator(
+                            * nalgebra::DMatrix::from_column_slice(
                                 missing.len(),
                                 1,
-                                missing.iter().copied().map(|n| n as f64),
+                                &missing,
                             ));
                     if joltages.iter().any(|f| f.round() < 0.0) {
                         return None;
@@ -183,7 +173,7 @@ impl Machine {
                         Some(
                             solution.iter().copied().sum::<f64>().round()
                                 as u64
-                                + missing.iter().sum::<u64>(),
+                                + missing.iter().sum::<f64>().round() as u64,
                         )
                     }
                 })
